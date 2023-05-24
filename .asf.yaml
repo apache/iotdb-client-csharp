@@ -27,12 +27,7 @@ github:
   homepage: https://iotdb.apache.org/
   labels:
     - timeseries
-    - database
-    - iot
-    - nosql
-    - big-data
-    - java
-    - tsdb
+    - iotdb
     - csharp
   features:
     issues: true
@@ -40,7 +35,7 @@ github:
     # enable squash button:
     squash:  true
     # enable merge button:
-    merge:   false
+    merge:   true
     # disable rebase button:
     rebase:  true
   collaborators:
