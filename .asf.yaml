@@ -35,7 +35,7 @@ github:
     # enable squash button:
     squash:  true
     # enable merge button:
-    merge:   true
+    merge:   false
     # disable rebase button:
     rebase:  true
   collaborators:
