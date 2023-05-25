@@ -4,9 +4,6 @@
 		<AssemblyName>Apache.IoTDB.Data</AssemblyName>
 		<RootNamespace>$(AssemblyName)</RootNamespace>
 		<PackageId>Apache.IoTDB.Data</PackageId>
-        <PackageVersion>1.0.0.3</PackageVersion>
-        <Authors>eedalong, lausannel, MysticBoy, Aiemu</Authors>
-        <Company>LiuLin Lab</Company>
 		<Description>
 			IoTDB implementation of the System.Data.Common provider model.
 			Commonly Used Types:
