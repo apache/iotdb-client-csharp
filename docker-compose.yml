@@ -34,7 +34,7 @@ services:
         iotdb-network:
           ipv4_address: 172.18.0.3
    environment:
-         - dn_rpc_address=iotdb
+         - dn_rpc_address=0.0.0.0
          - dn_internal_address=iotdb
          - dn_seed_config_node=iotdb-confignode-1:22277
   
