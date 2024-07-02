@@ -53,6 +53,7 @@ services:
           ipv4_address: 172.18.0.4
    environment:
          - cn_internal_address=iotdb-confignode-1
+         - cn_internal_port=22277
          - cn_seed_config_node=iotdb-confignode-1:22277
 
 
