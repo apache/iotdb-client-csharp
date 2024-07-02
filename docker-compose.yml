@@ -27,14 +27,14 @@ services:
       interval: 3s
       timeout: 5s
       retries: 30
-      start_period: 30s
+      start_period: 60s
    ports:
          - 6667:6667
    networks:
         iotdb-network:
           ipv4_address: 172.18.0.3
    environment:
-         - dn_rpc_address=0.0.0.0
+         - dn_rpc_address=iotdb
          - dn_internal_address=iotdb
          - dn_seed_config_node=iotdb-confignode-1:22277
   
