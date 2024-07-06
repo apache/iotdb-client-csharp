@@ -10,7 +10,7 @@ namespace Apache.IoTDB.Samples
         public static async Task Main(string[] args)
         {
             var sessionPoolTest = new SessionPoolTest("iotdb");
-           await  sessionPoolTest.Test() ;
+            await sessionPoolTest.Test();
         }
 
         public static void OpenDebugMode(this SessionPool session)

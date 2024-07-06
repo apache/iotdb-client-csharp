@@ -27,7 +27,9 @@ namespace Apache.IoTDB
         private bool _enableRpcCompression;
         private string _zoneId;
         private readonly string _host;
+        private readonly List<string> _hosts;
         private readonly int _port;
+        private readonly List<string> _ports;
         private readonly int _fetchSize;
         private readonly int _timeout;
         private readonly int _poolSize = 4;
@@ -36,6 +38,8 @@ namespace Apache.IoTDB
         private bool _isClose = true;
         private ConcurrentClientQueue _clients;
         private ILogger _logger;
+        public delegate Task<TResult> AsyncOperation<TResult>(Client client);
+
 
         public SessionPool(string host, int port, int poolSize)
                         : this(host, port, "root", "root", 1024, "UTC+08:00", poolSize, true, 60)
@@ -68,6 +72,40 @@ namespace Apache.IoTDB
             _poolSize = poolSize;
             _enableRpcCompression = enableRpcCompression;
             _timeout = timeout;
+        }
+        public async Task<TResult> ExecuteClientOperationAsync<TResult>(AsyncOperation<TResult> operation, string errMsg, bool retryOnFailure = true)
+        {
+            Client client = _clients.Take();
+            try
+            {
+                var resp = await operation(client);
+                return resp;
+            }
+            catch (TException ex)
+            {
+                if (retryOnFailure)
+                {
+                    await Open(_enableRpcCompression);
+                    client = _clients.Take();
+                    try
+                    {
+                        var resp = await operation(client);
+                        return resp;
+                    }
+                    catch (TException retryEx)
+                    {
+                        throw new TException(errMsg, retryEx);
+                    }
+                }
+                else
+                {
+                    throw new TException("Error occurs when executing operation", ex);
+                }
+            }
+            finally
+            {
+                _clients.Add(client);
+            }
         }
 
         /// <summary>
@@ -238,28 +276,10 @@ namespace Apache.IoTDB
                 throw;
             }
         }
-
         public async Task<int> SetStorageGroup(string groupName)
         {
-            var client = _clients.Take();
-
-            try
-            {
-                var status = await client.ServiceClient.setStorageGroupAsync(client.SessionId, groupName);
-
-                if (_debugMode)
-                {
-                    _logger.LogInformation("set storage group {0} successfully, server message is {1}", groupName, status.Message);
-                }
-
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-            }
-            catch (TException e)
-            {
-                // try to reconnect
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                try
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
                     var status = await client.ServiceClient.setStorageGroupAsync(client.SessionId, groupName);
                     if (_debugMode)
@@ -267,70 +287,38 @@ namespace Apache.IoTDB
                         _logger.LogInformation("set storage group {0} successfully, server message is {1}", groupName, status.Message);
                     }
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when setting storage group", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when setting storage group"
+            );
         }
-
         public async Task<int> CreateTimeSeries(
             string tsPath,
             TSDataType dataType,
             TSEncoding encoding,
             Compressor compressor)
         {
-            var client = _clients.Take();
-            var req = new TSCreateTimeseriesReq(
-                client.SessionId,
-                tsPath,
-                (int)dataType,
-                (int)encoding,
-                (int)compressor);
-            try
-            {
-                var status = await client.ServiceClient.createTimeseriesAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("creating time series {0} successfully, server message is {1}", tsPath, status.Message);
-                }
+                    var req = new TSCreateTimeseriesReq(
+                        client.SessionId,
+                        tsPath,
+                        (int)dataType,
+                        (int)encoding,
+                        (int)compressor);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.createTimeseriesAsync(req);
+
                     if (_debugMode)
                     {
                         _logger.LogInformation("creating time series {0} successfully, server message is {1}", tsPath, status.Message);
                     }
+
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when creating time series", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
-
+                },
+                errMsg: "Error occurs when creating time series"
+            );
         }
-
         public async Task<int> CreateAlignedTimeseriesAsync(
             string prefixPath,
             List<string> measurements,
@@ -338,223 +326,99 @@ namespace Apache.IoTDB
             List<TSEncoding> encodingLst,
             List<Compressor> compressorLst)
         {
-            var client = _clients.Take();
-            var dataTypes = dataTypeLst.ConvertAll(x => (int)x);
-            var encodings = encodingLst.ConvertAll(x => (int)x);
-            var compressors = compressorLst.ConvertAll(x => (int)x);
-
-            var req = new TSCreateAlignedTimeseriesReq(
-                client.SessionId,
-                prefixPath,
-                measurements,
-                dataTypes,
-                encodings,
-                compressors);
-            try
-            {
-                var status = await client.ServiceClient.createAlignedTimeseriesAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("creating aligned time series {0} successfully, server message is {1}", prefixPath, status.Message);
-                }
+                    var dataTypes = dataTypeLst.ConvertAll(x => (int)x);
+                    var encodings = encodingLst.ConvertAll(x => (int)x);
+                    var compressors = compressorLst.ConvertAll(x => (int)x);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    var req = new TSCreateAlignedTimeseriesReq(
+                        client.SessionId,
+                        prefixPath,
+                        measurements,
+                        dataTypes,
+                        encodings,
+                        compressors);
 
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.createAlignedTimeseriesAsync(req);
+
                     if (_debugMode)
                     {
                         _logger.LogInformation("creating aligned time series {0} successfully, server message is {1}", prefixPath, status.Message);
                     }
+
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when creating aligned time series", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when creating aligned time series"
+            );
         }
-
         public async Task<int> DeleteStorageGroupAsync(string groupName)
         {
-            var client = _clients.Take();
-            try
-            {
-                var status = await client.ServiceClient.deleteStorageGroupsAsync(
-                    client.SessionId,
-                    new List<string> { groupName });
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation($"delete storage group {groupName} successfully, server message is {status?.Message}");
-                }
-
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                try
-                {
-                    var status = await client.ServiceClient.deleteStorageGroupsAsync(
-                        client.SessionId,
-                        new List<string> { groupName });
+                    var status = await client.ServiceClient.deleteStorageGroupsAsync(client.SessionId, new List<string> { groupName });
 
                     if (_debugMode)
                     {
-                        _logger.LogInformation($"delete storage group {groupName} successfully, server message is {status?.Message}");
+                        _logger.LogInformation("delete storage group {0} successfully, server message is {1}", groupName, status.Message);
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when deleting storage group", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when deleting storage group"
+            );
         }
-
         public async Task<int> DeleteStorageGroupsAsync(List<string> groupNames)
         {
-            var client = _clients.Take();
-
-            try
-            {
-                var status = await client.ServiceClient.deleteStorageGroupsAsync(client.SessionId, groupNames);
-
-                if (_debugMode)
-                {
-                    _logger.LogInformation(
-                        "delete storage group(s) {0} successfully, server message is {1}",
-                        groupNames,
-                        status.Message);
-                }
-
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                try
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
                     var status = await client.ServiceClient.deleteStorageGroupsAsync(client.SessionId, groupNames);
 
                     if (_debugMode)
                     {
-                        _logger.LogInformation(
-                            "delete storage group(s) {0} successfully, server message is {1}",
-                            groupNames,
-                            status.Message);
+                        _logger.LogInformation("delete storage group(s) {0} successfully, server message is {1}", groupNames, status.Message);
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when deleting storage group(s)", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when deleting storage group(s)"
+            );
         }
-
+        // use ExecuteClientOperationAsync to create multi
         public async Task<int> CreateMultiTimeSeriesAsync(
             List<string> tsPathLst,
             List<TSDataType> dataTypeLst,
             List<TSEncoding> encodingLst,
             List<Compressor> compressorLst)
         {
-            var client = _clients.Take();
-            var dataTypes = dataTypeLst.ConvertAll(x => (int)x);
-            var encodings = encodingLst.ConvertAll(x => (int)x);
-            var compressors = compressorLst.ConvertAll(x => (int)x);
-
-            var req = new TSCreateMultiTimeseriesReq(client.SessionId, tsPathLst, dataTypes, encodings, compressors);
-
-            try
-            {
-                var status = await client.ServiceClient.createMultiTimeseriesAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("creating multiple time series {0}, server message is {1}", tsPathLst, status.Message);
-                }
+                    var dataTypes = dataTypeLst.ConvertAll(x => (int)x);
+                    var encodings = encodingLst.ConvertAll(x => (int)x);
+                    var compressors = compressorLst.ConvertAll(x => (int)x);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    var req = new TSCreateMultiTimeseriesReq(client.SessionId, tsPathLst, dataTypes, encodings, compressors);
 
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.createMultiTimeseriesAsync(req);
+
                     if (_debugMode)
                     {
                         _logger.LogInformation("creating multiple time series {0}, server message is {1}", tsPathLst, status.Message);
                     }
+
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when creating multiple time series", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when creating multiple time series"
+            );
         }
-
         public async Task<int> DeleteTimeSeriesAsync(List<string> pathList)
         {
-            var client = _clients.Take();
-
-            try
-            {
-                var status = await client.ServiceClient.deleteTimeseriesAsync(client.SessionId, pathList);
-
-                if (_debugMode)
-                {
-                    _logger.LogInformation("deleting multiple time series {0}, server message is {1}", pathList, status.Message);
-                }
-
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                try
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
                     var status = await client.ServiceClient.deleteTimeseriesAsync(client.SessionId, pathList);
 
@@ -564,17 +428,9 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when deleting multiple time series", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when deleting multiple time series"
+            );
         }
 
         public async Task<int> DeleteTimeSeriesAsync(string tsPath)
@@ -596,34 +452,13 @@ namespace Apache.IoTDB
                 throw new TException("could not check if certain time series exists", e);
             }
         }
-
         public async Task<int> DeleteDataAsync(List<string> tsPathLst, long startTime, long endTime)
         {
-            var client = _clients.Take();
-            var req = new TSDeleteDataReq(client.SessionId, tsPathLst, startTime, endTime);
-
-            try
-            {
-                var status = await client.ServiceClient.deleteDataAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation(
-                        "delete data from {0}, server message is {1}",
-                        tsPathLst,
-                        status.Message);
-                }
+                    var req = new TSDeleteDataReq(client.SessionId, tsPathLst, startTime, endTime);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.deleteDataAsync(req);
 
                     if (_debugMode)
@@ -635,43 +470,18 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when deleting data", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when deleting data"
+            );
         }
-
+        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertRecordAsync(string deviceId, RowRecord record)
         {
-            // TBD by Luzhan
-            var client = _clients.Take();
-            var req = new TSInsertRecordReq(client.SessionId, deviceId, record.Measurements, record.ToBytes(),
-                record.Timestamps);
-            try
-            {
-                var status = await client.ServiceClient.insertRecordAsync(req);
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert one record to device {0}， server message: {1}", deviceId, status.Message);
-                }
+                    var req = new TSInsertRecordReq(client.SessionId, deviceId, record.Measurements, record.ToBytes(), record.Timestamps);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.insertRecordAsync(req);
 
                     if (_debugMode)
@@ -680,45 +490,21 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting record", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when inserting record"
+            );
         }
+        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertAlignedRecordAsync(string deviceId, RowRecord record)
         {
-            var client = _clients.Take();
-            var req = new TSInsertRecordReq(client.SessionId, deviceId, record.Measurements, record.ToBytes(),
-                record.Timestamps);
-            req.IsAligned = true;
-            // ASSERT that the insert plan is aligned    
-            System.Diagnostics.Debug.Assert(req.IsAligned == true);
-            try
-            {
-                var status = await client.ServiceClient.insertRecordAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert one record to device {0}， server message: {1}", deviceId, status.Message);
-                }
+                    var req = new TSInsertRecordReq(client.SessionId, deviceId, record.Measurements, record.ToBytes(), record.Timestamps);
+                    req.IsAligned = true;
+                    // ASSERT that the insert plan is aligned
+                    System.Diagnostics.Debug.Assert(req.IsAligned == true);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.insertRecordAsync(req);
 
                     if (_debugMode)
@@ -727,17 +513,9 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting record", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when inserting record"
+            );
         }
 
         public TSInsertStringRecordReq GenInsertStrRecordReq(string deviceId, List<string> measurements,
@@ -776,74 +554,36 @@ namespace Apache.IoTDB
 
             return new TSInsertRecordsReq(sessionId, deviceId, measurementLst, valuesLstInBytes, timestampLst);
         }
+        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertStringRecordAsync(string deviceId, List<string> measurements, List<string> values,
             long timestamp)
         {
-            var client = _clients.Take();
-            var req = GenInsertStrRecordReq(deviceId, measurements, values, timestamp, client.SessionId);
-            try
-            {
-                var status = await client.ServiceClient.insertStringRecordAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert one string record to device {0}， server message: {1}", deviceId, status.Message);
-                }
+                    var req = GenInsertStrRecordReq(deviceId, measurements, values, timestamp, client.SessionId);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.insertStringRecordAsync(req);
 
                     if (_debugMode)
                     {
-                        _logger.LogInformation("insert one record to device {0}， server message: {1}", deviceId, status.Message);
+                        _logger.LogInformation("insert one string record to device {0}， server message: {1}", deviceId, status.Message);
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting a string record", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when inserting a string record"
+            );
         }
+        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertAlignedStringRecordAsync(string deviceId, List<string> measurements, List<string> values,
             long timestamp)
         {
-            var client = _clients.Take();
-            var req = GenInsertStrRecordReq(deviceId, measurements, values, timestamp, client.SessionId, true);
-            try
-            {
-                var status = await client.ServiceClient.insertStringRecordAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert one record to device {0}， server message: {1}", deviceId, status.Message);
-                }
+                    var req = GenInsertStrRecordReq(deviceId, measurements, values, timestamp, client.SessionId, true);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.insertStringRecordAsync(req);
 
                     if (_debugMode)
@@ -852,43 +592,19 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting record", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when inserting a string record"
+            );
         }
+        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertStringRecordsAsync(List<string> deviceIds, List<List<string>> measurements, List<List<string>> values,
             List<long> timestamps)
         {
-            var client = _clients.Take();
-            var req = GenInsertStringRecordsReq(deviceIds, measurements, values, timestamps, client.SessionId);
-            try
-            {
-                var status = await client.ServiceClient.insertStringRecordsAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert string records to devices {0}， server message: {1}", deviceIds, status.Message);
-                }
+                    var req = GenInsertStringRecordsReq(deviceIds, measurements, values, timestamps, client.SessionId);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.insertStringRecordsAsync(req);
 
                     if (_debugMode)
@@ -897,44 +613,19 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting string records", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when inserting string records"
+            );
         }
+        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertAlignedStringRecordsAsync(List<string> deviceIds, List<List<string>> measurements, List<List<string>> values,
             List<long> timestamps)
         {
-            var client = _clients.Take();
-            var req = GenInsertStringRecordsReq(deviceIds, measurements, values, timestamps, client.SessionId, true);
-            try
-            {
-                var status = await client.ServiceClient.insertStringRecordsAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert string records to devices {0}， server message: {1}", deviceIds, status.Message);
-                }
+                    var req = GenInsertStringRecordsReq(deviceIds, measurements, values, timestamps, client.SessionId, true);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.insertStringRecordsAsync(req);
 
                     if (_debugMode)
@@ -943,46 +634,19 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting string records", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when inserting string records"
+            );
         }
-
+        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertRecordsAsync(List<string> deviceId, List<RowRecord> rowRecords)
         {
-            var client = _clients.Take();
-
-            var request = GenInsertRecordsReq(deviceId, rowRecords, client.SessionId);
-
-            try
-            {
-                var status = await client.ServiceClient.insertRecordsAsync(request);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert multiple records to devices {0}, server message: {1}", deviceId, status.Message);
-                }
+                    var req = GenInsertRecordsReq(deviceId, rowRecords, client.SessionId);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                request.SessionId = client.SessionId;
-                try
-                {
-                    var status = await client.ServiceClient.insertRecordsAsync(request);
+                    var status = await client.ServiceClient.insertRecordsAsync(req);
 
                     if (_debugMode)
                     {
@@ -990,47 +654,22 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting records", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when inserting records"
+            );
         }
+        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertAlignedRecordsAsync(List<string> deviceId, List<RowRecord> rowRecords)
         {
-            var client = _clients.Take();
-
-            var request = GenInsertRecordsReq(deviceId, rowRecords, client.SessionId);
-            request.IsAligned = true;
-            // ASSERT that the insert plan is aligned
-            System.Diagnostics.Debug.Assert(request.IsAligned == true);
-
-            try
-            {
-                var status = await client.ServiceClient.insertRecordsAsync(request);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert multiple records to devices {0}, server message: {1}", deviceId, status.Message);
-                }
+                    var req = GenInsertRecordsReq(deviceId, rowRecords, client.SessionId);
+                    req.IsAligned = true;
+                    // ASSERT that the insert plan is aligned
+                    System.Diagnostics.Debug.Assert(req.IsAligned == true);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                request.SessionId = client.SessionId;
-                try
-                {
-                    var status = await client.ServiceClient.insertRecordsAsync(request);
+                    var status = await client.ServiceClient.insertRecordsAsync(req);
 
                     if (_debugMode)
                     {
@@ -1038,17 +677,9 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting records", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when inserting records"
+            );
         }
         public TSInsertTabletReq GenInsertTabletReq(Tablet tablet, long sessionId)
         {
@@ -1061,31 +692,14 @@ namespace Apache.IoTDB
                 tablet.GetDataTypes(),
                 tablet.RowNumber);
         }
-
+        // use ExecuteClientOperationAsync to insert tablet
         public async Task<int> InsertTabletAsync(Tablet tablet)
         {
-            var client = _clients.Take();
-            var req = GenInsertTabletReq(tablet, client.SessionId);
-
-            try
-            {
-                var status = await client.ServiceClient.insertTabletAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert one tablet to device {0}, server message: {1}", tablet.DeviceId, status.Message);
-                }
+                    var req = GenInsertTabletReq(tablet, client.SessionId);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.insertTabletAsync(req);
 
                     if (_debugMode)
@@ -1094,43 +708,19 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting tablet", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when inserting tablet"
+            );
         }
+        // use ExecuteClientOperationAsync to insert tablet
         public async Task<int> InsertAlignedTabletAsync(Tablet tablet)
         {
-            var client = _clients.Take();
-            var req = GenInsertTabletReq(tablet, client.SessionId);
-            req.IsAligned = true;
-
-            try
-            {
-                var status = await client.ServiceClient.insertTabletAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert one aligned tablet to device {0}, server message: {1}", tablet.DeviceId, status.Message);
-                }
+                    var req = GenInsertTabletReq(tablet, client.SessionId);
+                    req.IsAligned = true;
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.insertTabletAsync(req);
 
                     if (_debugMode)
@@ -1139,19 +729,10 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting tablet", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when inserting aligned tablet"
+            );
         }
-
 
         public TSInsertTabletsReq GenInsertTabletsReq(List<Tablet> tabletLst, long sessionId)
         {
@@ -1182,31 +763,15 @@ namespace Apache.IoTDB
                 typeLst,
                 sizeLst);
         }
+        // use ExecuteClientOperationAsync to insert tablets
 
         public async Task<int> InsertTabletsAsync(List<Tablet> tabletLst)
         {
-            var client = _clients.Take();
-            var req = GenInsertTabletsReq(tabletLst, client.SessionId);
-
-            try
-            {
-                var status = await client.ServiceClient.insertTabletsAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert multiple tablets, message: {0}", status.Message);
-                }
+                    var req = GenInsertTabletsReq(tabletLst, client.SessionId);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.insertTabletsAsync(req);
 
                     if (_debugMode)
@@ -1215,44 +780,19 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting tablets", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when inserting tablets"
+            );
         }
-
+        // use ExecuteClientOperationAsync to insert tablets
         public async Task<int> InsertAlignedTabletsAsync(List<Tablet> tabletLst)
         {
-            var client = _clients.Take();
-            var req = GenInsertTabletsReq(tabletLst, client.SessionId);
-            req.IsAligned = true;
-
-            try
-            {
-                var status = await client.ServiceClient.insertTabletsAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert multiple aligned tablets, message: {0}", status.Message);
-                }
+                    var req = GenInsertTabletsReq(tabletLst, client.SessionId);
+                    req.IsAligned = true;
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.insertTabletsAsync(req);
 
                     if (_debugMode)
@@ -1261,17 +801,9 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting tablets", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when inserting aligned tablets"
+            );
         }
 
         public async Task<int> InsertRecordsOfOneDeviceAsync(string deviceId, List<RowRecord> rowRecords)
@@ -1310,36 +842,20 @@ namespace Apache.IoTDB
 
             return await InsertStringRecordsOfOneDeviceSortedAsync(deviceId, sortedTimestamps, sortedMeasurementsList, sortedValuesList, true);
         }
+        // use ExecuteClientOperationAsync to InsertStringRecordsOfOneDeviceSortedAsync
         public async Task<int> InsertStringRecordsOfOneDeviceSortedAsync(string deviceId, List<long> timestamps,
             List<List<string>> measurementsList, List<List<string>> valuesList, bool isAligned)
         {
-            var client = _clients.Take();
-
-            if (!_utilFunctions.IsSorted(timestamps))
-            {
-                throw new TException("insert string records of one device error: timestamp not sorted", null);
-            }
-
-            var req = GenInsertStringRecordsOfOneDeviceReq(deviceId, timestamps, measurementsList, valuesList, client.SessionId, isAligned);
-            try
-            {
-                var status = await client.ServiceClient.insertStringRecordsOfOneDeviceAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert string records of one device, message: {0}", status.Message);
-                }
+                    if (!_utilFunctions.IsSorted(timestamps))
+                    {
+                        throw new TException("insert string records of one device error: timestamp not sorted", null);
+                    }
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    var req = GenInsertStringRecordsOfOneDeviceReq(deviceId, timestamps, measurementsList, valuesList, client.SessionId, isAligned);
 
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.insertStringRecordsOfOneDeviceAsync(req);
 
                     if (_debugMode)
@@ -1348,18 +864,9 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting string records of one device", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-
-            }
+                },
+                errMsg: "Error occurs when inserting string records of one device"
+            );
         }
         private TSInsertStringRecordsOfOneDeviceReq GenInsertStringRecordsOfOneDeviceReq(string deviceId,
             List<long> timestamps, List<List<string>> measurementsList, List<List<string>> valuesList,
@@ -1391,39 +898,21 @@ namespace Apache.IoTDB
                 values.ToList(),
                 timestampLst);
         }
-
+        // use ExecuteClientOperationAsync to InsertRecordsOfOneDeviceSortedAsync
         public async Task<int> InsertRecordsOfOneDeviceSortedAsync(string deviceId, List<RowRecord> rowRecords)
         {
-            var client = _clients.Take();
-
-            var timestampLst = rowRecords.Select(x => x.Timestamps).ToList();
-
-            if (!_utilFunctions.IsSorted(timestampLst))
-            {
-                throw new TException("insert records of one device error: timestamp not sorted", null);
-            }
-
-            var req = GenInsertRecordsOfOneDeviceRequest(deviceId, rowRecords, client.SessionId);
-
-            try
-            {
-                var status = await client.ServiceClient.insertRecordsOfOneDeviceAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert records of one device, message: {0}", status.Message);
-                }
+                    var timestampLst = rowRecords.Select(x => x.Timestamps).ToList();
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    if (!_utilFunctions.IsSorted(timestampLst))
+                    {
+                        throw new TException("insert records of one device error: timestamp not sorted", null);
+                    }
 
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
+                    var req = GenInsertRecordsOfOneDeviceRequest(deviceId, rowRecords, client.SessionId);
+
                     var status = await client.ServiceClient.insertRecordsOfOneDeviceAsync(req);
 
                     if (_debugMode)
@@ -1432,51 +921,26 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting records of one device", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when inserting records of one device"
+            );
         }
+        // use ExecuteClientOperationAsync to InsertAlignedRecordsOfOneDeviceSortedAsync
         public async Task<int> InsertAlignedRecordsOfOneDeviceSortedAsync(string deviceId, List<RowRecord> rowRecords)
         {
-            var client = _clients.Take();
-
-            var timestampLst = rowRecords.Select(x => x.Timestamps).ToList();
-
-            if (!_utilFunctions.IsSorted(timestampLst))
-            {
-                throw new TException("insert records of one device error: timestamp not sorted", null);
-            }
-
-            var req = GenInsertRecordsOfOneDeviceRequest(deviceId, rowRecords, client.SessionId);
-            req.IsAligned = true;
-
-            try
-            {
-                var status = await client.ServiceClient.insertRecordsOfOneDeviceAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert aligned records of one device, message: {0}", status.Message);
-                }
+                    var timestampLst = rowRecords.Select(x => x.Timestamps).ToList();
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    if (!_utilFunctions.IsSorted(timestampLst))
+                    {
+                        throw new TException("insert records of one device error: timestamp not sorted", null);
+                    }
 
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
+                    var req = GenInsertRecordsOfOneDeviceRequest(deviceId, rowRecords, client.SessionId);
+                    req.IsAligned = true;
+
                     var status = await client.ServiceClient.insertRecordsOfOneDeviceAsync(req);
 
                     if (_debugMode)
@@ -1485,49 +949,23 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when inserting aligned records of one device", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when inserting aligned records of one device"
+            );
         }
-
+        // use ExecuteClientOperationAsync to TestInsertRecordAsync
         public async Task<int> TestInsertRecordAsync(string deviceId, RowRecord record)
         {
-            var client = _clients.Take();
-
-            var req = new TSInsertRecordReq(
-                client.SessionId,
-                deviceId,
-                record.Measurements,
-                record.ToBytes(),
-                record.Timestamps);
-
-            try
-            {
-                var status = await client.ServiceClient.testInsertRecordAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert one record to device {0}， server message: {1}", deviceId, status.Message);
-                }
+                    var req = new TSInsertRecordReq(
+                        client.SessionId,
+                        deviceId,
+                        record.Measurements,
+                        record.ToBytes(),
+                        record.Timestamps);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.testInsertRecordAsync(req);
 
                     if (_debugMode)
@@ -1536,43 +974,18 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when test inserting one record", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when test inserting one record"
+            );
         }
-
+        // use ExecuteClientOperationAsync to TestInsertRecordsAsync
         public async Task<int> TestInsertRecordsAsync(List<string> deviceId, List<RowRecord> rowRecords)
         {
-            var client = _clients.Take();
-            var req = GenInsertRecordsReq(deviceId, rowRecords, client.SessionId);
-
-            try
-            {
-                var status = await client.ServiceClient.testInsertRecordsAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert multiple records to devices {0}, server message: {1}", deviceId, status.Message);
-                }
+                    var req = GenInsertRecordsReq(deviceId, rowRecords, client.SessionId);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.testInsertRecordsAsync(req);
 
                     if (_debugMode)
@@ -1581,92 +994,38 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when test inserting multiple records", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when test inserting multiple records"
+            );
         }
-
+        // use ExecuteClientOperationAsync to TestInsertTabletAsync
         public async Task<int> TestInsertTabletAsync(Tablet tablet)
         {
-            var client = _clients.Take();
-
-            var req = GenInsertTabletReq(tablet, client.SessionId);
-
-            try
-            {
-                var status = await client.ServiceClient.testInsertTabletAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert one tablet to device {0}, server message: {1}", tablet.DeviceId,
-                        status.Message);
-                }
+                    var req = GenInsertTabletReq(tablet, client.SessionId);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.testInsertTabletAsync(req);
 
                     if (_debugMode)
                     {
-                        _logger.LogInformation("insert one tablet to device {0}, server message: {1}", tablet.DeviceId,
-                            status.Message);
+                        _logger.LogInformation("insert one tablet to device {0}, server message: {1}", tablet.DeviceId, status.Message);
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when test inserting one tablet", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when test inserting one tablet"
+            );
         }
-
+        // use ExecuteClientOperationAsync to TestInsertTabletsAsync
         public async Task<int> TestInsertTabletsAsync(List<Tablet> tabletLst)
         {
-            var client = _clients.Take();
-
-            var req = GenInsertTabletsReq(tabletLst, client.SessionId);
-
-            try
-            {
-                var status = await client.ServiceClient.testInsertTabletsAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("insert multiple tablets, message: {0}", status.Message);
-                }
+                    var req = GenInsertTabletsReq(tabletLst, client.SessionId);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.testInsertTabletsAsync(req);
 
                     if (_debugMode)
@@ -1675,17 +1034,9 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when test inserting multiple tablets", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when test inserting multiple tablets"
+            );
         }
 
         public async Task<SessionDataSet> ExecuteQueryStatementAsync(string sql)
@@ -1788,33 +1139,14 @@ namespace Apache.IoTDB
 
             return sessionDataset;
         }
-
+        // use ExecuteClientOperationAsync to ExecuteNonQueryStatementAsync
         public async Task<int> ExecuteNonQueryStatementAsync(string sql)
         {
-            var client = _clients.Take();
-            var req = new TSExecuteStatementReq(client.SessionId, sql, client.StatementId);
-
-            try
-            {
-                var resp = await client.ServiceClient.executeUpdateStatementAsync(req);
-                var status = resp.Status;
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("execute non-query statement {0} message: {1}", sql, status.Message);
-                }
+                    var req = new TSExecuteStatementReq(client.SessionId, sql, client.StatementId);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                req.StatementId = client.StatementId;
-                try
-                {
                     var resp = await client.ServiceClient.executeUpdateStatementAsync(req);
                     var status = resp.Status;
 
@@ -1824,17 +1156,9 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when executing non-query statement", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when executing non-query statement"
+            );
         }
         public async Task<SessionDataSet> ExecuteRawDataQuery(List<string> paths, long startTime, long endTime)
         {
@@ -1938,30 +1262,14 @@ namespace Apache.IoTDB
 
             return sessionDataset;
         }
-
+        // use ExecuteClientOperationAsync to CreateSchemaTemplateAsync
         public async Task<int> CreateSchemaTemplateAsync(Template template)
         {
-            var client = _clients.Take();
-            var req = new TSCreateSchemaTemplateReq(client.SessionId, template.Name, template.ToBytes());
-            try
-            {
-                var status = await client.ServiceClient.createSchemaTemplateAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("create schema template {0} message: {1}", template.Name, status.Message);
-                }
+                    var req = new TSCreateSchemaTemplateReq(client.SessionId, template.Name, template.ToBytes());
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.createSchemaTemplateAsync(req);
 
                     if (_debugMode)
@@ -1970,42 +1278,18 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when creating schema template", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when creating schema template"
+            );
         }
-
+        // use ExecuteClientOperationAsync to DropSchemaTemplateAsync
         public async Task<int> DropSchemaTemplateAsync(string templateName)
         {
-            var client = _clients.Take();
-            var req = new TSDropSchemaTemplateReq(client.SessionId, templateName);
-            try
-            {
-                var status = await client.ServiceClient.dropSchemaTemplateAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("drop schema template {0} message: {1}", templateName, status.Message);
-                }
+                    var req = new TSDropSchemaTemplateReq(client.SessionId, templateName);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.dropSchemaTemplateAsync(req);
 
                     if (_debugMode)
@@ -2014,42 +1298,18 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when dropping schema template", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when dropping schema template"
+            );
         }
-
+        // use ExecuteClientOperationAsync to SetSchemaTemplateAsync
         public async Task<int> SetSchemaTemplateAsync(string templateName, string prefixPath)
         {
-            var client = _clients.Take();
-            var req = new TSSetSchemaTemplateReq(client.SessionId, templateName, prefixPath);
-            try
-            {
-                var status = await client.ServiceClient.setSchemaTemplateAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("set schema template {0} message: {1}", templateName, status.Message);
-                }
+                    var req = new TSSetSchemaTemplateReq(client.SessionId, templateName, prefixPath);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.setSchemaTemplateAsync(req);
 
                     if (_debugMode)
@@ -2058,42 +1318,18 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when setting schema template", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when setting schema template"
+            );
         }
-
+        // use ExecuteClientOperationAsync to UnsetSchemaTemplateAsync
         public async Task<int> UnsetSchemaTemplateAsync(string prefixPath, string templateName)
         {
-            var client = _clients.Take();
-            var req = new TSUnsetSchemaTemplateReq(client.SessionId, prefixPath, templateName);
-            try
-            {
-                var status = await client.ServiceClient.unsetSchemaTemplateAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("unset schema template {0} message: {1}", templateName, status.Message);
-                }
+                    var req = new TSUnsetSchemaTemplateReq(client.SessionId, prefixPath, templateName);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.unsetSchemaTemplateAsync(req);
 
                     if (_debugMode)
@@ -2102,42 +1338,18 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when unsetting schema template", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when unsetting schema template"
+            );
         }
-
+        // use ExecuteClientOperationAsync to DeleteNodeInTemplateAsync
         public async Task<int> DeleteNodeInTemplateAsync(string templateName, string path)
         {
-            var client = _clients.Take();
-            var req = new TSPruneSchemaTemplateReq(client.SessionId, templateName, path);
-            try
-            {
-                var status = await client.ServiceClient.pruneSchemaTemplateAsync(req);
-
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("delete node in template {0} message: {1}", templateName, status.Message);
-                }
+                    var req = new TSPruneSchemaTemplateReq(client.SessionId, templateName, path);
 
-                return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var status = await client.ServiceClient.pruneSchemaTemplateAsync(req);
 
                     if (_debugMode)
@@ -2146,44 +1358,21 @@ namespace Apache.IoTDB
                     }
 
                     return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when deleting node in template", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when deleting node in template"
+            );
         }
-
+        // use ExecuteClientOperationAsync to CountMeasurementsInTemplateAsync
         public async Task<int> CountMeasurementsInTemplateAsync(string name)
         {
-            var client = _clients.Take();
-            var req = new TSQueryTemplateReq(client.SessionId, name, (int)TemplateQueryType.COUNT_MEASUREMENTS);
-            try
-            {
-                var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
-                var status = resp.Status;
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
                 {
-                    _logger.LogInformation("count measurements in template {0} message: {1}", name, status.Message);
-                }
+                    var req = new TSQueryTemplateReq(client.SessionId, name, (int)TemplateQueryType.COUNT_MEASUREMENTS);
 
-                _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-                return resp.Count;
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
                     var status = resp.Status;
+
                     if (_debugMode)
                     {
                         _logger.LogInformation("count measurements in template {0} message: {1}", name, status.Message);
@@ -2191,43 +1380,22 @@ namespace Apache.IoTDB
 
                     _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
                     return resp.Count;
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when counting measurements in template", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when counting measurements in template"
+            );
         }
+        // use ExecuteClientOperationAsync to IsMeasurementInTemplateAsync
         public async Task<bool> IsMeasurementInTemplateAsync(string templateName, string path)
         {
-            var client = _clients.Take();
-            var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.IS_MEASUREMENT);
-            req.Measurement = path;
-            try
-            {
-                var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
-                var status = resp.Status;
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<bool>(
+                async client =>
                 {
-                    _logger.LogInformation("is measurement in template {0} message: {1}", templateName, status.Message);
-                }
+                    var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.IS_MEASUREMENT);
+                    req.Measurement = path;
 
-                _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-                return resp.Result;
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
                     var status = resp.Status;
+
                     if (_debugMode)
                     {
                         _logger.LogInformation("is measurement in template {0} message: {1}", templateName, status.Message);
@@ -2235,44 +1403,22 @@ namespace Apache.IoTDB
 
                     _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
                     return resp.Result;
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when checking measurement in template", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when checking measurement in template"
+            );
         }
-
-        public async Task<bool> IsPathExistInTemplate(string templateName, string path)
+        // use ExecuteClientOperationAsync to IsPathExistInTemplateAsync
+        public async Task<bool> IsPathExistInTemplateAsync(string templateName, string path)
         {
-            var client = _clients.Take();
-            var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.PATH_EXIST);
-            req.Measurement = path;
-            try
-            {
-                var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
-                var status = resp.Status;
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<bool>(
+                async client =>
                 {
-                    _logger.LogInformation("is path exist in template {0} message: {1}", templateName, status.Message);
-                }
+                    var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.PATH_EXIST);
+                    req.Measurement = path;
 
-                _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-                return resp.Result;
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
                     var status = resp.Status;
+
                     if (_debugMode)
                     {
                         _logger.LogInformation("is path exist in template {0} message: {1}", templateName, status.Message);
@@ -2280,44 +1426,22 @@ namespace Apache.IoTDB
 
                     _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
                     return resp.Result;
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when checking path exist in template", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when checking path exist in template"
+            );
         }
-
+        // use ExecuteClientOperationAsync to ShowMeasurementsInTemplateAsync
         public async Task<List<string>> ShowMeasurementsInTemplateAsync(string templateName, string pattern = "")
         {
-            var client = _clients.Take();
-            var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.SHOW_MEASUREMENTS);
-            req.Measurement = pattern;
-            try
-            {
-                var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
-                var status = resp.Status;
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<List<string>>(
+                async client =>
                 {
-                    _logger.LogInformation("get measurements in template {0} message: {1}", templateName, status.Message);
-                }
+                    var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.SHOW_MEASUREMENTS);
+                    req.Measurement = pattern;
 
-                _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-                return resp.Measurements;
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
                     var status = resp.Status;
+
                     if (_debugMode)
                     {
                         _logger.LogInformation("get measurements in template {0} message: {1}", templateName, status.Message);
@@ -2325,42 +1449,22 @@ namespace Apache.IoTDB
 
                     _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
                     return resp.Measurements;
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when getting measurements in template", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when showing measurements in template"
+            );
         }
+
+        // use ExecuteClientOperationAsync to ShowAllTemplatesAsync
         public async Task<List<string>> ShowAllTemplatesAsync()
         {
-            var client = _clients.Take();
-            var req = new TSQueryTemplateReq(client.SessionId, "", (int)TemplateQueryType.SHOW_TEMPLATES);
-            try
-            {
-                var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
-                var status = resp.Status;
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<List<string>>(
+                async client =>
                 {
-                    _logger.LogInformation("get all templates message: {0}", status.Message);
-                }
+                    var req = new TSQueryTemplateReq(client.SessionId, "", (int)TemplateQueryType.SHOW_TEMPLATES);
 
-                _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-                return resp.Measurements;
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
                     var status = resp.Status;
+
                     if (_debugMode)
                     {
                         _logger.LogInformation("get all templates message: {0}", status.Message);
@@ -2368,42 +1472,22 @@ namespace Apache.IoTDB
 
                     _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
                     return resp.Measurements;
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when getting all templates", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when getting all templates"
+            );
         }
+
+        // use ExecuteClientOperationAsync to ShowPathsTemplateSetOnAsync
         public async Task<List<string>> ShowPathsTemplateSetOnAsync(string templateName)
         {
-            var client = _clients.Take();
-            var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.SHOW_SET_TEMPLATES);
-            try
-            {
-                var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
-                var status = resp.Status;
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<List<string>>(
+                async client =>
                 {
-                    _logger.LogInformation("get paths template set on {0} message: {1}", templateName, status.Message);
-                }
+                    var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.SHOW_SET_TEMPLATES);
 
-                _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-                return resp.Measurements;
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
                     var status = resp.Status;
+
                     if (_debugMode)
                     {
                         _logger.LogInformation("get paths template set on {0} message: {1}", templateName, status.Message);
@@ -2411,42 +1495,21 @@ namespace Apache.IoTDB
 
                     _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
                     return resp.Measurements;
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when getting paths template set on", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when getting paths template set on"
+            );
         }
+        // use ExecuteClientOperationAsync to ShowPathsTemplateUsingOnAsync
         public async Task<List<string>> ShowPathsTemplateUsingOnAsync(string templateName)
         {
-            var client = _clients.Take();
-            var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.SHOW_USING_TEMPLATES);
-            try
-            {
-                var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
-                var status = resp.Status;
-                if (_debugMode)
+            return await ExecuteClientOperationAsync<List<string>>(
+                async client =>
                 {
-                    _logger.LogInformation("get paths template using on {0} message: {1}", templateName, status.Message);
-                }
+                    var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.SHOW_USING_TEMPLATES);
 
-                _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
-                return resp.Measurements;
-            }
-            catch (TException e)
-            {
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                try
-                {
                     var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
                     var status = resp.Status;
+
                     if (_debugMode)
                     {
                         _logger.LogInformation("get paths template using on {0} message: {1}", templateName, status.Message);
@@ -2454,16 +1517,9 @@ namespace Apache.IoTDB
 
                     _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
                     return resp.Measurements;
-                }
-                catch (TException ex)
-                {
-                    throw new TException("Error occurs when getting paths template using on", ex);
-                }
-            }
-            finally
-            {
-                _clients.Add(client);
-            }
+                },
+                errMsg: "Error occurs when getting paths template using on"
+            );
         }
 
         protected virtual void Dispose(bool disposing)
