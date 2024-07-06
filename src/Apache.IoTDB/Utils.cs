@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,23 +19,24 @@ namespace Apache.IoTDB
             return true;
         }
 
-        public int VerifySuccess(TSStatus status, int successCode, int redirectRecommendCode)
+        public int VerifySuccess(TSStatus status)
         {
-            if (status.__isset.subStatus)
+            if (status.Code == (int)TSStatusCode.MULTIPLE_ERROR)
             {
-                if (status.SubStatus.Any(subStatus => VerifySuccess(subStatus, successCode, redirectRecommendCode) != 0))
+                if (status.SubStatus.Any(subStatus => VerifySuccess(subStatus) != 0))
                 {
                     return -1;
                 }
-
                 return 0;
             }
-
-            if (status.Code == successCode || status.Code == redirectRecommendCode)
+            if (status.Code == (int)TSStatusCode.REDIRECTION_RECOMMEND)
             {
                 return 0;
             }
-
+            if (status.Code == (int)TSStatusCode.SUCCESS_STATUS)
+            {
+                return 0;
+            }
             return -1;
         }
     }
