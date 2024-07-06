@@ -18,18 +18,15 @@ namespace Apache.IoTDB
 
     public class SessionPool : IDisposable
     {
-        private static int SuccessCode => 200;
-        private static int RedirectRecommendCode => 400;
         private static readonly TSProtocolVersion ProtocolVersion = TSProtocolVersion.IOTDB_SERVICE_PROTOCOL_V3;
 
         private readonly string _username;
         private readonly string _password;
         private bool _enableRpcCompression;
         private string _zoneId;
+        private readonly List<string> _nodeUrls = new List<string>();
         private readonly string _host;
-        private readonly List<string> _hosts;
         private readonly int _port;
-        private readonly List<string> _ports;
         private readonly int _fetchSize;
         private readonly int _timeout;
         private readonly int _poolSize = 4;
@@ -73,6 +70,43 @@ namespace Apache.IoTDB
             _enableRpcCompression = enableRpcCompression;
             _timeout = timeout;
         }
+        /// <summary>
+        ///  Initializes a new instance of the <see cref="SessionPool"/> class.
+        ///  </summary>
+        ///  <param name="nodeUrls">The list of node URLs to connect to, multiple ip:rpcPort eg.127.0.0.1:9001</param>
+        ///  <param name="poolSize">The size of the session pool.</param>
+        public SessionPool(List<string> nodeUrls, int poolSize)
+                        : this(nodeUrls, "root", "root", 1024, "UTC+08:00", poolSize, true, 60)
+        {
+        }
+        public SessionPool(List<string> nodeUrls, string username, string password)
+                        : this(nodeUrls, username, password, 1024, "UTC+08:00", 8, true, 60)
+        {
+        }
+        public SessionPool(List<string> nodeUrls, string username, string password, int fetchSize)
+                        : this(nodeUrls, username, password, fetchSize, "UTC+08:00", 8, true, 60)
+        {
+        }
+        public SessionPool(List<string> nodeUrls, string username, string password, int fetchSize, string zoneId)
+                        : this(nodeUrls, username, password, fetchSize, zoneId, 8, true, 60)
+        {
+        }
+        public SessionPool(List<string> nodeUrls, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout)
+        {
+            if (nodeUrls.Count == 0)
+            {
+                throw new ArgumentException("nodeUrls shouldn't be empty.");
+            }
+            _nodeUrls = nodeUrls;
+            _username = username;
+            _password = password;
+            _zoneId = zoneId;
+            _fetchSize = fetchSize;
+            _debugMode = false;
+            _poolSize = poolSize;
+            _enableRpcCompression = enableRpcCompression;
+            _timeout = timeout;
+        }
         public async Task<TResult> ExecuteClientOperationAsync<TResult>(AsyncOperation<TResult> operation, string errMsg, bool retryOnFailure = true)
         {
             Client client = _clients.Take();
@@ -107,7 +141,6 @@ namespace Apache.IoTDB
                 _clients.Add(client);
             }
         }
-
         /// <summary>
         ///   Gets or sets the amount of time a Session will wait for  a send operation to complete successfully.
         /// </summary>
@@ -286,7 +319,7 @@ namespace Apache.IoTDB
                     {
                         _logger.LogInformation("set storage group {0} successfully, server message is {1}", groupName, status.Message);
                     }
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when setting storage group"
             );
@@ -314,7 +347,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("creating time series {0} successfully, server message is {1}", tsPath, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when creating time series"
             );
@@ -348,7 +381,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("creating aligned time series {0} successfully, server message is {1}", prefixPath, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when creating aligned time series"
             );
@@ -365,7 +398,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("delete storage group {0} successfully, server message is {1}", groupName, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when deleting storage group"
             );
@@ -382,7 +415,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("delete storage group(s) {0} successfully, server message is {1}", groupNames, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when deleting storage group(s)"
             );
@@ -410,7 +443,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("creating multiple time series {0}, server message is {1}", tsPathLst, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when creating multiple time series"
             );
@@ -427,7 +460,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("deleting multiple time series {0}, server message is {1}", pathList, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when deleting multiple time series"
             );
@@ -469,7 +502,7 @@ namespace Apache.IoTDB
                             status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when deleting data"
             );
@@ -489,7 +522,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert one record to device {0}， server message: {1}", deviceId, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting record"
             );
@@ -512,7 +545,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert one record to device {0}， server message: {1}", deviceId, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting record"
             );
@@ -570,7 +603,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert one string record to device {0}， server message: {1}", deviceId, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting a string record"
             );
@@ -591,7 +624,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert one record to device {0}， server message: {1}", deviceId, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting a string record"
             );
@@ -612,7 +645,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert string records to devices {0}， server message: {1}", deviceIds, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting string records"
             );
@@ -633,7 +666,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert string records to devices {0}， server message: {1}", deviceIds, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting string records"
             );
@@ -653,7 +686,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert multiple records to devices {0}, server message: {1}", deviceId, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting records"
             );
@@ -676,7 +709,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert multiple records to devices {0}, server message: {1}", deviceId, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting records"
             );
@@ -707,7 +740,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert one tablet to device {0}, server message: {1}", tablet.DeviceId, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting tablet"
             );
@@ -728,7 +761,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert one aligned tablet to device {0}, server message: {1}", tablet.DeviceId, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting aligned tablet"
             );
@@ -779,7 +812,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert multiple tablets, message: {0}", status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting tablets"
             );
@@ -800,7 +833,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert multiple aligned tablets, message: {0}", status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting aligned tablets"
             );
@@ -863,7 +896,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert string records of one device, message: {0}", status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting string records of one device"
             );
@@ -920,7 +953,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert records of one device, message: {0}", status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting records of one device"
             );
@@ -948,7 +981,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert aligned records of one device, message: {0}", status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when inserting aligned records of one device"
             );
@@ -973,7 +1006,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert one record to device {0}， server message: {1}", deviceId, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when test inserting one record"
             );
@@ -993,7 +1026,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert multiple records to devices {0}, server message: {1}", deviceId, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when test inserting multiple records"
             );
@@ -1013,7 +1046,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert one tablet to device {0}, server message: {1}", tablet.DeviceId, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when test inserting one tablet"
             );
@@ -1033,7 +1066,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("insert multiple tablets, message: {0}", status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when test inserting multiple tablets"
             );
@@ -1073,7 +1106,7 @@ namespace Apache.IoTDB
                 }
             }
 
-            if (_utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode) == -1)
+            if (_utilFunctions.VerifySuccess(status) == -1)
             {
                 _clients.Add(client);
 
@@ -1123,7 +1156,7 @@ namespace Apache.IoTDB
                 }
             }
 
-            if (_utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode) == -1)
+            if (_utilFunctions.VerifySuccess(status) == -1)
             {
                 _clients.Add(client);
 
@@ -1155,7 +1188,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("execute non-query statement {0} message: {1}", sql, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when executing non-query statement"
             );
@@ -1195,7 +1228,7 @@ namespace Apache.IoTDB
                 }
             }
 
-            if (_utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode) == -1)
+            if (_utilFunctions.VerifySuccess(status) == -1)
             {
                 _clients.Add(client);
 
@@ -1246,7 +1279,7 @@ namespace Apache.IoTDB
                 }
             }
 
-            if (_utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode) == -1)
+            if (_utilFunctions.VerifySuccess(status) == -1)
             {
                 _clients.Add(client);
 
@@ -1277,7 +1310,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("create schema template {0} message: {1}", template.Name, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when creating schema template"
             );
@@ -1297,7 +1330,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("drop schema template {0} message: {1}", templateName, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when dropping schema template"
             );
@@ -1317,7 +1350,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("set schema template {0} message: {1}", templateName, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when setting schema template"
             );
@@ -1337,7 +1370,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("unset schema template {0} message: {1}", templateName, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when unsetting schema template"
             );
@@ -1357,7 +1390,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("delete node in template {0} message: {1}", templateName, status.Message);
                     }
 
-                    return _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    return _utilFunctions.VerifySuccess(status);
                 },
                 errMsg: "Error occurs when deleting node in template"
             );
@@ -1378,7 +1411,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("count measurements in template {0} message: {1}", name, status.Message);
                     }
 
-                    _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    _utilFunctions.VerifySuccess(status);
                     return resp.Count;
                 },
                 errMsg: "Error occurs when counting measurements in template"
@@ -1401,7 +1434,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("is measurement in template {0} message: {1}", templateName, status.Message);
                     }
 
-                    _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    _utilFunctions.VerifySuccess(status);
                     return resp.Result;
                 },
                 errMsg: "Error occurs when checking measurement in template"
@@ -1424,7 +1457,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("is path exist in template {0} message: {1}", templateName, status.Message);
                     }
 
-                    _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    _utilFunctions.VerifySuccess(status);
                     return resp.Result;
                 },
                 errMsg: "Error occurs when checking path exist in template"
@@ -1447,7 +1480,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("get measurements in template {0} message: {1}", templateName, status.Message);
                     }
 
-                    _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    _utilFunctions.VerifySuccess(status);
                     return resp.Measurements;
                 },
                 errMsg: "Error occurs when showing measurements in template"
@@ -1470,7 +1503,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("get all templates message: {0}", status.Message);
                     }
 
-                    _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    _utilFunctions.VerifySuccess(status);
                     return resp.Measurements;
                 },
                 errMsg: "Error occurs when getting all templates"
@@ -1493,7 +1526,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("get paths template set on {0} message: {1}", templateName, status.Message);
                     }
 
-                    _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    _utilFunctions.VerifySuccess(status);
                     return resp.Measurements;
                 },
                 errMsg: "Error occurs when getting paths template set on"
@@ -1515,7 +1548,7 @@ namespace Apache.IoTDB
                         _logger.LogInformation("get paths template using on {0} message: {1}", templateName, status.Message);
                     }
 
-                    _utilFunctions.VerifySuccess(status, SuccessCode, RedirectRecommendCode);
+                    _utilFunctions.VerifySuccess(status);
                     return resp.Measurements;
                 },
                 errMsg: "Error occurs when getting paths template using on"
