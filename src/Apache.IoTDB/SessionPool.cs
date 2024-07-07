@@ -24,8 +24,8 @@ namespace Apache.IoTDB
         private readonly string _password;
         private bool _enableRpcCompression;
         private string _zoneId;
-        private readonly List<string> _nodeUrls = [];
-        private readonly List<TEndPoint> _endPoints = [];
+        private readonly List<string> _nodeUrls = new();
+        private readonly List<TEndPoint> _endPoints = new();
         private readonly string _host;
         private readonly int _port;
         private readonly int _fetchSize;
