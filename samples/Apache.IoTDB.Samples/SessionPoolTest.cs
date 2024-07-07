@@ -16,7 +16,7 @@ namespace Apache.IoTDB.Samples
         public int port = 6667;
         public string user = "root";
         public string passwd = "root";
-        public List<string> node_urls = new List<string> { "localhost:6667" };
+        public List<string> node_urls = new();
         public int fetch_size = 500;
         public int processed_size = 4;
         public bool debug = false;
@@ -38,6 +38,7 @@ namespace Apache.IoTDB.Samples
         public SessionPoolTest(string _host = "localhost")
         {
             host = _host;
+            node_urls.Add(host + ":" + port);
         }
 
         public async Task Test()
