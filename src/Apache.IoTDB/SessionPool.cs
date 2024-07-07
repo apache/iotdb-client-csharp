@@ -24,13 +24,15 @@ namespace Apache.IoTDB
         private readonly string _password;
         private bool _enableRpcCompression;
         private string _zoneId;
-        private readonly List<string> _nodeUrls = new List<string>();
+        private readonly List<string> _nodeUrls = [];
+        private readonly List<TEndPoint> _endPoints = [];
         private readonly string _host;
         private readonly int _port;
         private readonly int _fetchSize;
         private readonly int _timeout;
         private readonly int _poolSize = 4;
-        private readonly Utils _utilFunctions = new Utils();
+        private readonly Utils _utilFunctions = new();
+        private const int RetryNum = 3;
         private bool _debugMode;
         private bool _isClose = true;
         private ConcurrentClientQueue _clients;
@@ -98,6 +100,7 @@ namespace Apache.IoTDB
                 throw new ArgumentException("nodeUrls shouldn't be empty.");
             }
             _nodeUrls = nodeUrls;
+            _endPoints = _utilFunctions.ParseSeedNodeUrls(nodeUrls);
             _username = username;
             _password = password;
             _zoneId = zoneId;
@@ -119,7 +122,7 @@ namespace Apache.IoTDB
             {
                 if (retryOnFailure)
                 {
-                    await Open(_enableRpcCompression);
+                    await Reconnect();
                     client = _clients.Take();
                     try
                     {
@@ -133,7 +136,7 @@ namespace Apache.IoTDB
                 }
                 else
                 {
-                    throw new TException("Error occurs when executing operation", ex);
+                    throw new TException(errMsg, ex);
                 }
             }
             finally
@@ -172,11 +175,85 @@ namespace Apache.IoTDB
         {
             _clients = new ConcurrentClientQueue();
             _clients.Timeout = _timeout * 5;
-            for (var index = 0; index < _poolSize; index++)
+            if (_nodeUrls.Count == 0)
             {
-                _clients.Add(await CreateAndOpen(_enableRpcCompression, _timeout, cancellationToken));
+                for (var index = 0; index < _poolSize; index++)
+                {
+                    _clients.Add(await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, cancellationToken));
+                }
+            }
+            else
+            {
+                foreach (var endPoint in _endPoints)
+                {
+                    try
+                    {
+                        for (var index = 0; index < _poolSize; index++)
+                        {
+                            var client = await CreateAndOpen(endPoint.Ip, endPoint.Port, _enableRpcCompression, _timeout, cancellationToken);
+                            _clients.Add(client);
+                        }
+                        break;
+                    }
+                    catch (TException e)
+                    {
+#if NET461_OR_GREATER || NETSTANDARD2_0
+#else
+                        _clients.ClientQueue.Clear();
+#endif
+                        continue;
+                    }
+                }
+                if (_clients.ClientQueue.Count != _poolSize)
+                {
+                    throw new TException("Error occurs when opening session pool. Could not connect to any server", null);
+                }
             }
         }
+        public async Task Reconnect(CancellationToken cancellationToken = default)
+        {
+            if (_nodeUrls.Count == 0)
+            {
+                await Open(_enableRpcCompression);
+                return;
+            }
+
+            bool isConnected = false;
+            Random random = new Random();
+
+            for (int i = 0; i < RetryNum && !isConnected; i++)
+            {
+                int currentHostIndex = random.Next(0, _endPoints.Count);
+                int attempts = 0;
+
+                while (attempts < _endPoints.Count)
+                {
+                    int j = (currentHostIndex + attempts) % _endPoints.Count;
+
+                    try
+                    {
+                        for (int index = 0; index < _poolSize; index++)
+                        {
+                            var client = await CreateAndOpen(_endPoints[j].Ip, _endPoints[j].Port, _enableRpcCompression, _timeout, cancellationToken);
+                            _clients.Add(client);
+                        }
+                        isConnected = true;
+                        break;
+                    }
+                    catch (TException)
+                    {
+                        // Connection failed, try next node
+                    }
+                    attempts++;
+                }
+            }
+
+            if (!isConnected || _clients.ClientQueue.Count != _poolSize)
+            {
+                throw new TException("Error occurs when reconnecting session pool. Could not connect to any server", null);
+            }
+        }
+
 
         public bool IsOpen() => !_isClose;
 
@@ -254,9 +331,9 @@ namespace Apache.IoTDB
             }
         }
 
-        private async Task<Client> CreateAndOpen(bool enableRpcCompression, int timeout, CancellationToken cancellationToken = default)
+        private async Task<Client> CreateAndOpen(string host, int port, bool enableRpcCompression, int timeout, CancellationToken cancellationToken = default)
         {
-            var tcpClient = new TcpClient(_host, _port);
+            var tcpClient = new TcpClient(host, port);
             tcpClient.SendTimeout = timeout;
             tcpClient.ReceiveTimeout = timeout;
             var transport = new TFramedTransport(new TSocketTransport(tcpClient, null));
@@ -420,7 +497,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when deleting storage group(s)"
             );
         }
-        // use ExecuteClientOperationAsync to create multi
         public async Task<int> CreateMultiTimeSeriesAsync(
             List<string> tsPathLst,
             List<TSDataType> dataTypeLst,
@@ -507,7 +583,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when deleting data"
             );
         }
-        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertRecordAsync(string deviceId, RowRecord record)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -527,7 +602,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when inserting record"
             );
         }
-        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertAlignedRecordAsync(string deviceId, RowRecord record)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -556,7 +630,7 @@ namespace Apache.IoTDB
         {
             if (values.Count() != measurements.Count())
             {
-                throw new TException("length of data types does not equal to length of values!", null);
+                throw new ArgumentException("length of data types does not equal to length of values!");
             }
 
             return new TSInsertStringRecordReq(sessionId, deviceId, measurements, values, timestamp)
@@ -569,7 +643,7 @@ namespace Apache.IoTDB
         {
             if (valuesList.Count() != measurementsList.Count())
             {
-                throw new TException("length of data types does not equal to length of values!", null);
+                throw new ArgumentException("length of data types does not equal to length of values!");
             }
 
             return new TSInsertStringRecordsReq(sessionId, deviceIds, measurementsList, valuesList, timestamps)
@@ -587,7 +661,6 @@ namespace Apache.IoTDB
 
             return new TSInsertRecordsReq(sessionId, deviceId, measurementLst, valuesLstInBytes, timestampLst);
         }
-        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertStringRecordAsync(string deviceId, List<string> measurements, List<string> values,
             long timestamp)
         {
@@ -608,7 +681,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when inserting a string record"
             );
         }
-        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertAlignedStringRecordAsync(string deviceId, List<string> measurements, List<string> values,
             long timestamp)
         {
@@ -629,7 +701,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when inserting a string record"
             );
         }
-        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertStringRecordsAsync(List<string> deviceIds, List<List<string>> measurements, List<List<string>> values,
             List<long> timestamps)
         {
@@ -650,7 +721,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when inserting string records"
             );
         }
-        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertAlignedStringRecordsAsync(List<string> deviceIds, List<List<string>> measurements, List<List<string>> values,
             List<long> timestamps)
         {
@@ -671,7 +741,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when inserting string records"
             );
         }
-        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertRecordsAsync(List<string> deviceId, List<RowRecord> rowRecords)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -691,7 +760,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when inserting records"
             );
         }
-        // use ExecuteClientOperationAsync to insert record
         public async Task<int> InsertAlignedRecordsAsync(List<string> deviceId, List<RowRecord> rowRecords)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -725,7 +793,6 @@ namespace Apache.IoTDB
                 tablet.GetDataTypes(),
                 tablet.RowNumber);
         }
-        // use ExecuteClientOperationAsync to insert tablet
         public async Task<int> InsertTabletAsync(Tablet tablet)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -745,7 +812,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when inserting tablet"
             );
         }
-        // use ExecuteClientOperationAsync to insert tablet
         public async Task<int> InsertAlignedTabletAsync(Tablet tablet)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -796,7 +862,6 @@ namespace Apache.IoTDB
                 typeLst,
                 sizeLst);
         }
-        // use ExecuteClientOperationAsync to insert tablets
 
         public async Task<int> InsertTabletsAsync(List<Tablet> tabletLst)
         {
@@ -817,7 +882,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when inserting tablets"
             );
         }
-        // use ExecuteClientOperationAsync to insert tablets
         public async Task<int> InsertAlignedTabletsAsync(List<Tablet> tabletLst)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -875,7 +939,6 @@ namespace Apache.IoTDB
 
             return await InsertStringRecordsOfOneDeviceSortedAsync(deviceId, sortedTimestamps, sortedMeasurementsList, sortedValuesList, true);
         }
-        // use ExecuteClientOperationAsync to InsertStringRecordsOfOneDeviceSortedAsync
         public async Task<int> InsertStringRecordsOfOneDeviceSortedAsync(string deviceId, List<long> timestamps,
             List<List<string>> measurementsList, List<List<string>> valuesList, bool isAligned)
         {
@@ -884,7 +947,7 @@ namespace Apache.IoTDB
                 {
                     if (!_utilFunctions.IsSorted(timestamps))
                     {
-                        throw new TException("insert string records of one device error: timestamp not sorted", null);
+                        throw new ArgumentException("insert string records of one device error: timestamp not sorted");
                     }
 
                     var req = GenInsertStringRecordsOfOneDeviceReq(deviceId, timestamps, measurementsList, valuesList, client.SessionId, isAligned);
@@ -931,7 +994,6 @@ namespace Apache.IoTDB
                 values.ToList(),
                 timestampLst);
         }
-        // use ExecuteClientOperationAsync to InsertRecordsOfOneDeviceSortedAsync
         public async Task<int> InsertRecordsOfOneDeviceSortedAsync(string deviceId, List<RowRecord> rowRecords)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -941,7 +1003,7 @@ namespace Apache.IoTDB
 
                     if (!_utilFunctions.IsSorted(timestampLst))
                     {
-                        throw new TException("insert records of one device error: timestamp not sorted", null);
+                        throw new ArgumentException("insert records of one device error: timestamp not sorted");
                     }
 
                     var req = GenInsertRecordsOfOneDeviceRequest(deviceId, rowRecords, client.SessionId);
@@ -958,7 +1020,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when inserting records of one device"
             );
         }
-        // use ExecuteClientOperationAsync to InsertAlignedRecordsOfOneDeviceSortedAsync
         public async Task<int> InsertAlignedRecordsOfOneDeviceSortedAsync(string deviceId, List<RowRecord> rowRecords)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -968,7 +1029,7 @@ namespace Apache.IoTDB
 
                     if (!_utilFunctions.IsSorted(timestampLst))
                     {
-                        throw new TException("insert records of one device error: timestamp not sorted", null);
+                        throw new ArgumentException("insert records of one device error: timestamp not sorted");
                     }
 
                     var req = GenInsertRecordsOfOneDeviceRequest(deviceId, rowRecords, client.SessionId);
@@ -986,7 +1047,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when inserting aligned records of one device"
             );
         }
-        // use ExecuteClientOperationAsync to TestInsertRecordAsync
         public async Task<int> TestInsertRecordAsync(string deviceId, RowRecord record)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1011,7 +1071,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when test inserting one record"
             );
         }
-        // use ExecuteClientOperationAsync to TestInsertRecordsAsync
         public async Task<int> TestInsertRecordsAsync(List<string> deviceId, List<RowRecord> rowRecords)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1031,7 +1090,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when test inserting multiple records"
             );
         }
-        // use ExecuteClientOperationAsync to TestInsertTabletAsync
         public async Task<int> TestInsertTabletAsync(Tablet tablet)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1051,7 +1109,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when test inserting one tablet"
             );
         }
-        // use ExecuteClientOperationAsync to TestInsertTabletsAsync
         public async Task<int> TestInsertTabletsAsync(List<Tablet> tabletLst)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1074,105 +1131,59 @@ namespace Apache.IoTDB
 
         public async Task<SessionDataSet> ExecuteQueryStatementAsync(string sql)
         {
-            TSExecuteStatementResp resp;
-            TSStatus status;
-            var client = _clients.Take();
-            var req = new TSExecuteStatementReq(client.SessionId, sql, client.StatementId)
-            {
-                FetchSize = _fetchSize
-            };
-            try
-            {
-                resp = await client.ServiceClient.executeQueryStatementAsync(req);
-                status = resp.Status;
-            }
-            catch (TException e)
-            {
-                _clients.Add(client);
-
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                req.StatementId = client.StatementId;
-                try
+            return await ExecuteClientOperationAsync<SessionDataSet>(
+                async client =>
                 {
-                    resp = await client.ServiceClient.executeQueryStatementAsync(req);
-                    status = resp.Status;
-                }
-                catch (TException ex)
-                {
-                    _clients.Add(client);
-                    throw new TException("Error occurs when executing query statement", ex);
-                }
-            }
+                    var req = new TSExecuteStatementReq(client.SessionId, sql, client.StatementId)
+                    {
+                        FetchSize = _fetchSize
+                    };
 
-            if (_utilFunctions.VerifySuccess(status) == -1)
-            {
-                _clients.Add(client);
+                    var resp = await client.ServiceClient.executeQueryStatementAsync(req);
+                    var status = resp.Status;
 
-                throw new TException("execute query failed", null);
-            }
+                    if (_utilFunctions.VerifySuccess(status) == -1)
+                    {
+                        throw new Exception(string.Format("execute query failed, sql: {0}, message: {1}", sql, status.Message));
+                    }
 
-            _clients.Add(client);
-
-            var sessionDataset = new SessionDataSet(sql, resp, _clients, client.StatementId)
-            {
-                FetchSize = _fetchSize,
-            };
-
-            return sessionDataset;
+                    return new SessionDataSet(sql, resp, _clients, client.StatementId)
+                    {
+                        FetchSize = _fetchSize,
+                    };
+                },
+                errMsg: "Error occurs when executing query statement"
+            );
         }
-        public async Task<SessionDataSet> ExecuteStatementAsync(string sql)
+        public async Task<SessionDataSet> ExecuteStatementAsync(string sql, long timeout)
         {
-            TSExecuteStatementResp resp;
-            TSStatus status;
-            var client = _clients.Take();
-            var req = new TSExecuteStatementReq(client.SessionId, sql, client.StatementId)
-            {
-                FetchSize = _fetchSize
-            };
-            try
-            {
-                resp = await client.ServiceClient.executeStatementAsync(req);
-                status = resp.Status;
-            }
-            catch (TException e)
-            {
-                _clients.Add(client);
-
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                req.StatementId = client.StatementId;
-                try
+            return await ExecuteClientOperationAsync<SessionDataSet>(
+                async client =>
                 {
-                    resp = await client.ServiceClient.executeStatementAsync(req);
-                    status = resp.Status;
-                }
-                catch (TException ex)
-                {
-                    _clients.Add(client);
-                    throw new TException("Error occurs when executing query statement", ex);
-                }
-            }
+                    var req = new TSExecuteStatementReq(client.SessionId, sql, client.StatementId)
+                    {
+                        FetchSize = _fetchSize,
+                        Timeout = timeout
+                    };
 
-            if (_utilFunctions.VerifySuccess(status) == -1)
-            {
-                _clients.Add(client);
+                    var resp = await client.ServiceClient.executeStatementAsync(req);
+                    var status = resp.Status;
 
-                throw new TException("execute query failed", null);
-            }
+                    if (_utilFunctions.VerifySuccess(status) == -1)
+                    {
+                        throw new Exception(string.Format("execute query failed, sql: {0}, message: {1}", sql, status.Message));
+                    }
 
-            _clients.Add(client);
-
-            var sessionDataset = new SessionDataSet(sql, resp, _clients, client.StatementId)
-            {
-                FetchSize = _fetchSize,
-            };
-
-            return sessionDataset;
+                    return new SessionDataSet(sql, resp, _clients, client.StatementId)
+                    {
+                        FetchSize = _fetchSize,
+                    };
+                },
+                errMsg: "Error occurs when executing query statement"
+            );
         }
-        // use ExecuteClientOperationAsync to ExecuteNonQueryStatementAsync
+
+
         public async Task<int> ExecuteNonQueryStatementAsync(string sql)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1195,107 +1206,59 @@ namespace Apache.IoTDB
         }
         public async Task<SessionDataSet> ExecuteRawDataQuery(List<string> paths, long startTime, long endTime)
         {
-            TSExecuteStatementResp resp;
-            TSStatus status;
-            var client = _clients.Take();
-            var req = new TSRawDataQueryReq(client.SessionId, paths, startTime, endTime, client.StatementId)
-            {
-                FetchSize = _fetchSize,
-                EnableRedirectQuery = false
-            };
-            try
-            {
-                resp = await client.ServiceClient.executeRawDataQueryAsync(req);
-                status = resp.Status;
-            }
-            catch (TException e)
-            {
-                _clients.Add(client);
-
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                req.StatementId = client.StatementId;
-                try
+            return await ExecuteClientOperationAsync<SessionDataSet>(
+                async client =>
                 {
-                    resp = await client.ServiceClient.executeRawDataQueryAsync(req);
-                    status = resp.Status;
-                }
-                catch (TException ex)
-                {
-                    _clients.Add(client);
-                    throw new TException("Error occurs when executing raw data query", ex);
-                }
-            }
+                    var req = new TSRawDataQueryReq(client.SessionId, paths, startTime, endTime, client.StatementId)
+                    {
+                        FetchSize = _fetchSize,
+                        EnableRedirectQuery = false
+                    };
 
-            if (_utilFunctions.VerifySuccess(status) == -1)
-            {
-                _clients.Add(client);
+                    var resp = await client.ServiceClient.executeRawDataQueryAsync(req);
+                    var status = resp.Status;
 
-                throw new TException("execute raw data query failed", null);
-            }
+                    if (_utilFunctions.VerifySuccess(status) == -1)
+                    {
+                        throw new Exception(string.Format("execute raw data query failed, message: {0}", status.Message));
+                    }
 
-            _clients.Add(client);
-
-            var sessionDataset = new SessionDataSet("", resp, _clients, client.StatementId)
-            {
-                FetchSize = _fetchSize,
-            };
-
-            return sessionDataset;
+                    return new SessionDataSet("", resp, _clients, client.StatementId)
+                    {
+                        FetchSize = _fetchSize,
+                    };
+                },
+                errMsg: "Error occurs when executing raw data query"
+            );
         }
         public async Task<SessionDataSet> ExecuteLastDataQueryAsync(List<string> paths, long lastTime)
         {
-            TSExecuteStatementResp resp;
-            TSStatus status;
-            var client = _clients.Take();
-            var req = new TSLastDataQueryReq(client.SessionId, paths, lastTime, client.StatementId)
-            {
-                FetchSize = _fetchSize,
-                EnableRedirectQuery = false
-            };
-            try
-            {
-                resp = await client.ServiceClient.executeLastDataQueryAsync(req);
-                status = resp.Status;
-            }
-            catch (TException e)
-            {
-                _clients.Add(client);
-
-                await Open(_enableRpcCompression);
-                client = _clients.Take();
-                req.SessionId = client.SessionId;
-                req.StatementId = client.StatementId;
-                try
+            return await ExecuteClientOperationAsync<SessionDataSet>(
+                async client =>
                 {
-                    resp = await client.ServiceClient.executeLastDataQueryAsync(req);
-                    status = resp.Status;
-                }
-                catch (TException ex)
-                {
-                    _clients.Add(client);
-                    throw new TException("Error occurs when executing last data query", ex);
-                }
-            }
+                    var req = new TSLastDataQueryReq(client.SessionId, paths, lastTime, client.StatementId)
+                    {
+                        FetchSize = _fetchSize,
+                        EnableRedirectQuery = false
+                    };
 
-            if (_utilFunctions.VerifySuccess(status) == -1)
-            {
-                _clients.Add(client);
+                    var resp = await client.ServiceClient.executeLastDataQueryAsync(req);
+                    var status = resp.Status;
 
-                throw new TException("execute last data query failed", null);
-            }
+                    if (_utilFunctions.VerifySuccess(status) == -1)
+                    {
+                        throw new Exception(string.Format("execute last data query failed, message: {0}", status.Message));
+                    }
 
-            _clients.Add(client);
-
-            var sessionDataset = new SessionDataSet("", resp, _clients, client.StatementId)
-            {
-                FetchSize = _fetchSize,
-            };
-
-            return sessionDataset;
+                    return new SessionDataSet("", resp, _clients, client.StatementId)
+                    {
+                        FetchSize = _fetchSize,
+                    };
+                },
+                errMsg: "Error occurs when executing last data query"
+            );
         }
-        // use ExecuteClientOperationAsync to CreateSchemaTemplateAsync
+
         public async Task<int> CreateSchemaTemplateAsync(Template template)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1315,7 +1278,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when creating schema template"
             );
         }
-        // use ExecuteClientOperationAsync to DropSchemaTemplateAsync
         public async Task<int> DropSchemaTemplateAsync(string templateName)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1335,7 +1297,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when dropping schema template"
             );
         }
-        // use ExecuteClientOperationAsync to SetSchemaTemplateAsync
         public async Task<int> SetSchemaTemplateAsync(string templateName, string prefixPath)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1355,7 +1316,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when setting schema template"
             );
         }
-        // use ExecuteClientOperationAsync to UnsetSchemaTemplateAsync
         public async Task<int> UnsetSchemaTemplateAsync(string prefixPath, string templateName)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1375,7 +1335,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when unsetting schema template"
             );
         }
-        // use ExecuteClientOperationAsync to DeleteNodeInTemplateAsync
         public async Task<int> DeleteNodeInTemplateAsync(string templateName, string path)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1395,7 +1354,6 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when deleting node in template"
             );
         }
-        // use ExecuteClientOperationAsync to CountMeasurementsInTemplateAsync
         public async Task<int> CountMeasurementsInTemplateAsync(string name)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1411,13 +1369,15 @@ namespace Apache.IoTDB
                         _logger.LogInformation("count measurements in template {0} message: {1}", name, status.Message);
                     }
 
-                    _utilFunctions.VerifySuccess(status);
+                    if (_utilFunctions.VerifySuccess(status) == -1)
+                    {
+                        throw new Exception(string.Format("count measurements in template failed, template name: {0}, message: {1}", name, status.Message));
+                    }
                     return resp.Count;
                 },
                 errMsg: "Error occurs when counting measurements in template"
             );
         }
-        // use ExecuteClientOperationAsync to IsMeasurementInTemplateAsync
         public async Task<bool> IsMeasurementInTemplateAsync(string templateName, string path)
         {
             return await ExecuteClientOperationAsync<bool>(
@@ -1434,13 +1394,15 @@ namespace Apache.IoTDB
                         _logger.LogInformation("is measurement in template {0} message: {1}", templateName, status.Message);
                     }
 
-                    _utilFunctions.VerifySuccess(status);
+                    if (_utilFunctions.VerifySuccess(status) == -1)
+                    {
+                        throw new Exception(string.Format("is measurement in template failed, template name: {0}, message: {1}", templateName, status.Message));
+                    }
                     return resp.Result;
                 },
                 errMsg: "Error occurs when checking measurement in template"
             );
         }
-        // use ExecuteClientOperationAsync to IsPathExistInTemplateAsync
         public async Task<bool> IsPathExistInTemplateAsync(string templateName, string path)
         {
             return await ExecuteClientOperationAsync<bool>(
@@ -1457,13 +1419,15 @@ namespace Apache.IoTDB
                         _logger.LogInformation("is path exist in template {0} message: {1}", templateName, status.Message);
                     }
 
-                    _utilFunctions.VerifySuccess(status);
+                    if (_utilFunctions.VerifySuccess(status) == -1)
+                    {
+                        throw new Exception(string.Format("is path exist in template failed, template name: {0}, message: {1}", templateName, status.Message));
+                    }
                     return resp.Result;
                 },
                 errMsg: "Error occurs when checking path exist in template"
             );
         }
-        // use ExecuteClientOperationAsync to ShowMeasurementsInTemplateAsync
         public async Task<List<string>> ShowMeasurementsInTemplateAsync(string templateName, string pattern = "")
         {
             return await ExecuteClientOperationAsync<List<string>>(
@@ -1480,14 +1444,16 @@ namespace Apache.IoTDB
                         _logger.LogInformation("get measurements in template {0} message: {1}", templateName, status.Message);
                     }
 
-                    _utilFunctions.VerifySuccess(status);
+                    if (_utilFunctions.VerifySuccess(status) == -1)
+                    {
+                        throw new Exception(string.Format("show measurements in template failed, template name: {0}, pattern: {1}, message: {2}", templateName, pattern, status.Message));
+                    }
                     return resp.Measurements;
                 },
                 errMsg: "Error occurs when showing measurements in template"
             );
         }
 
-        // use ExecuteClientOperationAsync to ShowAllTemplatesAsync
         public async Task<List<string>> ShowAllTemplatesAsync()
         {
             return await ExecuteClientOperationAsync<List<string>>(
@@ -1503,14 +1469,16 @@ namespace Apache.IoTDB
                         _logger.LogInformation("get all templates message: {0}", status.Message);
                     }
 
-                    _utilFunctions.VerifySuccess(status);
+                    if (_utilFunctions.VerifySuccess(status) == -1)
+                    {
+                        throw new Exception(string.Format("show all templates failed, message: {0}", status.Message));
+                    }
                     return resp.Measurements;
                 },
                 errMsg: "Error occurs when getting all templates"
             );
         }
 
-        // use ExecuteClientOperationAsync to ShowPathsTemplateSetOnAsync
         public async Task<List<string>> ShowPathsTemplateSetOnAsync(string templateName)
         {
             return await ExecuteClientOperationAsync<List<string>>(
@@ -1526,13 +1494,15 @@ namespace Apache.IoTDB
                         _logger.LogInformation("get paths template set on {0} message: {1}", templateName, status.Message);
                     }
 
-                    _utilFunctions.VerifySuccess(status);
+                    if (_utilFunctions.VerifySuccess(status) == -1)
+                    {
+                        throw new Exception(string.Format("show paths template set on failed, template name: {0}, message: {1}", templateName, status.Message));
+                    }
                     return resp.Measurements;
                 },
                 errMsg: "Error occurs when getting paths template set on"
             );
         }
-        // use ExecuteClientOperationAsync to ShowPathsTemplateUsingOnAsync
         public async Task<List<string>> ShowPathsTemplateUsingOnAsync(string templateName)
         {
             return await ExecuteClientOperationAsync<List<string>>(
@@ -1548,7 +1518,10 @@ namespace Apache.IoTDB
                         _logger.LogInformation("get paths template using on {0} message: {1}", templateName, status.Message);
                     }
 
-                    _utilFunctions.VerifySuccess(status);
+                    if (_utilFunctions.VerifySuccess(status) == -1)
+                    {
+                        throw new Exception(string.Format("show paths template using on failed, template name: {0}, message: {1}", templateName, status.Message));
+                    }
                     return resp.Measurements;
                 },
                 errMsg: "Error occurs when getting paths template using on"

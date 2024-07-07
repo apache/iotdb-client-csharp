@@ -6,6 +6,7 @@ using Apache.IoTDB.Data;
 using Apache.IoTDB.DataStructure;
 using ConsoleTableExt;
 using System.Net.Sockets;
+using System.Diagnostics;
 
 namespace Apache.IoTDB.Samples
 {
@@ -15,6 +16,7 @@ namespace Apache.IoTDB.Samples
         public int port = 6667;
         public string user = "root";
         public string passwd = "root";
+        public List<string> node_urls = ["localhost:6667"];
         public int fetch_size = 500;
         public int processed_size = 4;
         public bool debug = false;
@@ -40,6 +42,10 @@ namespace Apache.IoTDB.Samples
 
         public async Task Test()
         {
+            await TestOpenWithNodeUrls();
+
+            await TestOpenWithNodeUrlsAndInsertOneRecord();
+
             await TestInsertOneRecord();
 
             await TestInsertAlignedRecord();
@@ -111,6 +117,35 @@ namespace Apache.IoTDB.Samples
             await TestSqlQuery();
 
             await TestNonSqlBy_ADO();
+        }
+        public async Task TestOpenWithNodeUrls()
+        {
+            var session_pool = new SessionPool(node_urls, 8);
+            await session_pool.Open(false);
+            Debug.Assert(session_pool.IsOpen());
+            if (debug) session_pool.OpenDebugMode();
+            await session_pool.Close();
+            Console.WriteLine("TestOpenWithNodeUrls Passed!");
+        }
+        public async Task TestOpenWithNodeUrlsAndInsertOneRecord()
+        {
+            var session_pool = new SessionPool(node_urls, 8);
+            await session_pool.Open(false);
+            if (debug) session_pool.OpenDebugMode();
+            await session_pool.DeleteStorageGroupAsync(test_group_name);
+            var status = await session_pool.CreateTimeSeries(
+                string.Format("{0}.{1}.{2}", test_group_name, test_device, test_measurements[0]),
+                TSDataType.TEXT, TSEncoding.PLAIN, Compressor.SNAPPY);
+            status = await session_pool.CreateTimeSeries(
+                string.Format("{0}.{1}.{2}", test_group_name, test_device, test_measurements[1]),
+                TSDataType.TEXT, TSEncoding.PLAIN, Compressor.SNAPPY);
+            status = await session_pool.CreateTimeSeries(
+                string.Format("{0}.{1}.{2}", test_group_name, test_device, test_measurements[2]),
+                TSDataType.TEXT, TSEncoding.PLAIN, Compressor.SNAPPY);
+            var rowRecord = new RowRecord(1668404120807, new() { "1111111", "22222", "333333" }, new() { test_measurements[0], test_measurements[1], test_measurements[2] });
+            status = await session_pool.InsertRecordsAsync(new List<string>() { string.Format("{0}.{1}", test_group_name, test_device) }, new List<RowRecord>() { rowRecord });
+            Debug.Assert(status == 0);
+            Console.WriteLine("TestOpenWithNodeUrlsAndInsertOneRecord Passed!");
         }
         public async Task TestInsertOneRecord()
         {
