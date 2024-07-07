@@ -45,6 +45,8 @@ namespace Apache.IoTDB.Samples
         {
             await TestOpenWithNodeUrls();
 
+            await TestOpenWith2NodeUrls();
+
             await TestOpenWithNodeUrlsAndInsertOneRecord();
 
             await TestInsertOneRecord();
@@ -127,6 +129,21 @@ namespace Apache.IoTDB.Samples
             if (debug) session_pool.OpenDebugMode();
             await session_pool.Close();
             Console.WriteLine("TestOpenWithNodeUrls Passed!");
+        }
+        public async Task TestOpenWith2NodeUrls()
+        {
+            var session_pool = new SessionPool(new List<string>() { host + ":" + port, host + ":" + (port + 1) }, 8);
+            await session_pool.Open(false);
+            Debug.Assert(session_pool.IsOpen());
+            if (debug) session_pool.OpenDebugMode();
+            await session_pool.Close();
+
+            session_pool = new SessionPool(new List<string>() { host + ":" + (port + 1), host + ":" + port }, 8);
+            await session_pool.Open(false);
+            Debug.Assert(session_pool.IsOpen());
+            if (debug) session_pool.OpenDebugMode();
+            await session_pool.Close();
+            Console.WriteLine("TestOpenWith2NodeUrls Passed!");
         }
         public async Task TestOpenWithNodeUrlsAndInsertOneRecord()
         {

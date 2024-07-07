@@ -195,7 +195,7 @@ namespace Apache.IoTDB
                         }
                         break;
                     }
-                    catch (TException e)
+                    catch (Exception e) // CreateAndOpen will not throw TException
                     {
 #if NET461_OR_GREATER || NETSTANDARD2_0
 #else
