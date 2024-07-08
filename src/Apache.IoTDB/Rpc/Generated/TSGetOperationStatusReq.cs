@@ -46,14 +46,6 @@ public partial class TSGetOperationStatusReq : TBase
     this.QueryId = queryId;
   }
 
-  public TSGetOperationStatusReq DeepCopy()
-  {
-    var tmp81 = new TSGetOperationStatusReq();
-    tmp81.SessionId = this.SessionId;
-    tmp81.QueryId = this.QueryId;
-    return tmp81;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

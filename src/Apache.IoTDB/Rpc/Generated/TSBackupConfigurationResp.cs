@@ -94,31 +94,6 @@ public partial class TSBackupConfigurationResp : TBase
     this.Status = status;
   }
 
-  public TSBackupConfigurationResp DeepCopy()
-  {
-    var tmp461 = new TSBackupConfigurationResp();
-    if((Status != null))
-    {
-      tmp461.Status = (TSStatus)this.Status.DeepCopy();
-    }
-    if(__isset.enableOperationSync)
-    {
-      tmp461.EnableOperationSync = this.EnableOperationSync;
-    }
-    tmp461.__isset.enableOperationSync = this.__isset.enableOperationSync;
-    if((SecondaryAddress != null) && __isset.secondaryAddress)
-    {
-      tmp461.SecondaryAddress = this.SecondaryAddress;
-    }
-    tmp461.__isset.secondaryAddress = this.__isset.secondaryAddress;
-    if(__isset.secondaryPort)
-    {
-      tmp461.SecondaryPort = this.SecondaryPort;
-    }
-    tmp461.__isset.secondaryPort = this.__isset.secondaryPort;
-    return tmp461;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

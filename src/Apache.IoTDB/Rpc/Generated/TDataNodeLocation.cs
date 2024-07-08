@@ -58,33 +58,6 @@ public partial class TDataNodeLocation : TBase
     this.SchemaRegionConsensusEndPoint = schemaRegionConsensusEndPoint;
   }
 
-  public TDataNodeLocation DeepCopy()
-  {
-    var tmp24 = new TDataNodeLocation();
-    tmp24.DataNodeId = this.DataNodeId;
-    if((ClientRpcEndPoint != null))
-    {
-      tmp24.ClientRpcEndPoint = (TEndPoint)this.ClientRpcEndPoint.DeepCopy();
-    }
-    if((InternalEndPoint != null))
-    {
-      tmp24.InternalEndPoint = (TEndPoint)this.InternalEndPoint.DeepCopy();
-    }
-    if((MPPDataExchangeEndPoint != null))
-    {
-      tmp24.MPPDataExchangeEndPoint = (TEndPoint)this.MPPDataExchangeEndPoint.DeepCopy();
-    }
-    if((DataRegionConsensusEndPoint != null))
-    {
-      tmp24.DataRegionConsensusEndPoint = (TEndPoint)this.DataRegionConsensusEndPoint.DeepCopy();
-    }
-    if((SchemaRegionConsensusEndPoint != null))
-    {
-      tmp24.SchemaRegionConsensusEndPoint = (TEndPoint)this.SchemaRegionConsensusEndPoint.DeepCopy();
-    }
-    return tmp24;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

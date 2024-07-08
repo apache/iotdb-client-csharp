@@ -97,32 +97,6 @@ public partial class TSQueryTemplateResp : TBase
     this.QueryType = queryType;
   }
 
-  public TSQueryTemplateResp DeepCopy()
-  {
-    var tmp429 = new TSQueryTemplateResp();
-    if((Status != null))
-    {
-      tmp429.Status = (TSStatus)this.Status.DeepCopy();
-    }
-    tmp429.QueryType = this.QueryType;
-    if(__isset.result)
-    {
-      tmp429.Result = this.Result;
-    }
-    tmp429.__isset.result = this.__isset.result;
-    if(__isset.count)
-    {
-      tmp429.Count = this.Count;
-    }
-    tmp429.__isset.count = this.__isset.count;
-    if((Measurements != null) && __isset.measurements)
-    {
-      tmp429.Measurements = this.Measurements.DeepCopy();
-    }
-    tmp429.__isset.measurements = this.__isset.measurements;
-    return tmp429;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -189,13 +163,13 @@ public partial class TSQueryTemplateResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list430 = await iprot.ReadListBeginAsync(cancellationToken);
-                Measurements = new List<string>(_list430.Count);
-                for(int _i431 = 0; _i431 < _list430.Count; ++_i431)
+                TList _list388 = await iprot.ReadListBeginAsync(cancellationToken);
+                Measurements = new List<string>(_list388.Count);
+                for(int _i389 = 0; _i389 < _list388.Count; ++_i389)
                 {
-                  string _elem432;
-                  _elem432 = await iprot.ReadStringAsync(cancellationToken);
-                  Measurements.Add(_elem432);
+                  string _elem390;
+                  _elem390 = await iprot.ReadStringAsync(cancellationToken);
+                  Measurements.Add(_elem390);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -278,9 +252,9 @@ public partial class TSQueryTemplateResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Measurements.Count), cancellationToken);
-          foreach (string _iter433 in Measurements)
+          foreach (string _iter391 in Measurements)
           {
-            await oprot.WriteStringAsync(_iter433, cancellationToken);
+            await oprot.WriteStringAsync(_iter391, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

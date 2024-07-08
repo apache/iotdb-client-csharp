@@ -133,44 +133,6 @@ public partial class TSLastDataQueryReq : TBase
     this.StatementId = statementId;
   }
 
-  public TSLastDataQueryReq DeepCopy()
-  {
-    var tmp324 = new TSLastDataQueryReq();
-    tmp324.SessionId = this.SessionId;
-    if((Paths != null))
-    {
-      tmp324.Paths = this.Paths.DeepCopy();
-    }
-    if(__isset.fetchSize)
-    {
-      tmp324.FetchSize = this.FetchSize;
-    }
-    tmp324.__isset.fetchSize = this.__isset.fetchSize;
-    tmp324.Time = this.Time;
-    tmp324.StatementId = this.StatementId;
-    if(__isset.enableRedirectQuery)
-    {
-      tmp324.EnableRedirectQuery = this.EnableRedirectQuery;
-    }
-    tmp324.__isset.enableRedirectQuery = this.__isset.enableRedirectQuery;
-    if(__isset.jdbcQuery)
-    {
-      tmp324.JdbcQuery = this.JdbcQuery;
-    }
-    tmp324.__isset.jdbcQuery = this.__isset.jdbcQuery;
-    if(__isset.timeout)
-    {
-      tmp324.Timeout = this.Timeout;
-    }
-    tmp324.__isset.timeout = this.__isset.timeout;
-    if(__isset.legalPathNodes)
-    {
-      tmp324.LegalPathNodes = this.LegalPathNodes;
-    }
-    tmp324.__isset.legalPathNodes = this.__isset.legalPathNodes;
-    return tmp324;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -207,13 +169,13 @@ public partial class TSLastDataQueryReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list325 = await iprot.ReadListBeginAsync(cancellationToken);
-                Paths = new List<string>(_list325.Count);
-                for(int _i326 = 0; _i326 < _list325.Count; ++_i326)
+                TList _list294 = await iprot.ReadListBeginAsync(cancellationToken);
+                Paths = new List<string>(_list294.Count);
+                for(int _i295 = 0; _i295 < _list294.Count; ++_i295)
                 {
-                  string _elem327;
-                  _elem327 = await iprot.ReadStringAsync(cancellationToken);
-                  Paths.Add(_elem327);
+                  string _elem296;
+                  _elem296 = await iprot.ReadStringAsync(cancellationToken);
+                  Paths.Add(_elem296);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -350,9 +312,9 @@ public partial class TSLastDataQueryReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Paths.Count), cancellationToken);
-          foreach (string _iter328 in Paths)
+          foreach (string _iter297 in Paths)
           {
-            await oprot.WriteStringAsync(_iter328, cancellationToken);
+            await oprot.WriteStringAsync(_iter297, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

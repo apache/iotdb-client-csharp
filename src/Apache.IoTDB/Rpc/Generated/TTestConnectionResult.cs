@@ -70,26 +70,6 @@ public partial class TTestConnectionResult : TBase
     this.Success = success;
   }
 
-  public TTestConnectionResult DeepCopy()
-  {
-    var tmp94 = new TTestConnectionResult();
-    if((ServiceProvider != null))
-    {
-      tmp94.ServiceProvider = (TServiceProvider)this.ServiceProvider.DeepCopy();
-    }
-    if((Sender != null))
-    {
-      tmp94.Sender = (TSender)this.Sender.DeepCopy();
-    }
-    tmp94.Success = this.Success;
-    if((Reason != null) && __isset.reason)
-    {
-      tmp94.Reason = this.Reason;
-    }
-    tmp94.__isset.reason = this.__isset.reason;
-    return tmp94;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

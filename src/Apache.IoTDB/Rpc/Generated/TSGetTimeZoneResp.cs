@@ -46,20 +46,6 @@ public partial class TSGetTimeZoneResp : TBase
     this.TimeZone = timeZone;
   }
 
-  public TSGetTimeZoneResp DeepCopy()
-  {
-    var tmp103 = new TSGetTimeZoneResp();
-    if((Status != null))
-    {
-      tmp103.Status = (TSStatus)this.Status.DeepCopy();
-    }
-    if((TimeZone != null))
-    {
-      tmp103.TimeZone = this.TimeZone;
-    }
-    return tmp103;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

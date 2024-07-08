@@ -94,31 +94,6 @@ public partial class TSFetchMetadataResp : TBase
     this.Status = status;
   }
 
-  public TSFetchMetadataResp DeepCopy()
-  {
-    var tmp95 = new TSFetchMetadataResp();
-    if((Status != null))
-    {
-      tmp95.Status = (TSStatus)this.Status.DeepCopy();
-    }
-    if((MetadataInJson != null) && __isset.metadataInJson)
-    {
-      tmp95.MetadataInJson = this.MetadataInJson;
-    }
-    tmp95.__isset.metadataInJson = this.__isset.metadataInJson;
-    if((ColumnsList != null) && __isset.columnsList)
-    {
-      tmp95.ColumnsList = this.ColumnsList.DeepCopy();
-    }
-    tmp95.__isset.columnsList = this.__isset.columnsList;
-    if((DataType != null) && __isset.dataType)
-    {
-      tmp95.DataType = this.DataType;
-    }
-    tmp95.__isset.dataType = this.__isset.dataType;
-    return tmp95;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -163,13 +138,13 @@ public partial class TSFetchMetadataResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list96 = await iprot.ReadListBeginAsync(cancellationToken);
-                ColumnsList = new List<string>(_list96.Count);
-                for(int _i97 = 0; _i97 < _list96.Count; ++_i97)
+                TList _list81 = await iprot.ReadListBeginAsync(cancellationToken);
+                ColumnsList = new List<string>(_list81.Count);
+                for(int _i82 = 0; _i82 < _list81.Count; ++_i82)
                 {
-                  string _elem98;
-                  _elem98 = await iprot.ReadStringAsync(cancellationToken);
-                  ColumnsList.Add(_elem98);
+                  string _elem83;
+                  _elem83 = await iprot.ReadStringAsync(cancellationToken);
+                  ColumnsList.Add(_elem83);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -243,9 +218,9 @@ public partial class TSFetchMetadataResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, ColumnsList.Count), cancellationToken);
-          foreach (string _iter99 in ColumnsList)
+          foreach (string _iter84 in ColumnsList)
           {
-            await oprot.WriteStringAsync(_iter99, cancellationToken);
+            await oprot.WriteStringAsync(_iter84, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

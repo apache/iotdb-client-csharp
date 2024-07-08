@@ -46,17 +46,6 @@ public partial class TSchemaNode : TBase
     this.NodeType = nodeType;
   }
 
-  public TSchemaNode DeepCopy()
-  {
-    var tmp40 = new TSchemaNode();
-    if((NodeName != null))
-    {
-      tmp40.NodeName = this.NodeName;
-    }
-    tmp40.NodeType = this.NodeType;
-    return tmp40;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

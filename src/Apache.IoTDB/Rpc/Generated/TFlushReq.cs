@@ -72,22 +72,6 @@ public partial class TFlushReq : TBase
   {
   }
 
-  public TFlushReq DeepCopy()
-  {
-    var tmp28 = new TFlushReq();
-    if((IsSeq != null) && __isset.isSeq)
-    {
-      tmp28.IsSeq = this.IsSeq;
-    }
-    tmp28.__isset.isSeq = this.__isset.isSeq;
-    if((StorageGroups != null) && __isset.storageGroups)
-    {
-      tmp28.StorageGroups = this.StorageGroups.DeepCopy();
-    }
-    tmp28.__isset.storageGroups = this.__isset.storageGroups;
-    return tmp28;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -119,13 +103,13 @@ public partial class TFlushReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list29 = await iprot.ReadListBeginAsync(cancellationToken);
-                StorageGroups = new List<string>(_list29.Count);
-                for(int _i30 = 0; _i30 < _list29.Count; ++_i30)
+                TList _list18 = await iprot.ReadListBeginAsync(cancellationToken);
+                StorageGroups = new List<string>(_list18.Count);
+                for(int _i19 = 0; _i19 < _list18.Count; ++_i19)
                 {
-                  string _elem31;
-                  _elem31 = await iprot.ReadStringAsync(cancellationToken);
-                  StorageGroups.Add(_elem31);
+                  string _elem20;
+                  _elem20 = await iprot.ReadStringAsync(cancellationToken);
+                  StorageGroups.Add(_elem20);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -176,9 +160,9 @@ public partial class TFlushReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, StorageGroups.Count), cancellationToken);
-          foreach (string _iter32 in StorageGroups)
+          foreach (string _iter21 in StorageGroups)
           {
-            await oprot.WriteStringAsync(_iter32, cancellationToken);
+            await oprot.WriteStringAsync(_iter21, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -219,16 +203,16 @@ public partial class TFlushReq : TBase
   public override string ToString()
   {
     var sb = new StringBuilder("TFlushReq(");
-    int tmp33 = 0;
+    int tmp22 = 0;
     if((IsSeq != null) && __isset.isSeq)
     {
-      if(0 < tmp33++) { sb.Append(", "); }
+      if(0 < tmp22++) { sb.Append(", "); }
       sb.Append("IsSeq: ");
       IsSeq.ToString(sb);
     }
     if((StorageGroups != null) && __isset.storageGroups)
     {
-      if(0 < tmp33++) { sb.Append(", "); }
+      if(0 < tmp22++) { sb.Append(", "); }
       sb.Append("StorageGroups: ");
       StorageGroups.ToString(sb);
     }

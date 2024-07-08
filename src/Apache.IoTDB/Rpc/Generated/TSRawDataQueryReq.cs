@@ -136,45 +136,6 @@ public partial class TSRawDataQueryReq : TBase
     this.StatementId = statementId;
   }
 
-  public TSRawDataQueryReq DeepCopy()
-  {
-    var tmp318 = new TSRawDataQueryReq();
-    tmp318.SessionId = this.SessionId;
-    if((Paths != null))
-    {
-      tmp318.Paths = this.Paths.DeepCopy();
-    }
-    if(__isset.fetchSize)
-    {
-      tmp318.FetchSize = this.FetchSize;
-    }
-    tmp318.__isset.fetchSize = this.__isset.fetchSize;
-    tmp318.StartTime = this.StartTime;
-    tmp318.EndTime = this.EndTime;
-    tmp318.StatementId = this.StatementId;
-    if(__isset.enableRedirectQuery)
-    {
-      tmp318.EnableRedirectQuery = this.EnableRedirectQuery;
-    }
-    tmp318.__isset.enableRedirectQuery = this.__isset.enableRedirectQuery;
-    if(__isset.jdbcQuery)
-    {
-      tmp318.JdbcQuery = this.JdbcQuery;
-    }
-    tmp318.__isset.jdbcQuery = this.__isset.jdbcQuery;
-    if(__isset.timeout)
-    {
-      tmp318.Timeout = this.Timeout;
-    }
-    tmp318.__isset.timeout = this.__isset.timeout;
-    if(__isset.legalPathNodes)
-    {
-      tmp318.LegalPathNodes = this.LegalPathNodes;
-    }
-    tmp318.__isset.legalPathNodes = this.__isset.legalPathNodes;
-    return tmp318;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -212,13 +173,13 @@ public partial class TSRawDataQueryReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list319 = await iprot.ReadListBeginAsync(cancellationToken);
-                Paths = new List<string>(_list319.Count);
-                for(int _i320 = 0; _i320 < _list319.Count; ++_i320)
+                TList _list289 = await iprot.ReadListBeginAsync(cancellationToken);
+                Paths = new List<string>(_list289.Count);
+                for(int _i290 = 0; _i290 < _list289.Count; ++_i290)
                 {
-                  string _elem321;
-                  _elem321 = await iprot.ReadStringAsync(cancellationToken);
-                  Paths.Add(_elem321);
+                  string _elem291;
+                  _elem291 = await iprot.ReadStringAsync(cancellationToken);
+                  Paths.Add(_elem291);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -370,9 +331,9 @@ public partial class TSRawDataQueryReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Paths.Count), cancellationToken);
-          foreach (string _iter322 in Paths)
+          foreach (string _iter292 in Paths)
           {
-            await oprot.WriteStringAsync(_iter322, cancellationToken);
+            await oprot.WriteStringAsync(_iter292, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

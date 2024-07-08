@@ -87,27 +87,6 @@ public partial class TSOpenSessionResp : TBase
     this.ServerProtocolVersion = serverProtocolVersion;
   }
 
-  public TSOpenSessionResp DeepCopy()
-  {
-    var tmp57 = new TSOpenSessionResp();
-    if((Status != null))
-    {
-      tmp57.Status = (TSStatus)this.Status.DeepCopy();
-    }
-    tmp57.ServerProtocolVersion = this.ServerProtocolVersion;
-    if(__isset.sessionId)
-    {
-      tmp57.SessionId = this.SessionId;
-    }
-    tmp57.__isset.sessionId = this.__isset.sessionId;
-    if((Configuration != null) && __isset.configuration)
-    {
-      tmp57.Configuration = this.Configuration.DeepCopy();
-    }
-    tmp57.__isset.configuration = this.__isset.configuration;
-    return tmp57;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -164,15 +143,15 @@ public partial class TSOpenSessionResp : TBase
             if (field.Type == TType.Map)
             {
               {
-                TMap _map58 = await iprot.ReadMapBeginAsync(cancellationToken);
-                Configuration = new Dictionary<string, string>(_map58.Count);
-                for(int _i59 = 0; _i59 < _map58.Count; ++_i59)
+                TMap _map53 = await iprot.ReadMapBeginAsync(cancellationToken);
+                Configuration = new Dictionary<string, string>(_map53.Count);
+                for(int _i54 = 0; _i54 < _map53.Count; ++_i54)
                 {
-                  string _key60;
-                  string _val61;
-                  _key60 = await iprot.ReadStringAsync(cancellationToken);
-                  _val61 = await iprot.ReadStringAsync(cancellationToken);
-                  Configuration[_key60] = _val61;
+                  string _key55;
+                  string _val56;
+                  _key55 = await iprot.ReadStringAsync(cancellationToken);
+                  _val56 = await iprot.ReadStringAsync(cancellationToken);
+                  Configuration[_key55] = _val56;
                 }
                 await iprot.ReadMapEndAsync(cancellationToken);
               }
@@ -246,10 +225,10 @@ public partial class TSOpenSessionResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, Configuration.Count), cancellationToken);
-          foreach (string _iter62 in Configuration.Keys)
+          foreach (string _iter57 in Configuration.Keys)
           {
-            await oprot.WriteStringAsync(_iter62, cancellationToken);
-            await oprot.WriteStringAsync(Configuration[_iter62], cancellationToken);
+            await oprot.WriteStringAsync(_iter57, cancellationToken);
+            await oprot.WriteStringAsync(Configuration[_iter57], cancellationToken);
           }
           await oprot.WriteMapEndAsync(cancellationToken);
         }

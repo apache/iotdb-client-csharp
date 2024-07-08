@@ -76,34 +76,6 @@ public partial class TSInsertRecordsReq : TBase
     this.Timestamps = timestamps;
   }
 
-  public TSInsertRecordsReq DeepCopy()
-  {
-    var tmp167 = new TSInsertRecordsReq();
-    tmp167.SessionId = this.SessionId;
-    if((PrefixPaths != null))
-    {
-      tmp167.PrefixPaths = this.PrefixPaths.DeepCopy();
-    }
-    if((MeasurementsList != null))
-    {
-      tmp167.MeasurementsList = this.MeasurementsList.DeepCopy();
-    }
-    if((ValuesList != null))
-    {
-      tmp167.ValuesList = this.ValuesList.DeepCopy();
-    }
-    if((Timestamps != null))
-    {
-      tmp167.Timestamps = this.Timestamps.DeepCopy();
-    }
-    if(__isset.isAligned)
-    {
-      tmp167.IsAligned = this.IsAligned;
-    }
-    tmp167.__isset.isAligned = this.__isset.isAligned;
-    return tmp167;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -141,13 +113,13 @@ public partial class TSInsertRecordsReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list168 = await iprot.ReadListBeginAsync(cancellationToken);
-                PrefixPaths = new List<string>(_list168.Count);
-                for(int _i169 = 0; _i169 < _list168.Count; ++_i169)
+                TList _list145 = await iprot.ReadListBeginAsync(cancellationToken);
+                PrefixPaths = new List<string>(_list145.Count);
+                for(int _i146 = 0; _i146 < _list145.Count; ++_i146)
                 {
-                  string _elem170;
-                  _elem170 = await iprot.ReadStringAsync(cancellationToken);
-                  PrefixPaths.Add(_elem170);
+                  string _elem147;
+                  _elem147 = await iprot.ReadStringAsync(cancellationToken);
+                  PrefixPaths.Add(_elem147);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -162,23 +134,23 @@ public partial class TSInsertRecordsReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list171 = await iprot.ReadListBeginAsync(cancellationToken);
-                MeasurementsList = new List<List<string>>(_list171.Count);
-                for(int _i172 = 0; _i172 < _list171.Count; ++_i172)
+                TList _list148 = await iprot.ReadListBeginAsync(cancellationToken);
+                MeasurementsList = new List<List<string>>(_list148.Count);
+                for(int _i149 = 0; _i149 < _list148.Count; ++_i149)
                 {
-                  List<string> _elem173;
+                  List<string> _elem150;
                   {
-                    TList _list174 = await iprot.ReadListBeginAsync(cancellationToken);
-                    _elem173 = new List<string>(_list174.Count);
-                    for(int _i175 = 0; _i175 < _list174.Count; ++_i175)
+                    TList _list151 = await iprot.ReadListBeginAsync(cancellationToken);
+                    _elem150 = new List<string>(_list151.Count);
+                    for(int _i152 = 0; _i152 < _list151.Count; ++_i152)
                     {
-                      string _elem176;
-                      _elem176 = await iprot.ReadStringAsync(cancellationToken);
-                      _elem173.Add(_elem176);
+                      string _elem153;
+                      _elem153 = await iprot.ReadStringAsync(cancellationToken);
+                      _elem150.Add(_elem153);
                     }
                     await iprot.ReadListEndAsync(cancellationToken);
                   }
-                  MeasurementsList.Add(_elem173);
+                  MeasurementsList.Add(_elem150);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -193,13 +165,13 @@ public partial class TSInsertRecordsReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list177 = await iprot.ReadListBeginAsync(cancellationToken);
-                ValuesList = new List<byte[]>(_list177.Count);
-                for(int _i178 = 0; _i178 < _list177.Count; ++_i178)
+                TList _list154 = await iprot.ReadListBeginAsync(cancellationToken);
+                ValuesList = new List<byte[]>(_list154.Count);
+                for(int _i155 = 0; _i155 < _list154.Count; ++_i155)
                 {
-                  byte[] _elem179;
-                  _elem179 = await iprot.ReadBinaryAsync(cancellationToken);
-                  ValuesList.Add(_elem179);
+                  byte[] _elem156;
+                  _elem156 = await iprot.ReadBinaryAsync(cancellationToken);
+                  ValuesList.Add(_elem156);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -214,13 +186,13 @@ public partial class TSInsertRecordsReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list180 = await iprot.ReadListBeginAsync(cancellationToken);
-                Timestamps = new List<long>(_list180.Count);
-                for(int _i181 = 0; _i181 < _list180.Count; ++_i181)
+                TList _list157 = await iprot.ReadListBeginAsync(cancellationToken);
+                Timestamps = new List<long>(_list157.Count);
+                for(int _i158 = 0; _i158 < _list157.Count; ++_i158)
                 {
-                  long _elem182;
-                  _elem182 = await iprot.ReadI64Async(cancellationToken);
-                  Timestamps.Add(_elem182);
+                  long _elem159;
+                  _elem159 = await iprot.ReadI64Async(cancellationToken);
+                  Timestamps.Add(_elem159);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -299,9 +271,9 @@ public partial class TSInsertRecordsReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, PrefixPaths.Count), cancellationToken);
-          foreach (string _iter183 in PrefixPaths)
+          foreach (string _iter160 in PrefixPaths)
           {
-            await oprot.WriteStringAsync(_iter183, cancellationToken);
+            await oprot.WriteStringAsync(_iter160, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -315,13 +287,13 @@ public partial class TSInsertRecordsReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.List, MeasurementsList.Count), cancellationToken);
-          foreach (List<string> _iter184 in MeasurementsList)
+          foreach (List<string> _iter161 in MeasurementsList)
           {
             {
-              await oprot.WriteListBeginAsync(new TList(TType.String, _iter184.Count), cancellationToken);
-              foreach (string _iter185 in _iter184)
+              await oprot.WriteListBeginAsync(new TList(TType.String, _iter161.Count), cancellationToken);
+              foreach (string _iter162 in _iter161)
               {
-                await oprot.WriteStringAsync(_iter185, cancellationToken);
+                await oprot.WriteStringAsync(_iter162, cancellationToken);
               }
               await oprot.WriteListEndAsync(cancellationToken);
             }
@@ -338,9 +310,9 @@ public partial class TSInsertRecordsReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, ValuesList.Count), cancellationToken);
-          foreach (byte[] _iter186 in ValuesList)
+          foreach (byte[] _iter163 in ValuesList)
           {
-            await oprot.WriteBinaryAsync(_iter186, cancellationToken);
+            await oprot.WriteBinaryAsync(_iter163, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -354,9 +326,9 @@ public partial class TSInsertRecordsReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I64, Timestamps.Count), cancellationToken);
-          foreach (long _iter187 in Timestamps)
+          foreach (long _iter164 in Timestamps)
           {
-            await oprot.WriteI64Async(_iter187, cancellationToken);
+            await oprot.WriteI64Async(_iter164, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

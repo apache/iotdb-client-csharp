@@ -46,20 +46,6 @@ public partial class TSetThrottleQuotaReq : TBase
     this.ThrottleQuota = throttleQuota;
   }
 
-  public TSetThrottleQuotaReq DeepCopy()
-  {
-    var tmp86 = new TSetThrottleQuotaReq();
-    if((UserName != null))
-    {
-      tmp86.UserName = this.UserName;
-    }
-    if((ThrottleQuota != null))
-    {
-      tmp86.ThrottleQuota = (TThrottleQuota)this.ThrottleQuota.DeepCopy();
-    }
-    return tmp86;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

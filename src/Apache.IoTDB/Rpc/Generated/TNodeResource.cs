@@ -46,14 +46,6 @@ public partial class TNodeResource : TBase
     this.MaxMemory = maxMemory;
   }
 
-  public TNodeResource DeepCopy()
-  {
-    var tmp20 = new TNodeResource();
-    tmp20.CpuCoreNum = this.CpuCoreNum;
-    tmp20.MaxMemory = this.MaxMemory;
-    return tmp20;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

@@ -76,31 +76,6 @@ public partial class TSInsertRecordReq : TBase
     this.Timestamp = timestamp;
   }
 
-  public TSInsertRecordReq DeepCopy()
-  {
-    var tmp107 = new TSInsertRecordReq();
-    tmp107.SessionId = this.SessionId;
-    if((PrefixPath != null))
-    {
-      tmp107.PrefixPath = this.PrefixPath;
-    }
-    if((Measurements != null))
-    {
-      tmp107.Measurements = this.Measurements.DeepCopy();
-    }
-    if((Values != null))
-    {
-      tmp107.Values = this.Values.ToArray();
-    }
-    tmp107.Timestamp = this.Timestamp;
-    if(__isset.isAligned)
-    {
-      tmp107.IsAligned = this.IsAligned;
-    }
-    tmp107.__isset.isAligned = this.__isset.isAligned;
-    return tmp107;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -149,13 +124,13 @@ public partial class TSInsertRecordReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list108 = await iprot.ReadListBeginAsync(cancellationToken);
-                Measurements = new List<string>(_list108.Count);
-                for(int _i109 = 0; _i109 < _list108.Count; ++_i109)
+                TList _list89 = await iprot.ReadListBeginAsync(cancellationToken);
+                Measurements = new List<string>(_list89.Count);
+                for(int _i90 = 0; _i90 < _list89.Count; ++_i90)
                 {
-                  string _elem110;
-                  _elem110 = await iprot.ReadStringAsync(cancellationToken);
-                  Measurements.Add(_elem110);
+                  string _elem91;
+                  _elem91 = await iprot.ReadStringAsync(cancellationToken);
+                  Measurements.Add(_elem91);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -265,9 +240,9 @@ public partial class TSInsertRecordReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Measurements.Count), cancellationToken);
-          foreach (string _iter111 in Measurements)
+          foreach (string _iter92 in Measurements)
           {
-            await oprot.WriteStringAsync(_iter111, cancellationToken);
+            await oprot.WriteStringAsync(_iter92, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

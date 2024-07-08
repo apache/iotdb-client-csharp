@@ -43,13 +43,6 @@ public partial class TSeriesPartitionSlot : TBase
     this.SlotId = slotId;
   }
 
-  public TSeriesPartitionSlot DeepCopy()
-  {
-    var tmp10 = new TSeriesPartitionSlot();
-    tmp10.SlotId = this.SlotId;
-    return tmp10;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

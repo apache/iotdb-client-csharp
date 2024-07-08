@@ -87,27 +87,6 @@ public partial class TSpaceQuota : TBase
   {
   }
 
-  public TSpaceQuota DeepCopy()
-  {
-    var tmp69 = new TSpaceQuota();
-    if(__isset.diskSize)
-    {
-      tmp69.DiskSize = this.DiskSize;
-    }
-    tmp69.__isset.diskSize = this.__isset.diskSize;
-    if(__isset.deviceNum)
-    {
-      tmp69.DeviceNum = this.DeviceNum;
-    }
-    tmp69.__isset.deviceNum = this.__isset.deviceNum;
-    if(__isset.timeserieNum)
-    {
-      tmp69.TimeserieNum = this.TimeserieNum;
-    }
-    tmp69.__isset.timeserieNum = this.__isset.timeserieNum;
-    return tmp69;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -246,22 +225,22 @@ public partial class TSpaceQuota : TBase
   public override string ToString()
   {
     var sb = new StringBuilder("TSpaceQuota(");
-    int tmp70 = 0;
+    int tmp51 = 0;
     if(__isset.diskSize)
     {
-      if(0 < tmp70++) { sb.Append(", "); }
+      if(0 < tmp51++) { sb.Append(", "); }
       sb.Append("DiskSize: ");
       DiskSize.ToString(sb);
     }
     if(__isset.deviceNum)
     {
-      if(0 < tmp70++) { sb.Append(", "); }
+      if(0 < tmp51++) { sb.Append(", "); }
       sb.Append("DeviceNum: ");
       DeviceNum.ToString(sb);
     }
     if(__isset.timeserieNum)
     {
-      if(0 < tmp70++) { sb.Append(", "); }
+      if(0 < tmp51++) { sb.Append(", "); }
       sb.Append("TimeserieNum: ");
       TimeserieNum.ToString(sb);
     }

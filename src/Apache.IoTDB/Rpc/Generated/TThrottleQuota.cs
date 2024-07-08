@@ -87,27 +87,6 @@ public partial class TThrottleQuota : TBase
   {
   }
 
-  public TThrottleQuota DeepCopy()
-  {
-    var tmp73 = new TThrottleQuota();
-    if((ThrottleLimit != null) && __isset.throttleLimit)
-    {
-      tmp73.ThrottleLimit = this.ThrottleLimit.DeepCopy();
-    }
-    tmp73.__isset.throttleLimit = this.__isset.throttleLimit;
-    if(__isset.memLimit)
-    {
-      tmp73.MemLimit = this.MemLimit;
-    }
-    tmp73.__isset.memLimit = this.__isset.memLimit;
-    if(__isset.cpuLimit)
-    {
-      tmp73.CpuLimit = this.CpuLimit;
-    }
-    tmp73.__isset.cpuLimit = this.__isset.cpuLimit;
-    return tmp73;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -129,16 +108,16 @@ public partial class TThrottleQuota : TBase
             if (field.Type == TType.Map)
             {
               {
-                TMap _map74 = await iprot.ReadMapBeginAsync(cancellationToken);
-                ThrottleLimit = new Dictionary<ThrottleType, TTimedQuota>(_map74.Count);
-                for(int _i75 = 0; _i75 < _map74.Count; ++_i75)
+                TMap _map53 = await iprot.ReadMapBeginAsync(cancellationToken);
+                ThrottleLimit = new Dictionary<ThrottleType, TTimedQuota>(_map53.Count);
+                for(int _i54 = 0; _i54 < _map53.Count; ++_i54)
                 {
-                  ThrottleType _key76;
-                  TTimedQuota _val77;
-                  _key76 = (ThrottleType)await iprot.ReadI32Async(cancellationToken);
-                  _val77 = new TTimedQuota();
-                  await _val77.ReadAsync(iprot, cancellationToken);
-                  ThrottleLimit[_key76] = _val77;
+                  ThrottleType _key55;
+                  TTimedQuota _val56;
+                  _key55 = (ThrottleType)await iprot.ReadI32Async(cancellationToken);
+                  _val56 = new TTimedQuota();
+                  await _val56.ReadAsync(iprot, cancellationToken);
+                  ThrottleLimit[_key55] = _val56;
                 }
                 await iprot.ReadMapEndAsync(cancellationToken);
               }
@@ -200,10 +179,10 @@ public partial class TThrottleQuota : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteMapBeginAsync(new TMap(TType.I32, TType.Struct, ThrottleLimit.Count), cancellationToken);
-          foreach (ThrottleType _iter78 in ThrottleLimit.Keys)
+          foreach (ThrottleType _iter57 in ThrottleLimit.Keys)
           {
-            await oprot.WriteI32Async((int)_iter78, cancellationToken);
-            await ThrottleLimit[_iter78].WriteAsync(oprot, cancellationToken);
+            await oprot.WriteI32Async((int)_iter57, cancellationToken);
+            await ThrottleLimit[_iter57].WriteAsync(oprot, cancellationToken);
           }
           await oprot.WriteMapEndAsync(cancellationToken);
         }
@@ -267,22 +246,22 @@ public partial class TThrottleQuota : TBase
   public override string ToString()
   {
     var sb = new StringBuilder("TThrottleQuota(");
-    int tmp79 = 0;
+    int tmp58 = 0;
     if((ThrottleLimit != null) && __isset.throttleLimit)
     {
-      if(0 < tmp79++) { sb.Append(", "); }
+      if(0 < tmp58++) { sb.Append(", "); }
       sb.Append("ThrottleLimit: ");
       ThrottleLimit.ToString(sb);
     }
     if(__isset.memLimit)
     {
-      if(0 < tmp79++) { sb.Append(", "); }
+      if(0 < tmp58++) { sb.Append(", "); }
       sb.Append("MemLimit: ");
       MemLimit.ToString(sb);
     }
     if(__isset.cpuLimit)
     {
-      if(0 < tmp79++) { sb.Append(", "); }
+      if(0 < tmp58++) { sb.Append(", "); }
       sb.Append("CpuLimit: ");
       CpuLimit.ToString(sb);
     }

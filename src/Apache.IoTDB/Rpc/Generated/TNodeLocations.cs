@@ -72,22 +72,6 @@ public partial class TNodeLocations : TBase
   {
   }
 
-  public TNodeLocations DeepCopy()
-  {
-    var tmp102 = new TNodeLocations();
-    if((ConfigNodeLocations != null) && __isset.configNodeLocations)
-    {
-      tmp102.ConfigNodeLocations = this.ConfigNodeLocations.DeepCopy();
-    }
-    tmp102.__isset.configNodeLocations = this.__isset.configNodeLocations;
-    if((DataNodeLocations != null) && __isset.dataNodeLocations)
-    {
-      tmp102.DataNodeLocations = this.DataNodeLocations.DeepCopy();
-    }
-    tmp102.__isset.dataNodeLocations = this.__isset.dataNodeLocations;
-    return tmp102;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -109,14 +93,14 @@ public partial class TNodeLocations : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list103 = await iprot.ReadListBeginAsync(cancellationToken);
-                ConfigNodeLocations = new List<TConfigNodeLocation>(_list103.Count);
-                for(int _i104 = 0; _i104 < _list103.Count; ++_i104)
+                TList _list74 = await iprot.ReadListBeginAsync(cancellationToken);
+                ConfigNodeLocations = new List<TConfigNodeLocation>(_list74.Count);
+                for(int _i75 = 0; _i75 < _list74.Count; ++_i75)
                 {
-                  TConfigNodeLocation _elem105;
-                  _elem105 = new TConfigNodeLocation();
-                  await _elem105.ReadAsync(iprot, cancellationToken);
-                  ConfigNodeLocations.Add(_elem105);
+                  TConfigNodeLocation _elem76;
+                  _elem76 = new TConfigNodeLocation();
+                  await _elem76.ReadAsync(iprot, cancellationToken);
+                  ConfigNodeLocations.Add(_elem76);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -130,14 +114,14 @@ public partial class TNodeLocations : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list106 = await iprot.ReadListBeginAsync(cancellationToken);
-                DataNodeLocations = new List<TDataNodeLocation>(_list106.Count);
-                for(int _i107 = 0; _i107 < _list106.Count; ++_i107)
+                TList _list77 = await iprot.ReadListBeginAsync(cancellationToken);
+                DataNodeLocations = new List<TDataNodeLocation>(_list77.Count);
+                for(int _i78 = 0; _i78 < _list77.Count; ++_i78)
                 {
-                  TDataNodeLocation _elem108;
-                  _elem108 = new TDataNodeLocation();
-                  await _elem108.ReadAsync(iprot, cancellationToken);
-                  DataNodeLocations.Add(_elem108);
+                  TDataNodeLocation _elem79;
+                  _elem79 = new TDataNodeLocation();
+                  await _elem79.ReadAsync(iprot, cancellationToken);
+                  DataNodeLocations.Add(_elem79);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -179,9 +163,9 @@ public partial class TNodeLocations : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Struct, ConfigNodeLocations.Count), cancellationToken);
-          foreach (TConfigNodeLocation _iter109 in ConfigNodeLocations)
+          foreach (TConfigNodeLocation _iter80 in ConfigNodeLocations)
           {
-            await _iter109.WriteAsync(oprot, cancellationToken);
+            await _iter80.WriteAsync(oprot, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -195,9 +179,9 @@ public partial class TNodeLocations : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Struct, DataNodeLocations.Count), cancellationToken);
-          foreach (TDataNodeLocation _iter110 in DataNodeLocations)
+          foreach (TDataNodeLocation _iter81 in DataNodeLocations)
           {
-            await _iter110.WriteAsync(oprot, cancellationToken);
+            await _iter81.WriteAsync(oprot, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -238,16 +222,16 @@ public partial class TNodeLocations : TBase
   public override string ToString()
   {
     var sb = new StringBuilder("TNodeLocations(");
-    int tmp111 = 0;
+    int tmp82 = 0;
     if((ConfigNodeLocations != null) && __isset.configNodeLocations)
     {
-      if(0 < tmp111++) { sb.Append(", "); }
+      if(0 < tmp82++) { sb.Append(", "); }
       sb.Append("ConfigNodeLocations: ");
       ConfigNodeLocations.ToString(sb);
     }
     if((DataNodeLocations != null) && __isset.dataNodeLocations)
     {
-      if(0 < tmp111++) { sb.Append(", "); }
+      if(0 < tmp82++) { sb.Append(", "); }
       sb.Append("DataNodeLocations: ");
       DataNodeLocations.ToString(sb);
     }

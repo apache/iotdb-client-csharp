@@ -115,38 +115,6 @@ public partial class TSFetchResultsResp : TBase
     this.IsAlign = isAlign;
   }
 
-  public TSFetchResultsResp DeepCopy()
-  {
-    var tmp89 = new TSFetchResultsResp();
-    if((Status != null))
-    {
-      tmp89.Status = (TSStatus)this.Status.DeepCopy();
-    }
-    tmp89.HasResultSet = this.HasResultSet;
-    tmp89.IsAlign = this.IsAlign;
-    if((QueryDataSet != null) && __isset.queryDataSet)
-    {
-      tmp89.QueryDataSet = (TSQueryDataSet)this.QueryDataSet.DeepCopy();
-    }
-    tmp89.__isset.queryDataSet = this.__isset.queryDataSet;
-    if((NonAlignQueryDataSet != null) && __isset.nonAlignQueryDataSet)
-    {
-      tmp89.NonAlignQueryDataSet = (TSQueryNonAlignDataSet)this.NonAlignQueryDataSet.DeepCopy();
-    }
-    tmp89.__isset.nonAlignQueryDataSet = this.__isset.nonAlignQueryDataSet;
-    if((QueryResult != null) && __isset.queryResult)
-    {
-      tmp89.QueryResult = this.QueryResult.DeepCopy();
-    }
-    tmp89.__isset.queryResult = this.__isset.queryResult;
-    if(__isset.moreData)
-    {
-      tmp89.MoreData = this.MoreData;
-    }
-    tmp89.__isset.moreData = this.__isset.moreData;
-    return tmp89;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -227,13 +195,13 @@ public partial class TSFetchResultsResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list90 = await iprot.ReadListBeginAsync(cancellationToken);
-                QueryResult = new List<byte[]>(_list90.Count);
-                for(int _i91 = 0; _i91 < _list90.Count; ++_i91)
+                TList _list76 = await iprot.ReadListBeginAsync(cancellationToken);
+                QueryResult = new List<byte[]>(_list76.Count);
+                for(int _i77 = 0; _i77 < _list76.Count; ++_i77)
                 {
-                  byte[] _elem92;
-                  _elem92 = await iprot.ReadBinaryAsync(cancellationToken);
-                  QueryResult.Add(_elem92);
+                  byte[] _elem78;
+                  _elem78 = await iprot.ReadBinaryAsync(cancellationToken);
+                  QueryResult.Add(_elem78);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -336,9 +304,9 @@ public partial class TSFetchResultsResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, QueryResult.Count), cancellationToken);
-          foreach (byte[] _iter93 in QueryResult)
+          foreach (byte[] _iter79 in QueryResult)
           {
-            await oprot.WriteBinaryAsync(_iter93, cancellationToken);
+            await oprot.WriteBinaryAsync(_iter79, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

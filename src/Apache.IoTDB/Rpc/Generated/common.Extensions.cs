@@ -37,18 +37,6 @@ public static class commonExtensions
   }
 
 
-  public static Dictionary<ThrottleType, TTimedQuota> DeepCopy(this Dictionary<ThrottleType, TTimedQuota> source)
-  {
-    if (source == null)
-      return null;
-
-    var tmp116 = new Dictionary<ThrottleType, TTimedQuota>(source.Count);
-    foreach (var pair in source)
-      tmp116.Add(pair.Key, (pair.Value != null) ? pair.Value.DeepCopy() : null);
-    return tmp116;
-  }
-
-
   public static bool Equals(this Dictionary<string, string> instance, object that)
   {
     if (!(that is Dictionary<string, string> other)) return false;
@@ -61,18 +49,6 @@ public static class commonExtensions
   public static int GetHashCode(this Dictionary<string, string> instance)
   {
     return TCollections.GetHashCode(instance);
-  }
-
-
-  public static Dictionary<string, string> DeepCopy(this Dictionary<string, string> source)
-  {
-    if (source == null)
-      return null;
-
-    var tmp117 = new Dictionary<string, string>(source.Count);
-    foreach (var pair in source)
-      tmp117.Add((pair.Key != null) ? pair.Key : null, (pair.Value != null) ? pair.Value : null);
-    return tmp117;
   }
 
 
@@ -91,18 +67,6 @@ public static class commonExtensions
   }
 
 
-  public static List<TConfigNodeLocation> DeepCopy(this List<TConfigNodeLocation> source)
-  {
-    if (source == null)
-      return null;
-
-    var tmp118 = new List<TConfigNodeLocation>(source.Count);
-    foreach (var elem in source)
-      tmp118.Add((elem != null) ? elem.DeepCopy() : null);
-    return tmp118;
-  }
-
-
   public static bool Equals(this List<TDataNodeLocation> instance, object that)
   {
     if (!(that is List<TDataNodeLocation> other)) return false;
@@ -115,18 +79,6 @@ public static class commonExtensions
   public static int GetHashCode(this List<TDataNodeLocation> instance)
   {
     return TCollections.GetHashCode(instance);
-  }
-
-
-  public static List<TDataNodeLocation> DeepCopy(this List<TDataNodeLocation> source)
-  {
-    if (source == null)
-      return null;
-
-    var tmp119 = new List<TDataNodeLocation>(source.Count);
-    foreach (var elem in source)
-      tmp119.Add((elem != null) ? elem.DeepCopy() : null);
-    return tmp119;
   }
 
 
@@ -145,18 +97,6 @@ public static class commonExtensions
   }
 
 
-  public static List<TFile> DeepCopy(this List<TFile> source)
-  {
-    if (source == null)
-      return null;
-
-    var tmp120 = new List<TFile>(source.Count);
-    foreach (var elem in source)
-      tmp120.Add((elem != null) ? elem.DeepCopy() : null);
-    return tmp120;
-  }
-
-
   public static bool Equals(this List<TSStatus> instance, object that)
   {
     if (!(that is List<TSStatus> other)) return false;
@@ -169,18 +109,6 @@ public static class commonExtensions
   public static int GetHashCode(this List<TSStatus> instance)
   {
     return TCollections.GetHashCode(instance);
-  }
-
-
-  public static List<TSStatus> DeepCopy(this List<TSStatus> source)
-  {
-    if (source == null)
-      return null;
-
-    var tmp121 = new List<TSStatus>(source.Count);
-    foreach (var elem in source)
-      tmp121.Add((elem != null) ? elem.DeepCopy() : null);
-    return tmp121;
   }
 
 
@@ -199,18 +127,6 @@ public static class commonExtensions
   }
 
 
-  public static List<TTestConnectionResult> DeepCopy(this List<TTestConnectionResult> source)
-  {
-    if (source == null)
-      return null;
-
-    var tmp122 = new List<TTestConnectionResult>(source.Count);
-    foreach (var elem in source)
-      tmp122.Add((elem != null) ? elem.DeepCopy() : null);
-    return tmp122;
-  }
-
-
   public static bool Equals(this List<string> instance, object that)
   {
     if (!(that is List<string> other)) return false;
@@ -223,18 +139,6 @@ public static class commonExtensions
   public static int GetHashCode(this List<string> instance)
   {
     return TCollections.GetHashCode(instance);
-  }
-
-
-  public static List<string> DeepCopy(this List<string> source)
-  {
-    if (source == null)
-      return null;
-
-    var tmp123 = new List<string>(source.Count);
-    foreach (var elem in source)
-      tmp123.Add((elem != null) ? elem : null);
-    return tmp123;
   }
 
 

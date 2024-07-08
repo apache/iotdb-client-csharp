@@ -115,38 +115,6 @@ public partial class TSExecuteStatementReq : TBase
     this.StatementId = statementId;
   }
 
-  public TSExecuteStatementReq DeepCopy()
-  {
-    var tmp73 = new TSExecuteStatementReq();
-    tmp73.SessionId = this.SessionId;
-    if((Statement != null))
-    {
-      tmp73.Statement = this.Statement;
-    }
-    tmp73.StatementId = this.StatementId;
-    if(__isset.fetchSize)
-    {
-      tmp73.FetchSize = this.FetchSize;
-    }
-    tmp73.__isset.fetchSize = this.__isset.fetchSize;
-    if(__isset.timeout)
-    {
-      tmp73.Timeout = this.Timeout;
-    }
-    tmp73.__isset.timeout = this.__isset.timeout;
-    if(__isset.enableRedirectQuery)
-    {
-      tmp73.EnableRedirectQuery = this.EnableRedirectQuery;
-    }
-    tmp73.__isset.enableRedirectQuery = this.__isset.enableRedirectQuery;
-    if(__isset.jdbcQuery)
-    {
-      tmp73.JdbcQuery = this.JdbcQuery;
-    }
-    tmp73.__isset.jdbcQuery = this.__isset.jdbcQuery;
-    return tmp73;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

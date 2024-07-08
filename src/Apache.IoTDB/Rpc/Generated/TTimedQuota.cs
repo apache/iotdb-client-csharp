@@ -46,14 +46,6 @@ public partial class TTimedQuota : TBase
     this.SoftLimit = softLimit;
   }
 
-  public TTimedQuota DeepCopy()
-  {
-    var tmp71 = new TTimedQuota();
-    tmp71.TimeUnit = this.TimeUnit;
-    tmp71.SoftLimit = this.SoftLimit;
-    return tmp71;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

@@ -46,20 +46,6 @@ public partial class TDataNodeConfiguration : TBase
     this.Resource = resource;
   }
 
-  public TDataNodeConfiguration DeepCopy()
-  {
-    var tmp26 = new TDataNodeConfiguration();
-    if((Location != null))
-    {
-      tmp26.Location = (TDataNodeLocation)this.Location.DeepCopy();
-    }
-    if((Resource != null))
-    {
-      tmp26.Resource = (TNodeResource)this.Resource.DeepCopy();
-    }
-    return tmp26;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

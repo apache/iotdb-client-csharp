@@ -49,21 +49,6 @@ public partial class TSUnsetSchemaTemplateReq : TBase
     this.TemplateName = templateName;
   }
 
-  public TSUnsetSchemaTemplateReq DeepCopy()
-  {
-    var tmp435 = new TSUnsetSchemaTemplateReq();
-    tmp435.SessionId = this.SessionId;
-    if((PrefixPath != null))
-    {
-      tmp435.PrefixPath = this.PrefixPath;
-    }
-    if((TemplateName != null))
-    {
-      tmp435.TemplateName = this.TemplateName;
-    }
-    return tmp435;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
