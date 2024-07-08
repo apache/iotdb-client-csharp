@@ -122,7 +122,7 @@ namespace Apache.IoTDB
             {
                 if (retryOnFailure)
                 {
-                    await Reconnect();
+                    await Reconnect(client);
                     client = _clients.Take();
                     try
                     {
@@ -175,6 +175,7 @@ namespace Apache.IoTDB
         {
             _clients = new ConcurrentClientQueue();
             _clients.Timeout = _timeout * 5;
+
             if (_nodeUrls.Count == 0)
             {
                 for (var index = 0; index < _poolSize; index++)
@@ -184,33 +185,46 @@ namespace Apache.IoTDB
             }
             else
             {
-                foreach (var endPoint in _endPoints)
+                int startIndex = 0;
+                for (var index = 0; index < _poolSize; index++)
                 {
-                    try
+                    bool isConnected = false;
+                    for (int i = 0; i < _endPoints.Count; i++)
                     {
-                        for (var index = 0; index < _poolSize; index++)
+                        var endPointIndex = (startIndex + i) % _endPoints.Count;
+                        var endPoint = _endPoints[endPointIndex];
+                        try
                         {
                             var client = await CreateAndOpen(endPoint.Ip, endPoint.Port, _enableRpcCompression, _timeout, cancellationToken);
                             _clients.Add(client);
+                            isConnected = true;
+                            startIndex = (endPointIndex + 1) % _endPoints.Count;
+                            break;
                         }
-                        break;
+                        catch (Exception e)
+                        {
+                            if (_debugMode)
+                            {
+                                _logger.LogWarning(e, "Currently connecting to {0}:{1} failed", endPoint.Ip, endPoint.Port);
+                            }
+                        }
                     }
-                    catch (Exception e) // CreateAndOpen will not throw TException
+                    if (!isConnected) // current client could not connect to any endpoint
                     {
-#if NET461_OR_GREATER || NETSTANDARD2_0
-#else
-                        _clients.ClientQueue.Clear();
-#endif
-                        continue;
+                        throw new TException("Error occurs when opening session pool. Could not connect to any server", null);
                     }
-                }
-                if (_clients.ClientQueue.Count != _poolSize)
-                {
-                    throw new TException("Error occurs when opening session pool. Could not connect to any server", null);
                 }
             }
+
+            if (_clients.ClientQueue.Count != _poolSize)
+            {
+                throw new TException(string.Format("Error occurs when opening session pool. Client pool size is not equal to the expected size. Client pool size: {0}, expected size: {1}", _clients.ClientQueue.Count, _poolSize), null);
+            }
+            _isClose = false;
         }
-        public async Task Reconnect(CancellationToken cancellationToken = default)
+
+
+        public async Task Reconnect(Client originalClient = null, CancellationToken cancellationToken = default)
         {
             if (_nodeUrls.Count == 0)
             {
@@ -219,24 +233,24 @@ namespace Apache.IoTDB
             }
 
             bool isConnected = false;
-            Random random = new Random();
+            originalClient.Transport.Close();
+
+            int startIndex = _endPoints.FindIndex(x => x.Ip == originalClient.EndPoint.Ip && x.Port == originalClient.EndPoint.Port);
+            if (startIndex == -1)
+            {
+                throw new ArgumentException($"The original client is not in the list of endpoints. Original client: {originalClient.EndPoint.Ip}:{originalClient.EndPoint.Port}");
+            }
 
             for (int i = 0; i < RetryNum && !isConnected; i++)
             {
-                int currentHostIndex = random.Next(0, _endPoints.Count);
-                int attempts = 0;
-
+                int attempts = 1;
                 while (attempts < _endPoints.Count)
                 {
-                    int j = (currentHostIndex + attempts) % _endPoints.Count;
-
+                    int j = (startIndex + attempts) % _endPoints.Count;
                     try
                     {
-                        for (int index = 0; index < _poolSize; index++)
-                        {
-                            var client = await CreateAndOpen(_endPoints[j].Ip, _endPoints[j].Port, _enableRpcCompression, _timeout, cancellationToken);
-                            _clients.Add(client);
-                        }
+                        var client = await CreateAndOpen(_endPoints[j].Ip, _endPoints[j].Port, _enableRpcCompression, _timeout, cancellationToken);
+                        _clients.Add(client);
                         isConnected = true;
                         break;
                     }
@@ -248,7 +262,7 @@ namespace Apache.IoTDB
                 }
             }
 
-            if (!isConnected || _clients.ClientQueue.Count != _poolSize)
+            if (!isConnected)
             {
                 throw new TException("Error occurs when reconnecting session pool. Could not connect to any server", null);
             }
@@ -369,13 +383,14 @@ namespace Apache.IoTDB
                 var sessionId = openResp.SessionId;
                 var statementId = await client.requestStatementIdAsync(sessionId, cancellationToken);
 
-                _isClose = false;
+                var endpoint = new TEndPoint(host, port);
 
                 var returnClient = new Client(
                     client,
                     sessionId,
                     statementId,
-                    transport);
+                    transport,
+                    endpoint);
 
                 return returnClient;
             }
