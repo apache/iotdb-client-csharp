@@ -122,8 +122,7 @@ namespace Apache.IoTDB
             {
                 if (retryOnFailure)
                 {
-                    await Reconnect(client);
-                    client = _clients.Take();
+                    client = await Reconnect(client);
                     try
                     {
                         var resp = await operation(client);
@@ -224,15 +223,14 @@ namespace Apache.IoTDB
         }
 
 
-        public async Task Reconnect(Client originalClient = null, CancellationToken cancellationToken = default)
+        public async Task<Client> Reconnect(Client originalClient = null, CancellationToken cancellationToken = default)
         {
             if (_nodeUrls.Count == 0)
             {
                 await Open(_enableRpcCompression);
-                return;
+                return _clients.Take();
             }
 
-            bool isConnected = false;
             originalClient.Transport.Close();
 
             int startIndex = _endPoints.FindIndex(x => x.Ip == originalClient.EndPoint.Ip && x.Port == originalClient.EndPoint.Port);
@@ -241,31 +239,26 @@ namespace Apache.IoTDB
                 throw new ArgumentException($"The original client is not in the list of endpoints. Original client: {originalClient.EndPoint.Ip}:{originalClient.EndPoint.Port}");
             }
 
-            for (int i = 0; i < RetryNum && !isConnected; i++)
+            for (int attempt = 1; attempt <= RetryNum; attempt++)
             {
-                int attempts = 1;
-                while (attempts < _endPoints.Count)
+                for (int i = 0; i < _endPoints.Count; i++)
                 {
-                    int j = (startIndex + attempts) % _endPoints.Count;
+                    int j = (startIndex + i) % _endPoints.Count;
                     try
                     {
                         var client = await CreateAndOpen(_endPoints[j].Ip, _endPoints[j].Port, _enableRpcCompression, _timeout, cancellationToken);
-                        _clients.Add(client);
-                        isConnected = true;
-                        break;
+                        return client;
                     }
-                    catch (TException)
+                    catch (Exception)
                     {
-                        // Connection failed, try next node
+                        if (_debugMode)
+                        {
+                            _logger.LogWarning(e, "Attempt connecting to {0}:{1} failed", _endPoints[j].Ip, _endPoints[j].Port);
+                        }
                     }
-                    attempts++;
                 }
             }
-
-            if (!isConnected)
-            {
-                throw new TException("Error occurs when reconnecting session pool. Could not connect to any server", null);
-            }
+            throw new TException("Error occurs when reconnecting session pool. Could not connect to any server", null);
         }
 
 
