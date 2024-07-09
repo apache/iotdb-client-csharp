@@ -21,7 +21,8 @@
 [English](./README.md) | [中文](./README_ZH.md)
 
 # Apache IoTDB C#语言客户端
-
+[![E2E Tests](https://github.com/apache/iotdb-client-csharp/actions/workflows/e2e.yml/badge.svg)](https://github.com/apache/iotdb-client-csharp/actions/workflows/e2e.yml)
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 ## 概览
 
 本仓库是Apache IoTDB的C#语言客户端,与其他语言支持相同语义的用户接口。
@@ -38,8 +39,9 @@ Apache IoTDB Github: https://github.com/apache/iotdb
 ```sh
 dotnet add package Apache.IoTDB
 ```
+> [!NOTE]
+> 请注意，`Apache.IoTDB`这个包仅支持大于`.net framework 4.6.1`的版本。
 
-请注意，`Apache.IoTDB`这个包仅支持大于`.net framework 4.6.1`的版本。
 ## 环境准备
 
     .NET SDK Version >= 5.0
@@ -62,7 +64,7 @@ NLog >= 4.7.9
 
 ### 操作系统
 
-* Linux、Macos或其他类unix系统
+* Linux、MacOS或其他类unix系统
 * Windows+bash(WSL、cygwin、Git Bash)
 
 ### 命令行工具

@@ -22,6 +22,8 @@
 
 # Apache IoTDB Client for C#
 
+[![E2E Tests](https://github.com/apache/iotdb-client-csharp/actions/workflows/e2e.yml/badge.svg)](https://github.com/apache/iotdb-client-csharp/actions/workflows/e2e.yml)
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 ## Overview
 
 This is the C# client of Apache IoTDB.
@@ -41,7 +43,8 @@ We have prepared Nuget Package for C# users. Users can directly install the clie
 dotnet add package Apache.IoTDB
 ```
 
-Note that the `Apache.IoTDB` package only supports versions greater than `.net framework 4.6.1`.
+> [!NOTE]
+> The `Apache.IoTDB` package only supports versions greater than `.net framework 4.6.1`.
 
 ## Prerequisites
 
@@ -65,7 +68,7 @@ NLog >= 4.7.9
 
 ### OS
 
-* Linux, Macos or other unix-like OS
+* Linux, MacOS or other unix-like OS
 * Windows+bash(WSL, cygwin, Git Bash)
 
 ### Command Line Tools
