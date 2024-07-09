@@ -249,7 +249,7 @@ namespace Apache.IoTDB
                         var client = await CreateAndOpen(_endPoints[j].Ip, _endPoints[j].Port, _enableRpcCompression, _timeout, cancellationToken);
                         return client;
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         if (_debugMode)
                         {
