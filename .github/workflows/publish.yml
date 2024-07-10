@@ -12,21 +12,22 @@ jobs:
       uses: actions/checkout@v2
 
     - uses: actions/checkout@v4
-    - name: Setup .NET
+    - name: Setup .NET SDK
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '6.0.x'
 
     - name: Build the project
-      run: dotnet build src/Apache.IoTDB/Apache.IoTDB.csproj --configuration Release
-           dotnet build src/Apache.IoTDB.Data/Apache.IoTDB.Data.csproj --configuration Release
+      run: |
+        dotnet build src/Apache.IoTDB/Apache.IoTDB.csproj --configuration Release
+        dotnet build src/Apache.IoTDB.Data/Apache.IoTDB.Data.csproj --configuration Release
 
-    - name: Pack the project
+    - name: Package Projects
       run: |
         dotnet pack src/Apache.IoTDB/Apache.IoTDB.csproj -c Release -p:PackageVersion=${{ github.event.release.tag_name }} --no-build -o nupkgs /p:PackageId=test_proj_1
         dotnet pack src/Apache.IoTDB.Data/Apache.IoTDB.Data.csproj -c Release -p:PackageVersion=${{ github.event.release.tag_name }} --no-build -o nupkgs /p:PackageId=test_proj_2
 
-    - name: Push to NuGet
+    - name: Publish Packages to NuGet
       run: |
         dotnet nuget push "nupkgs/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
       env:
