@@ -1,4 +1,4 @@
-name: Release to NuGet and GitHub Packages
+name: Release to NuGet
 
 on:
   release:
@@ -24,16 +24,11 @@ jobs:
 
     - name: Package Projects
       run: |
-        dotnet pack src/Apache.IoTDB/Apache.IoTDB.csproj -c Release -p:PackageVersion=${{ github.event.release.tag_name }} --no-build -o nupkgs /p:PackageId=test_proj_1
-        dotnet pack src/Apache.IoTDB.Data/Apache.IoTDB.Data.csproj -c Release -p:PackageVersion=${{ github.event.release.tag_name }} --no-build -o nupkgs /p:PackageId=test_proj_2
+        dotnet pack src/Apache.IoTDB/Apache.IoTDB.csproj -c Release -p:PackageVersion=${{ github.event.release.tag_name }} --no-build -o nupkgs /p:PackageId=Apache.IoTDB
+        dotnet pack src/Apache.IoTDB.Data/Apache.IoTDB.Data.csproj -c Release -p:PackageVersion=${{ github.event.release.tag_name }} --no-build -o nupkgs /p:PackageId=Apache.IoTDB.Data
 
     - name: Publish Packages to NuGet
       run: |
         dotnet nuget push "nupkgs/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-
-    - name: Publish Packages to GitHub Packages
-      run: dotnet nuget push "nupkgs/*.nupkg" --api-key ${{ secrets.GITHUB_TOKEN }} --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
