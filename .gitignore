@@ -5,6 +5,7 @@
 *.userosscache
 *.sln.docstates
 **/tmp
+nupkgs/
 
 # Build results
 [Dd]ebug/
