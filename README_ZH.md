@@ -23,6 +23,8 @@
 # Apache IoTDB C#语言客户端
 [![E2E Tests](https://github.com/apache/iotdb-client-csharp/actions/workflows/e2e.yml/badge.svg)](https://github.com/apache/iotdb-client-csharp/actions/workflows/e2e.yml)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![NuGet Badge](https://buildstats.info/nuget/Apache.IoTDB)](https://www.nuget.org/packages/Apache.IoTDB)
+
 ## 概览
 
 本仓库是Apache IoTDB的C#语言客户端,与其他语言支持相同语义的用户接口。
@@ -35,10 +37,16 @@ Apache IoTDB Github: https://github.com/apache/iotdb
 ### 从NuGet Package安装
 
 我们为CSharp用户准备了NuGet包，用户可直接通过.NET CLI进行客户端安装，[NuGet包链接如下](https://www.nuget.org/packages/Apache.IoTDB/),命令行中运行如下命令即可完成安装
+
+我们为 C# 用户准备了一个 Nuget 包。用户可以直接通过 .NET CLI 进行客户端安装。命令行中运行如下命令即可完成安装
     
 ```sh
 dotnet add package Apache.IoTDB
 ```
+
+详情请访问 [NuGet 上的包](https://www.nuget.org/packages/Apache.IoTDB/)。
+
+
 > [!NOTE]
 > 请注意，`Apache.IoTDB`这个包仅支持大于`.net framework 4.6.1`的版本。
 
@@ -64,8 +72,8 @@ NLog >= 4.7.9
 
 ### 操作系统
 
-* Linux、MacOS或其他类unix系统
-* Windows+bash(WSL、cygwin、Git Bash)
+* Linux、MacOS 或其他类 Unix 系统
+* Windows + Bash (WSL、cygwin、Git Bash)
 
 ### 命令行工具
 
