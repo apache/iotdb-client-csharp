@@ -122,9 +122,9 @@ namespace Apache.IoTDB
             {
                 if (retryOnFailure)
                 {
-                    client = await Reconnect(client);
                     try
                     {
+                        client = await Reconnect(client);
                         var resp = await operation(client);
                         return resp;
                     }
@@ -179,7 +179,17 @@ namespace Apache.IoTDB
             {
                 for (var index = 0; index < _poolSize; index++)
                 {
-                    _clients.Add(await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, cancellationToken));
+                    try
+                    {
+                        _clients.Add(await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, cancellationToken));
+                    }
+                    catch (Exception e)
+                    {
+                        if (_debugMode)
+                        {
+                            _logger.LogWarning(e, "Currently connecting to {0}:{1} failed", _host, _port);
+                        }
+                    }
                 }
             }
             else
@@ -225,13 +235,13 @@ namespace Apache.IoTDB
 
         public async Task<Client> Reconnect(Client originalClient = null, CancellationToken cancellationToken = default)
         {
+            originalClient.Transport.Close();
+
             if (_nodeUrls.Count == 0)
             {
                 await Open(_enableRpcCompression);
                 return _clients.Take();
             }
-
-            originalClient.Transport.Close();
 
             int startIndex = _endPoints.FindIndex(x => x.Ip == originalClient.EndPoint.Ip && x.Port == originalClient.EndPoint.Port);
             if (startIndex == -1)
