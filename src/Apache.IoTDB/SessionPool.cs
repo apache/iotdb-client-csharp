@@ -227,7 +227,7 @@ namespace Apache.IoTDB
 
             if (_clients.ClientQueue.Count != _poolSize)
             {
-                throw new TException(string.Format("Error occurs when opening session pool. Client pool size is not equal to the expected size. Client pool size: {0}, expected size: {1}", _clients.ClientQueue.Count, _poolSize), null);
+                throw new TException(string.Format("Error occurs when opening session pool. Client pool size is not equal to the expected size. Client pool size: {0}, expected size: {1}, Please check the server status", _clients.ClientQueue.Count, _poolSize), null);
             }
             _isClose = false;
         }
