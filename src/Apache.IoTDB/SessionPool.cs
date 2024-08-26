@@ -235,39 +235,55 @@ namespace Apache.IoTDB
 
         public async Task<Client> Reconnect(Client originalClient = null, CancellationToken cancellationToken = default)
         {
-            originalClient.Transport.Close();
+            originalClient?.Transport.Close();
 
             if (_nodeUrls.Count == 0)
             {
-                await Open(_enableRpcCompression);
-                return _clients.Take();
-            }
-
-            int startIndex = _endPoints.FindIndex(x => x.Ip == originalClient.EndPoint.Ip && x.Port == originalClient.EndPoint.Port);
-            if (startIndex == -1)
-            {
-                throw new ArgumentException($"The original client is not in the list of endpoints. Original client: {originalClient.EndPoint.Ip}:{originalClient.EndPoint.Port}");
-            }
-
-            for (int attempt = 1; attempt <= RetryNum; attempt++)
-            {
-                for (int i = 0; i < _endPoints.Count; i++)
+                for (int attempt = 1; attempt <= RetryNum; attempt++)
                 {
-                    int j = (startIndex + i) % _endPoints.Count;
                     try
                     {
-                        var client = await CreateAndOpen(_endPoints[j].Ip, _endPoints[j].Port, _enableRpcCompression, _timeout, cancellationToken);
+                        var client = await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, cancellationToken);
                         return client;
                     }
                     catch (Exception e)
                     {
                         if (_debugMode)
                         {
-                            _logger.LogWarning(e, "Attempt connecting to {0}:{1} failed", _endPoints[j].Ip, _endPoints[j].Port);
+                            _logger.LogWarning(e, "Attempt reconnecting to {0}:{1} failed", _host, _port);
                         }
                     }
                 }
             }
+            else
+            {
+                int startIndex = _endPoints.FindIndex(x => x.Ip == originalClient.EndPoint.Ip && x.Port == originalClient.EndPoint.Port);
+                if (startIndex == -1)
+                {
+                    throw new ArgumentException($"The original client is not in the list of endpoints. Original client: {originalClient.EndPoint.Ip}:{originalClient.EndPoint.Port}");
+                }
+
+                for (int attempt = 1; attempt <= RetryNum; attempt++)
+                {
+                    for (int i = 0; i < _endPoints.Count; i++)
+                    {
+                        int j = (startIndex + i) % _endPoints.Count;
+                        try
+                        {
+                            var client = await CreateAndOpen(_endPoints[j].Ip, _endPoints[j].Port, _enableRpcCompression, _timeout, cancellationToken);
+                            return client;
+                        }
+                        catch (Exception e)
+                        {
+                            if (_debugMode)
+                            {
+                                _logger.LogWarning(e, "Attempt connecting to {0}:{1} failed", _endPoints[j].Ip, _endPoints[j].Port);
+                            }
+                        }
+                    }
+                }
+            }
+
             throw new TException("Error occurs when reconnecting session pool. Could not connect to any server", null);
         }
 
