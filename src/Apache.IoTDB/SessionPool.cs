@@ -113,20 +113,6 @@ namespace Apache.IoTDB
         public async Task<TResult> ExecuteClientOperationAsync<TResult>(AsyncOperation<TResult> operation, string errMsg, bool retryOnFailure = true)
         {
             Client client = _clients.Take();
-            Func<Client, Task<TResult>> executeWithReconnect = async (currentClient) =>
-            {
-                try
-                {
-                    currentClient = await Reconnect(currentClient);
-                    var response = await operation(currentClient);
-                    return response;
-                }
-                catch (TException retryEx)
-                {
-                    throw new TException(errMsg, retryEx);
-                }
-            };
-
             try
             {
                 var resp = await operation(client);
@@ -136,7 +122,13 @@ namespace Apache.IoTDB
             {
                 if (retryOnFailure)
                 {
-                    return await executeWithReconnect(client);
+                    try{
+                        client = await Reconnect(client);
+                        return await operation(client);
+                    } catch (TException retryEx)
+                    {
+                        throw new TException(errMsg, retryEx);
+                    }
                 }
                 else
                 {
@@ -147,7 +139,13 @@ namespace Apache.IoTDB
             {
                 if (retryOnFailure)
                 {
-                    return await executeWithReconnect(client);
+                    try{
+                        client = await Reconnect(client);
+                        return await operation(client);
+                    } catch (TException retryEx)
+                    {
+                        throw new TException(errMsg, retryEx);
+                    }
                 }
                 else
                 {
