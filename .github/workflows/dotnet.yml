@@ -22,6 +22,8 @@ jobs:
         dotnet-version: '6.0.x'
     - name: Restore dependencies
       run: dotnet restore "src/Apache.IoTDB/Apache.IoTDB.csproj"
+    - name: Check License Header
+      uses: apache/skywalking-eyes@v0.6.0
     - name: Build
       run: dotnet build --no-restore "src/Apache.IoTDB/Apache.IoTDB.csproj"
     - name: Test
