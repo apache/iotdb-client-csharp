@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -17,7 +17,7 @@
  * under the License.
  */
 
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -27,7 +27,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
- 
+
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
@@ -39,16 +39,16 @@ namespace Apache.IoTDB.Data
     /// </summary>
     public partial class IoTDBConnection : DbConnection
     {
- 
+
 
         private readonly IList<WeakReference<IoTDBCommand>> _commands = new List<WeakReference<IoTDBCommand>>();
 
         private string _connectionString;
         private ConnectionState _state;
         internal SessionPool  _IoTDB;
-      
- 
-     
+
+
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="IoTDBConnection" /> class.
         /// </summary>
@@ -113,7 +113,7 @@ namespace Apache.IoTDB.Data
         public virtual int DefaultTimeout { get; set; } = 60;
 
 
-   
+
         /// <summary>
         ///     Gets the version of IoTDB used by the connection.
         /// </summary>
@@ -153,7 +153,7 @@ namespace Apache.IoTDB.Data
         /// <value>The transaction currently being used by the connection.</value>
         protected internal virtual IoTDBTransaction Transaction { get; set; }
 
- 
+
 
 
 
@@ -179,7 +179,7 @@ namespace Apache.IoTDB.Data
         }
         public   override   async Task OpenAsync(CancellationToken cancellationToken=default)
         {
-         
+
             if (State == ConnectionState.Open)
             {
                 return;
@@ -212,7 +212,7 @@ namespace Apache.IoTDB.Data
 #else
         public override async Task CloseAsync()
 #endif
-        { 
+        {
             if (State != ConnectionState.Closed)
                 await  _IoTDB.Close();
             Transaction?.Dispose();
@@ -348,7 +348,7 @@ namespace Apache.IoTDB.Data
         public override string Database => throw new  NotSupportedException();
 
         /// <summary>
-        ///     Changes the current database.  
+        ///     Changes the current database.
         /// </summary>
         /// <param name="databaseName">The name of the database to use.</param>
         /// <exception cref="PlatformNotSupportedException"></exception>
@@ -357,7 +357,7 @@ namespace Apache.IoTDB.Data
             throw new NotSupportedException();
         }
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="databaseName"></param>
         /// <returns></returns>
@@ -366,7 +366,7 @@ namespace Apache.IoTDB.Data
         {
             throw new NotSupportedException();
         }
-        
-     
+
+
     }
 }

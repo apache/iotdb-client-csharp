@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -17,7 +17,7 @@
  * under the License.
  */
 
-﻿#if NET461_OR_GREATER || NETSTANDARD2_0
+#if NET461_OR_GREATER || NETSTANDARD2_0
 //https://github.com/Grax32/ArrayExtensions/blob/master/docs/index.md
 
 using System;

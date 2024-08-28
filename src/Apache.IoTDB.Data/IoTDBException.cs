@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -17,9 +17,9 @@
  * under the License.
  */
 
-﻿using System;
+using System;
 using System.Data.Common;
- 
+
 
 namespace Apache.IoTDB.Data
 {
@@ -43,9 +43,9 @@ namespace Apache.IoTDB.Data
         }
 
 
-   
 
-      
+
+
         public override string Message => _IoTDBError?.Error;
         public override int ErrorCode =>   (int) _IoTDBError?.Code;
         /// <summary>

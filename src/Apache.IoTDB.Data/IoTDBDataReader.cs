@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -17,7 +17,7 @@
  * under the License.
  */
 
-﻿using Apache.IoTDB.DataStructure;
+using Apache.IoTDB.DataStructure;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,7 +27,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
- 
+
 
 namespace Apache.IoTDB.Data
 {
@@ -43,9 +43,9 @@ namespace Apache.IoTDB.Data
         private bool _closed;
         private readonly  List<string> _metas;
         private bool _closeConnection;
- 
+
         private int _fieldCount;
-      
+
         RowRecord rowdata= null;
 
 
@@ -81,8 +81,8 @@ namespace Apache.IoTDB.Data
         /// <value>A value indicating whether the data reader contains any rows.</value>
         public override bool HasRows
             => _hasRows;
- 
- 
+
+
         /// <summary>
         ///     Gets a value indicating whether the data reader is closed.
         /// </summary>
@@ -98,7 +98,7 @@ namespace Apache.IoTDB.Data
         {
             get
             {
-                return _recordsAffected; 
+                return _recordsAffected;
             }
         }
 
@@ -184,7 +184,7 @@ namespace Apache.IoTDB.Data
                 _closed = true;
             }
             rowdata = null;
-        
+
         }
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace Apache.IoTDB.Data
         /// <returns>The data type of the column.</returns>
         public override Type GetFieldType(int ordinal)
         {
-        
+
             return ordinal==0?typeof(DateTime): rowdata.GetCrlType(ordinal-1);
         }
 
@@ -357,8 +357,8 @@ namespace Apache.IoTDB.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the column.</returns>
         public override string GetString(int ordinal) => (string)GetValue(ordinal);
- 
-  
+
+
         /// <summary>
         ///     Reads a stream of bytes from the specified column. Not supported.
         /// </summary>
@@ -424,7 +424,7 @@ namespace Apache.IoTDB.Data
             return result;
         }
 
-       
+
 
         /// <summary>
         ///     Gets the column values of the current row.
@@ -529,8 +529,8 @@ namespace Apache.IoTDB.Data
                 schemaRow1[IsExpression] = columnName1 == null;
                 schemaRow1[IsLong] = DBNull.Value;
                 schemaRow1[IsKey] = true;
-        
- 
+
+
                 schemaTable.Rows.Add(schemaRow1);
 
 
@@ -541,11 +541,11 @@ namespace Apache.IoTDB.Data
                     var columnName = rowdata.Measurements[i-1] ;
                     schemaRow[ColumnName] = columnName;
                     schemaRow[ColumnOrdinal] = i;
-               
+
                     schemaRow[NumericPrecision] = DBNull.Value;
                     schemaRow[NumericScale] = DBNull.Value;
                     schemaRow[BaseServerName] = _command.Connection.DataSource;
-              
+
                     schemaRow[BaseColumnName] = columnName;
                     schemaRow[BaseSchemaName] = DBNull.Value;
                     var tableName = string.Empty;

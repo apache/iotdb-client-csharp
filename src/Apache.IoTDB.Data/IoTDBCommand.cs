@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -17,8 +17,6 @@
  * under the License.
  */
 
-﻿
-
 using Apache.IoTDB.DataStructure;
 using System;
 using System.Collections.Generic;
@@ -32,7 +30,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
- 
+
 
 namespace Apache.IoTDB.Data
 {
@@ -264,7 +262,7 @@ namespace Apache.IoTDB.Data
             => ExecuteReader(CommandBehavior.Default);
 
 
-  
+
 
         /// <summary>
         ///     Executes the <see cref="CommandText" /> against the database and returns a data reader.
@@ -300,7 +298,7 @@ namespace Apache.IoTDB.Data
                     throw new InvalidOperationException($"CallRequiresOpenConnection{nameof(ExecuteReader)}");
                 }
             }
-         
+
 
             if (string.IsNullOrEmpty(_commandText))
             {
@@ -328,7 +326,7 @@ namespace Apache.IoTDB.Data
                 }
                 else
                 {
-                    
+
                     var sessionData = Task.Run(() => _IoTDB.ExecuteQueryStatementAsync(_commandText));
                     isok = sessionData.Wait(TimeSpan.FromSeconds(CommandTimeout));
                     if (isok)
@@ -370,7 +368,7 @@ namespace Apache.IoTDB.Data
         {
             var measures = new List<string>();
             var values = new List<object> ();
-           
+
 
             for (int i = 0; i < pms.Count; i++)
             {
@@ -399,7 +397,7 @@ namespace Apache.IoTDB.Data
                         values.Add(t0.GetValueOrDefault());
                         break;
                     case TypeCode.DBNull:
-                   
+
                         break;
                     case TypeCode.Single:
                         values.Add((tp.Value as float?).GetValueOrDefault());
@@ -553,7 +551,7 @@ namespace Apache.IoTDB.Data
                     : null;
             }
         }
-      
+
         /// <summary>
         ///     Attempts to cancel the execution of the command. Does nothing.
         /// </summary>
@@ -561,6 +559,6 @@ namespace Apache.IoTDB.Data
         {
         }
 
-      
+
     }
 }
