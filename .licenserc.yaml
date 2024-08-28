@@ -26,6 +26,7 @@ header:
     - '**/*.md'
     - '**/*.yml'
     - '**/*.json'
+    - '**/*.csproj'
     - '**/*.dcproj'
     - 'LICENSE'
     - 'Apache.IoTDB.sln'
