@@ -17,7 +17,7 @@
   ~ under the License.
 -->
 
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<AssemblyName>Apache.IoTDB.Data</AssemblyName>
