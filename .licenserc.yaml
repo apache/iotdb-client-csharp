@@ -29,5 +29,7 @@ header:
     - '**/*.dcproj'
     - 'LICENSE'
     - 'Apache.IoTDB.sln'
+    - '.gitignore'
+    - '.dockerignore'
 
   comment: on-failure
