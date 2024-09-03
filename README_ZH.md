@@ -23,7 +23,8 @@
 # Apache IoTDB C#语言客户端
 [![E2E Tests](https://github.com/apache/iotdb-client-csharp/actions/workflows/e2e.yml/badge.svg)](https://github.com/apache/iotdb-client-csharp/actions/workflows/e2e.yml)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
-[![NuGet Badge](https://buildstats.info/nuget/Apache.IoTDB)](https://www.nuget.org/packages/Apache.IoTDB)
+![NuGet Version](https://img.shields.io/nuget/v/Apache.IoTDB)
+![NuGet Downloads](https://img.shields.io/nuget/dt/Apache.IoTDB)
 
 ## 概览
 
