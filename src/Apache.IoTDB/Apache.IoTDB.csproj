@@ -6,6 +6,7 @@
         <Authors>eedalong, lausannel, MysticBoy, Aiemu, HTHou</Authors>
         <PackageProjectUrl>https://github.com/apache/iotdb-client-csharp</PackageProjectUrl>
         <RepositoryUrl>https://github.com/apache/iotdb-client-csharp</RepositoryUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <Description>
 		C# client of Apache IoTDB.
 		Apache IoTDB (Internet of Things Database) is a data management system for time series data, which can provide users specific services, such as, data collection, storage and analysis. Due to its light weight structure, high performance and usable features together with its seamless integration with the Hadoop and Spark ecology, IoTDB meets the requirements of massive dataset storage, high throughput data input, and complex data analysis in the industrial IoT field.
@@ -19,6 +20,9 @@
     <ItemGroup
         Condition="'$(TargetFramework)' == 'net461' or '$(TargetFramework)' == 'netstandard2.0'">
         <PackageReference Include="IndexRange" Version="1.0.2" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="../../README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 
 </Project>
