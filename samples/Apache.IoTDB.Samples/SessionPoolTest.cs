@@ -461,9 +461,16 @@ namespace Apache.IoTDB.Samples
             while (res.HasNext()) Console.WriteLine(res.Next());
 
             await res.Close();
-            Console.WriteLine("SELECT sql Passed");
+            Console.WriteLine("SELECT * sql Passed");
             res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", test_group_name, test_device) + " where time<10");
+            res.ShowTableNames();
+            while (res.HasNext()) Console.WriteLine(res.Next());
+
+            await res.Close();
+            Console.WriteLine("SELECT sql Passed");
+            res = await session_pool.ExecuteQueryStatementAsync(
+                "select timestamp, status, temperature, hardware from " + string.Format("{0}.{1}", test_group_name, test_device) + " where time<10");
             res.ShowTableNames();
             while (res.HasNext()) Console.WriteLine(res.Next());
 
