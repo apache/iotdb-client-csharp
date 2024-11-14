@@ -472,14 +472,15 @@ namespace Apache.IoTDB.Samples
             res = await session_pool.ExecuteQueryStatementAsync(
                 "select status, temperature, hardware from " + string.Format("{0}.{1}", test_group_name, test_device) + " where time<10");
             res.ShowTableNames();
-            Console.WriteLine(res.ShowTableNames());
+            var columnNames = new List<string> { "root.TEST_CSHARP_CLIENT_GROUP_97209.TEST_CSHARP_CLIENT_DEVICE.status", "root.TEST_CSHARP_CLIENT_GROUP_97209.TEST_CSHARP_CLIENT_DEVICE.temperature", "root.TEST_CSHARP_CLIENT_GROUP_97209.TEST_CSHARP_CLIENT_DEVICE.hardware" };
+            System.Diagnostics.Debug.Assert(res.ColumnNames.SequenceEqual(list2), "The columnnNames are not equal");
             while (res.HasNext()) Console.WriteLine(res.Next());
 
             await res.Close();
+            Console.WriteLine("SELECT sql Passed");
             status = await session_pool.DeleteStorageGroupAsync(test_group_name);
             System.Diagnostics.Debug.Assert(status == 0);
             await session_pool.Close();
-            Console.WriteLine("SELECT sql Passed");
         }
         public async Task TestRawDataQuery()
         {
