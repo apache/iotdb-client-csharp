@@ -472,6 +472,7 @@ namespace Apache.IoTDB.Samples
             res = await session_pool.ExecuteQueryStatementAsync(
                 "select status, temperature, hardware from " + string.Format("{0}.{1}", test_group_name, test_device) + " where time<10");
             res.ShowTableNames();
+            Console.WriteLine(res.ShowTableNames());
             while (res.HasNext()) Console.WriteLine(res.Next());
 
             await res.Close();
