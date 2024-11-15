@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Apache.IoTDB.Data;
@@ -473,7 +474,7 @@ namespace Apache.IoTDB.Samples
                 "select status, temperature, hardware from " + string.Format("{0}.{1}", test_group_name, test_device) + " where time<10");
             res.ShowTableNames();
             var columnNames = new List<string> { "root.TEST_CSHARP_CLIENT_GROUP_97209.TEST_CSHARP_CLIENT_DEVICE.status", "root.TEST_CSHARP_CLIENT_GROUP_97209.TEST_CSHARP_CLIENT_DEVICE.temperature", "root.TEST_CSHARP_CLIENT_GROUP_97209.TEST_CSHARP_CLIENT_DEVICE.hardware" };
-            Console.WriteLine(res.ColumnNames);
+            System.Diagnostics.Debug.Assert(columnNames.SequenceEqual(res.ColumnNames), "The columnnNames are not equal");
             while (res.HasNext()) Console.WriteLine(res.Next());
 
             await res.Close();
