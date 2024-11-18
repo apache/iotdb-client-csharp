@@ -295,6 +295,22 @@ namespace Apache.IoTDB.Samples
             Console.WriteLine(res_count + " " + fetch_size * processed_size);
             System.Diagnostics.Debug.Assert(res_count == record_count);
             System.Diagnostics.Debug.Assert(status == 0);
+
+            string sql = string.Format("select {0}, {1}, {2} from ", test_measurements[3], test_measurements[1], test_measurements[2]) + string.Format("{0}.{1}", test_group_name, test_device);
+            res = await session_pool.ExecuteQueryStatementAsync(sql);
+            res.ShowTableNames();
+            RowRecord row = null;
+            while (res.HasNext())
+            {
+                row = res.Next();
+                break;
+            }
+            
+            Console.WriteLine($"{test_group_name}.{test_device}.{row.Measurements[0]}  {test_measurements[3]}");
+            System.Diagnostics.Debug.Assert($"{test_group_name}.{test_device}.{test_measurements[3]}" == row.Measurements[0]);
+            System.Diagnostics.Debug.Assert($"{test_group_name}.{test_device}.{test_measurements[1]}" == row.Measurements[1]);
+            System.Diagnostics.Debug.Assert($"{test_group_name}.{test_device}.{test_measurements[2]}" == row.Measurements[2]);
+            
             status = await session_pool.DeleteStorageGroupAsync(test_group_name);
             System.Diagnostics.Debug.Assert(status == 0);
             await session_pool.Close();
