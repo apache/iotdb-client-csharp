@@ -78,7 +78,7 @@ namespace Apache.IoTDB.DataStructure
             _columnTypeLst = resp.DataTypeList;
 
             int deduplicateIdx = 0;
-            Dictionary<string, int> columnToFirstIndexMap = [];
+            Dictionary<string, int> columnToFirstIndexMap = new Dictionary<string, int>();
             for(var i = 0; i < _columnSize; i++){
                 var columnName = _columnNames[i];
                 if(_columnNameIndexMap.ContainsKey(columnName)){
