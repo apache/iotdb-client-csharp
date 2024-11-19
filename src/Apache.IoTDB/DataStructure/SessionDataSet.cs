@@ -63,6 +63,7 @@ namespace Apache.IoTDB.DataStructure
             _currentBitmap = new byte[_columnSize];
             _columnNames = new List<string>();
             _timeBuffer = new ByteBuffer(_queryDataset.Time);
+            // column name -> column location
             _columnNameIndexMap = new Dictionary<string, int>();
             _columnTypeLst = new List<string>();
             _duplicateLocation = new Dictionary<int, int>();
@@ -72,43 +73,31 @@ namespace Apache.IoTDB.DataStructure
             _hasCatchedResult = false;
             _rowIndex = 0;
             RowCount = _queryDataset.Time.Length / sizeof(long);
-            if (resp.ColumnNameIndexMap != null)
-            {
-                for (var index = 0; index < resp.Columns.Count; index++)
-                {
-                    _columnNames.Add("");
-                    _columnTypeLst.Add("");
-                }
 
-                for (var index = 0; index < resp.Columns.Count; index++)
-                {
-                    var name = resp.Columns[index];
-                    _columnNames[resp.ColumnNameIndexMap[name]] = name;
-                    _columnTypeLst[resp.ColumnNameIndexMap[name]] = resp.DataTypeList[index];
+            _columnNames = resp.Columns;
+            _columnTypeLst = resp.DataTypeList;
+
+            int deduplicateIdx = 0;
+            Dictionary<string, int> columnToFirstIndexMap = new Dictionary<string, int>();
+            for(var i = 0; i < _columnSize; i++){
+                var columnName = _columnNames[i];
+                if(_columnNameIndexMap.ContainsKey(columnName)){
+                    _duplicateLocation[i] = columnToFirstIndexMap[columnName];
+                } else {
+                    columnToFirstIndexMap[columnName] = i;
+                    if(resp.ColumnNameIndexMap != null) {
+                        int valueIndex = resp.ColumnNameIndexMap[columnName];
+                        _columnNameIndexMap[columnName] = valueIndex;
+                        _valueBufferLst.Add(new ByteBuffer(_queryDataset.ValueList[valueIndex]));
+                        _bitmapBufferLst.Add(new ByteBuffer(_queryDataset.BitmapList[valueIndex]));
+                    } else {
+                        _columnNameIndexMap[columnName] = deduplicateIdx;
+                        _valueBufferLst.Add(new ByteBuffer(_queryDataset.ValueList[deduplicateIdx]));
+                        _bitmapBufferLst.Add(new ByteBuffer(_queryDataset.BitmapList[deduplicateIdx]));
+                    }
+                    deduplicateIdx++;
                 }
             }
-            else
-            {
-                _columnNames = resp.Columns;
-                _columnTypeLst = resp.DataTypeList;
-            }
-
-            for (int index = 0; index < _columnNames.Count; index++)
-            {
-                var columnName = _columnNames[index];
-                if (_columnNameIndexMap.ContainsKey(columnName))
-                {
-                    _duplicateLocation[index] = _columnNameIndexMap[columnName];
-                }
-                else
-                {
-                    _columnNameIndexMap[columnName] = index;
-                }
-
-                _valueBufferLst.Add(new ByteBuffer(_queryDataset.ValueList[index]));
-                _bitmapBufferLst.Add(new ByteBuffer(_queryDataset.BitmapList[index]));
-            }
-
         }
         public List<string> ColumnNames => _columnNames;
 
@@ -282,8 +271,10 @@ namespace Apache.IoTDB.DataStructure
                     _bitmapBufferLst = new List<ByteBuffer>();
                     for (int index = 0; index < _queryDataset.ValueList.Count; index++)
                     {
-                        _valueBufferLst.Add(new ByteBuffer(_queryDataset.ValueList[index]));
-                        _bitmapBufferLst.Add(new ByteBuffer(_queryDataset.BitmapList[index]));
+                        string columnName = _columnNames[index];
+                        int valueIndex = _columnNameIndexMap[columnName];
+                        _valueBufferLst.Add(new ByteBuffer(_queryDataset.ValueList[valueIndex]));
+                        _bitmapBufferLst.Add(new ByteBuffer(_queryDataset.BitmapList[valueIndex]));
                     }
 
                     // reset row index
