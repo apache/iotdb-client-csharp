@@ -169,6 +169,12 @@ namespace Apache.IoTDB.DataStructure
                             case string _:
                                 DataTypes.Add(TSDataType.TEXT);
                                 break;
+                            case byte[] _:
+                                DataTypes.Add(TSDataType.BLOB);
+                                break;
+                            case DateTime _:
+                                DataTypes.Add(TSDataType.DATE);
+                                break;
                             default:
                                 throw new Exception(
                                     $"Input error. Data type {_values[j][i].GetType().Name} is not supported.",
@@ -229,9 +235,11 @@ namespace Apache.IoTDB.DataStructure
                         estimateSize += 1;
                         break;
                     case TSDataType.INT32:
+                    case TSDataType.DATE:
                         estimateSize += 4;
                         break;
                     case TSDataType.INT64:
+                    case TSDataType.TIMESTAMP:
                         estimateSize += 8;
                         break;
                     case TSDataType.FLOAT:
@@ -241,6 +249,8 @@ namespace Apache.IoTDB.DataStructure
                         estimateSize += 8;
                         break;
                     case TSDataType.TEXT:
+                    case TSDataType.BLOB:
+                    case TSDataType.STRING:
                         estimateSize += 8;
                         break;
                     default:
@@ -305,6 +315,7 @@ namespace Apache.IoTDB.DataStructure
                             break;
                         }
                     case TSDataType.INT64:
+                    case TSDataType.TIMESTAMP:
                         {
                             for (int j = 0; j < RowNumber; j++)
                             {
@@ -335,6 +346,7 @@ namespace Apache.IoTDB.DataStructure
                             break;
                         }
                     case TSDataType.TEXT:
+                    case TSDataType.STRING:
                         {
                             for (int j = 0; j < RowNumber; j++)
                             {
@@ -342,6 +354,24 @@ namespace Apache.IoTDB.DataStructure
                                 buffer.AddStr(value != null ? (string)value : string.Empty);
                             }
 
+                            break;
+                        }
+                    case TSDataType.DATE:
+                        {
+                            for (int j = 0; j < RowNumber; j++)
+                            {
+                                var value = _values[j][i];
+                                buffer.AddInt(value != null ? Utils.ParseDateToInt((DateTime)value) : int.MinValue);
+                            }
+                            break;
+                        }
+                    case TSDataType.BLOB:
+                        {
+                            for (int j = 0; j < RowNumber; j++)
+                            {
+                                var value = _values[j][i];
+                                buffer.AddBinary(value != null ? (byte[])value : []);
+                            }
                             break;
                         }
                     default:

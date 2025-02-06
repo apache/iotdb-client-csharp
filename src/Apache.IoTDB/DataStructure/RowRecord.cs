@@ -29,22 +29,87 @@ namespace Apache.IoTDB.DataStructure
         public long Timestamps { get; }
         public List<object> Values { get; }
         public List<string> Measurements { get; }
+        public List<TSDataType> DataTypes { get; }
 
+        public RowRecord(DateTime timestamp, List<object> values, List<string> measurements, List<string> dataTypes)
+            :this(new DateTimeOffset(timestamp.ToUniversalTime()).ToUnixTimeMilliseconds(), values,measurements, dataTypes)
+        {
+        }
+
+        public RowRecord(DateTime timestamp, List<object> values, List<string> measurements, List<TSDataType> dataTypes)
+            :this(new DateTimeOffset(timestamp.ToUniversalTime()).ToUnixTimeMilliseconds(), values,measurements, dataTypes)
+        {
+        }
+
+        [Obsolete("Use the constructor with List<TSDataType> instead")]
         public RowRecord(DateTime timestamp, List<object> values, List<string> measurements)
             :this(new DateTimeOffset(timestamp.ToUniversalTime()).ToUnixTimeMilliseconds(), values,measurements)
         {
         }
+        [Obsolete("Use the constructor with List<TSDataType> instead")]
         public RowRecord(long timestamps, List<object> values, List<string> measurements)
         {
             Timestamps = timestamps;
             Values = values;
             Measurements = measurements;
         }
+        public RowRecord(long timestamps, List<object> values, List<string> measurements, List<string> dataTypes){
+            Timestamps = timestamps;
+            Values = values;
+            Measurements = measurements;
+            DataTypes = new List<TSDataType>();
+            foreach (var dataType in dataTypes)
+            {
+                switch (dataType)
+                {
+                    case "BOOLEAN":
+                        DataTypes.Add(TSDataType.BOOLEAN);
+                        break;
+                    case "INT32":
+                        DataTypes.Add(TSDataType.INT32);
+                        break;
+                    case "INT64":
+                        DataTypes.Add(TSDataType.INT64);
+                        break;
+                    case "FLOAT":
+                        DataTypes.Add(TSDataType.FLOAT);
+                        break;
+                    case "DOUBLE":
+                        DataTypes.Add(TSDataType.DOUBLE);
+                        break;
+                    case "TEXT":
+                        DataTypes.Add(TSDataType.TEXT);
+                        break;
+                    case "TIMESTAMP":
+                        DataTypes.Add(TSDataType.TIMESTAMP);
+                        break;
+                    case "BLOB":
+                        DataTypes.Add(TSDataType.BLOB);
+                        break;
+                    case "DATE":
+                        DataTypes.Add(TSDataType.DATE);
+                        break;
+                    case "STRING":
+                        DataTypes.Add(TSDataType.STRING);
+                        break;
+                    default:
+                        throw new TException($"Unsupported data type:{dataType}", null);
+                }
+            }
+        }
+        public RowRecord(long timestamps, List<object> values, List<string> measurements, List<TSDataType> dataTypes)
+        {
+            Timestamps = timestamps;
+            Values = values;
+            Measurements = measurements;
+            DataTypes = dataTypes;
+        }
 
-        public void Append(string measurement, object value)
+        public void Append(string measurement, object value, TSDataType dataType)
         {
             Values.Add(value);
             Measurements.Add(measurement);
+            DataTypes.Add(dataType);
         }
 
         public DateTime GetDateTime()
@@ -67,70 +132,19 @@ namespace Apache.IoTDB.DataStructure
             foreach (var rowValue in Values)
             {
                 str += "\t\t";
-                str += rowValue.ToString();
+                if(rowValue is byte[] bytes)
+                {
+                  str += Utils.ByteArrayToHexString(bytes);
+                }
+                else
+                {
+                  str += rowValue.ToString();
+                }
             }
 
             return str;
         }
-
-        public List<int> GetDataTypes()
-        {
-            var dataTypeValues = new List<int>();
-            
-            foreach (var valueType in Values.Select(value => value))
-            {
-                switch (valueType)
-                {
-                    case bool _:
-                        dataTypeValues.Add((int) TSDataType.BOOLEAN);
-                        break;
-                    case int _:
-                        dataTypeValues.Add((int) TSDataType.INT32);
-                        break;
-                    case long _:
-                        dataTypeValues.Add((int) TSDataType.INT64);
-                        break;
-                    case float _:
-                        dataTypeValues.Add((int) TSDataType.FLOAT);
-                        break;
-                    case double _:
-                        dataTypeValues.Add((int) TSDataType.DOUBLE);
-                        break;
-                    case string _:
-                        dataTypeValues.Add((int) TSDataType.TEXT);
-                        break;
-                }
-            }
-
-            return dataTypeValues;
-        }
-        public TypeCode GetTypeCode(int index)
-        {
-            TypeCode tSDataType = TypeCode.Empty;
-            var valueType = Values[index];
-            switch (valueType)
-            {
-                case bool _:
-                    tSDataType = TypeCode.Boolean;
-                    break;
-                case int _:
-                    tSDataType = TypeCode.Int32;
-                    break;
-                case long _:
-                    tSDataType = TypeCode.Int64;
-                    break;
-                case float _:
-                    tSDataType = TypeCode.Single;
-                    break;
-                case double _:
-                    tSDataType = TypeCode.Double;
-                    break;
-                case string _:
-                    tSDataType = TypeCode.String;
-                    break;
-            }
-            return tSDataType;
-        }
+        
         public Type GetCrlType(int index)
         {
             Type tSDataType =  typeof(object);
@@ -155,77 +169,97 @@ namespace Apache.IoTDB.DataStructure
                 case string _:
                     tSDataType = typeof(string);
                     break;
-            }
-            return tSDataType;
-        }
-
-        public TSDataType GetDataType(int index)
-        {
-            TSDataType tSDataType = TSDataType.NONE;
-            var valueType = Values[index];
-            switch (valueType)
-            {
-                case bool _:
-                    tSDataType = TSDataType.BOOLEAN;
+                case byte[] _:
+                    tSDataType = typeof(byte[]);
                     break;
-                case int _:
-                    tSDataType = TSDataType.INT32;
-                    break;
-                case long _:
-                    tSDataType = TSDataType.INT64;
-                    break;
-                case float _:
-                    tSDataType = TSDataType.FLOAT;
-                    break;
-                case double _:
-                    tSDataType = TSDataType.DOUBLE;
-                    break;
-                case string _:
-                    tSDataType = TSDataType.TEXT;
+                case DateTime _:
+                    tSDataType = typeof(DateTime);
                     break;
             }
             return tSDataType;
         }
-
-
         public byte[] ToBytes()
         {
             var buffer = new ByteBuffer(Values.Count * 8);
-            
-            foreach (var value in Values)
+
+            for (int i = 0; i < Values.Count; i++)
             {
-                switch (value)
+                var value = Values[i];
+                var dataType = DataTypes != null && DataTypes.Count == Values.Count ? DataTypes[i] : GetTSDataType(value);
+
+                switch (dataType)
                 {
-                    case bool b:
+                    case TSDataType.BOOLEAN:
                         buffer.AddByte((byte) TSDataType.BOOLEAN);
-                        buffer.AddBool(b);
+                        buffer.AddBool((bool)value);
                         break;
-                    case int i:
+                    case TSDataType.INT32:
                         buffer.AddByte((byte) TSDataType.INT32);
-                        buffer.AddInt(i);
+                        buffer.AddInt((int)value);
                         break;
-                    case long l:
+                    case TSDataType.INT64:
                         buffer.AddByte((byte) TSDataType.INT64);
-                        buffer.AddLong(l);
+                        buffer.AddLong((long)value);
                         break;
-                    case double d:
-                        buffer.AddByte((byte) TSDataType.DOUBLE);
-                        buffer.AddDouble(d);
-                        break;
-                    case float f:
+                    case TSDataType.FLOAT:
                         buffer.AddByte((byte) TSDataType.FLOAT);
-                        buffer.AddFloat(f);
+                        buffer.AddFloat((float)value);
                         break;
-                    case string s:
+                    case TSDataType.DOUBLE:
+                        buffer.AddByte((byte) TSDataType.DOUBLE);
+                        buffer.AddDouble((double)value);
+                        break;
+                    case TSDataType.TEXT:
                         buffer.AddByte((byte) TSDataType.TEXT);
-                        buffer.AddStr(s);
+                        buffer.AddStr((string)value);
+                        break;
+                    case TSDataType.TIMESTAMP:
+                        buffer.AddByte((byte) TSDataType.TIMESTAMP);
+                        buffer.AddLong((long)value);
+                        break;
+                    case TSDataType.BLOB:
+                        buffer.AddByte((byte) TSDataType.BLOB);
+                        buffer.AddBinary((byte[])value);
+                        break;
+                    case TSDataType.DATE:
+                        buffer.AddByte((byte) TSDataType.DATE);
+                        buffer.AddInt(Utils.ParseDateToInt((DateTime)value));
+                        break;
+                    case TSDataType.STRING:
+                        buffer.AddByte((byte) TSDataType.STRING);
+                        buffer.AddStr((string)value);
                         break;
                     default:
-                        throw new TException($"Unsupported data type:{value.GetType()}", null);
+                        throw new TException($"Unsupported data type:{dataType}", null);
                 }
             }
 
-            return buffer.GetBuffer();;
+            return buffer.GetBuffer();
+        }
+
+        private TSDataType GetTSDataType(object value)
+        {
+            switch (value)
+            {
+                case bool _:
+                    return TSDataType.BOOLEAN;
+                case int _:
+                    return TSDataType.INT32;
+                case long _:
+                    return TSDataType.INT64;
+                case float _:
+                    return TSDataType.FLOAT;
+                case double _:
+                    return TSDataType.DOUBLE;
+                case string _:
+                    return TSDataType.TEXT;
+                case byte[] _:
+                    return TSDataType.BLOB;
+                case DateTime _:
+                    return TSDataType.DATE;
+                default:
+                    throw new TException($"Unsupported data type:{value.GetType()}", null);
+            }
         }
     }
 }

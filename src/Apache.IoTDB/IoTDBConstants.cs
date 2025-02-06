@@ -21,21 +21,24 @@ namespace Apache.IoTDB
 {
     public enum TSDataType
     {
-        BOOLEAN,
-        INT32,
-        INT64,
-        FLOAT,
-        DOUBLE,
-        TEXT,
-
-        // default value must be 0
-        NONE
+        BOOLEAN = 0,
+        INT32 = 1,
+        INT64 = 2,
+        FLOAT = 3,
+        DOUBLE = 4,
+        TEXT = 5,
+        // unused
+        NONE = 7,
+        TIMESTAMP = 8,
+        DATE = 9,
+        BLOB = 10,
+        STRING = 11,
     }
 
     public enum TSEncoding
     {
         PLAIN,
-        PLAIN_DICTIONARY,
+        DICTIONARY,
         RLE,
         DIFF,
         TS_2DIFF,
@@ -43,21 +46,21 @@ namespace Apache.IoTDB
         GORILLA_V1,
         REGULAR,
         GORILLA,
-
-        // default value must be 0
-        NONE
+        ZIGZAG,
+        FREQ,
+        CHIMP,
+        SPRINTZ,
+        RLBE
     }
 
     public enum Compressor
     {
-        UNCOMPRESSED,
-        SNAPPY,
-        GZIP,
-        LZO,
-        SDT,
-        PAA,
-        PLA,
-        LZ4
+        UNCOMPRESSED = 0,
+        SNAPPY = 1,
+        GZIP = 2,
+        LZ4 = 7,
+        ZSTD = 8,
+        LZMA2 = 9
     }
     public enum TemplateQueryType
     {

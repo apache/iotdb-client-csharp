@@ -56,7 +56,7 @@ namespace Apache.IoTDB.Samples
             }
             status = await session_pool.DropSchemaTemplateAsync(test_template_name);
             System.Diagnostics.Debug.Assert(status == 0);
-            status = await session_pool.DeleteStorageGroupAsync(test_group_name);
+            status = await session_pool.DeleteDatabaseAsync(test_database_name);
             await session_pool.Close();
             Console.WriteLine("TestCreateAndDropSchemaTemplate Passed!");
         }
@@ -69,8 +69,8 @@ namespace Apache.IoTDB.Samples
 
             System.Diagnostics.Debug.Assert(session_pool.IsOpen());
             var status = 0;
-            await session_pool.DeleteStorageGroupAsync(test_group_name);
-            await session_pool.UnsetSchemaTemplateAsync(string.Format("{0}.{1}", test_group_name, test_device), "template");
+            await session_pool.DeleteDatabaseAsync(test_database_name);
+            await session_pool.UnsetSchemaTemplateAsync(string.Format("{0}.{1}", test_database_name, test_device), "template");
             await session_pool.DropSchemaTemplateAsync(test_template_name);
 
             MeasurementNode node1 = new MeasurementNode(test_measurements[1], TSDataType.INT32, TSEncoding.PLAIN, Compressor.SNAPPY);
@@ -86,16 +86,16 @@ namespace Apache.IoTDB.Samples
 
             status = await session_pool.CreateSchemaTemplateAsync(template);
             System.Diagnostics.Debug.Assert(status == 0);
-            status = await session_pool.SetSchemaTemplateAsync(test_template_name, string.Format("{0}.{1}", test_group_name, test_device));
+            status = await session_pool.SetSchemaTemplateAsync(test_template_name, string.Format("{0}.{1}", test_database_name, test_device));
             var paths = await session_pool.ShowPathsTemplateSetOnAsync(test_template_name);
             foreach (var p in paths)
             {
                 Console.WriteLine("path :\t{0}", p);
             }
-            status = await session_pool.UnsetSchemaTemplateAsync(string.Format("{0}.{1}", test_group_name, test_device), test_template_name);
+            status = await session_pool.UnsetSchemaTemplateAsync(string.Format("{0}.{1}", test_database_name, test_device), test_template_name);
             status = await session_pool.DropSchemaTemplateAsync(test_template_name);
             System.Diagnostics.Debug.Assert(status == 0);
-            status = await session_pool.DeleteStorageGroupAsync(test_group_name);
+            status = await session_pool.DeleteDatabaseAsync(test_database_name);
             await session_pool.Close();
             Console.WriteLine("TestSetAndUnsetSchemaTemplate Passed!");
         }

@@ -170,7 +170,11 @@ namespace Apache.IoTDB.DataStructure
                 "DOUBLE" => TSDataType.DOUBLE,
                 "TEXT" => TSDataType.TEXT,
                 "NULLTYPE" => TSDataType.NONE,
-                _ => TSDataType.TEXT
+                "TIMESTAMP" => TSDataType.TIMESTAMP,
+                "DATE" => TSDataType.DATE,
+                "BLOB" => TSDataType.BLOB,
+                "STRING" => TSDataType.STRING,
+                _ => TSDataType.STRING
             };
         }
 
@@ -207,9 +211,14 @@ namespace Apache.IoTDB.DataStructure
                                 localField = columnValueBuffer.GetBool();
                                 break;
                             case TSDataType.INT32:
+                            // case TSDataType.DATE:
                                 localField = columnValueBuffer.GetInt();
                                 break;
+                            case TSDataType.DATE:
+                                localField = Utils.ParseIntToDate(columnValueBuffer.GetInt());
+                                break;
                             case TSDataType.INT64:
+                            case TSDataType.TIMESTAMP:
                                 localField = columnValueBuffer.GetLong();
                                 break;
                             case TSDataType.FLOAT:
@@ -219,8 +228,14 @@ namespace Apache.IoTDB.DataStructure
                                 localField = columnValueBuffer.GetDouble();
                                 break;
                             case TSDataType.TEXT:
+                            case TSDataType.STRING:
+                            // case TSDataType.BLOB:
                                 localField = columnValueBuffer.GetStr();
                                 break;
+                            case TSDataType.BLOB:
+                                localField = columnValueBuffer.GetBinary();
+                                break;
+                            // TODO
                             default:
                                 string err_msg = "value format not supported";
                                 throw new TException(err_msg, null);

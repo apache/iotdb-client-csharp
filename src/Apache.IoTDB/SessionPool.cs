@@ -453,6 +453,26 @@ namespace Apache.IoTDB
                 throw;
             }
         }
+
+        public async Task<int> CreateDatabase(string dbName)
+        {
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
+                {
+                    var status = await client.ServiceClient.setStorageGroupAsync(client.SessionId, dbName);
+
+                    if (_debugMode)
+                    {
+                        _logger.LogInformation("create database {0} successfully, server message is {1}", dbName, status.Message);
+                    }
+
+                    return _utilFunctions.VerifySuccess(status);
+                },
+                errMsg: "Error occurs when creating database"
+            );
+        }
+
+        [Obsolete("This method is deprecated, please use createDatabase instead.")]
         public async Task<int> SetStorageGroup(string groupName)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -530,6 +550,24 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when creating aligned time series"
             );
         }
+        public async Task<int> DeleteDatabaseAsync(string dbName)
+        {
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
+                {
+                    var status = await client.ServiceClient.deleteStorageGroupsAsync(client.SessionId, new List<string> { dbName });
+
+                    if (_debugMode)
+                    {
+                        _logger.LogInformation("delete database {0} successfully, server message is {1}", dbName, status.Message);
+                    }
+
+                    return _utilFunctions.VerifySuccess(status);
+                },
+                errMsg: "Error occurs when deleting database"
+            );
+        }
+        [Obsolete("This method is deprecated, please use DeleteDatabaseAsync instead.")]
         public async Task<int> DeleteStorageGroupAsync(string groupName)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -547,6 +585,24 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when deleting storage group"
             );
         }
+        public async Task<int> DeleteDatabasesAsync(List<string> dbNames)
+        {
+            return await ExecuteClientOperationAsync<int>(
+                async client =>
+                {
+                    var status = await client.ServiceClient.deleteStorageGroupsAsync(client.SessionId, dbNames);
+
+                    if (_debugMode)
+                    {
+                        _logger.LogInformation("delete database(s) {0} successfully, server message is {1}", dbNames, status.Message);
+                    }
+
+                    return _utilFunctions.VerifySuccess(status);
+                },
+                errMsg: "Error occurs when deleting database(s)"
+            );
+        }
+        [Obsolete("This method is deprecated, please use DeleteDatabasesAsync instead.")]
         public async Task<int> DeleteStorageGroupsAsync(List<string> groupNames)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1325,7 +1381,7 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when executing last data query"
             );
         }
-
+        [Obsolete("This method is obsolete. Use SQL instead.", false)]
         public async Task<int> CreateSchemaTemplateAsync(Template template)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1345,6 +1401,8 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when creating schema template"
             );
         }
+
+        [Obsolete("This method is obsolete. Use SQL instead.", false)]
         public async Task<int> DropSchemaTemplateAsync(string templateName)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1364,6 +1422,7 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when dropping schema template"
             );
         }
+        [Obsolete("This method is obsolete. Use SQL instead.", false)]
         public async Task<int> SetSchemaTemplateAsync(string templateName, string prefixPath)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1383,6 +1442,7 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when setting schema template"
             );
         }
+        [Obsolete("This method is obsolete. Use SQL instead.", false)]
         public async Task<int> UnsetSchemaTemplateAsync(string prefixPath, string templateName)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1402,6 +1462,7 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when unsetting schema template"
             );
         }
+        [Obsolete("This method is obsolete. Use SQL instead.", false)]
         public async Task<int> DeleteNodeInTemplateAsync(string templateName, string path)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1421,6 +1482,7 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when deleting node in template"
             );
         }
+        [Obsolete("This method is obsolete. Use SQL instead.", false)]
         public async Task<int> CountMeasurementsInTemplateAsync(string name)
         {
             return await ExecuteClientOperationAsync<int>(
@@ -1445,6 +1507,7 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when counting measurements in template"
             );
         }
+        [Obsolete("This method is obsolete. Use SQL instead.", false)]
         public async Task<bool> IsMeasurementInTemplateAsync(string templateName, string path)
         {
             return await ExecuteClientOperationAsync<bool>(
@@ -1470,6 +1533,7 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when checking measurement in template"
             );
         }
+        [Obsolete("This method is obsolete. Use SQL instead.", false)]
         public async Task<bool> IsPathExistInTemplateAsync(string templateName, string path)
         {
             return await ExecuteClientOperationAsync<bool>(
@@ -1495,6 +1559,7 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when checking path exist in template"
             );
         }
+        [Obsolete("This method is obsolete. Use SQL instead.", false)]
         public async Task<List<string>> ShowMeasurementsInTemplateAsync(string templateName, string pattern = "")
         {
             return await ExecuteClientOperationAsync<List<string>>(
@@ -1520,7 +1585,7 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when showing measurements in template"
             );
         }
-
+        [Obsolete("This method is obsolete. Use SQL instead.", false)]
         public async Task<List<string>> ShowAllTemplatesAsync()
         {
             return await ExecuteClientOperationAsync<List<string>>(
@@ -1546,6 +1611,7 @@ namespace Apache.IoTDB
             );
         }
 
+        [Obsolete("This method is obsolete. Use SQL instead.", false)]
         public async Task<List<string>> ShowPathsTemplateSetOnAsync(string templateName)
         {
             return await ExecuteClientOperationAsync<List<string>>(
@@ -1570,6 +1636,7 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when getting paths template set on"
             );
         }
+        [Obsolete("This method is obsolete. Use SQL instead.", false)]
         public async Task<List<string>> ShowPathsTemplateUsingOnAsync(string templateName)
         {
             return await ExecuteClientOperationAsync<List<string>>(
