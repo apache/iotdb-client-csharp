@@ -46,6 +46,14 @@ public partial class TSCancelOperationReq : TBase
     this.QueryId = queryId;
   }
 
+  public TSCancelOperationReq DeepCopy()
+  {
+    var tmp83 = new TSCancelOperationReq();
+    tmp83.SessionId = this.SessionId;
+    tmp83.QueryId = this.QueryId;
+    return tmp83;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

@@ -79,6 +79,23 @@ public partial class TSCloseOperationReq : TBase
     this.SessionId = sessionId;
   }
 
+  public TSCloseOperationReq DeepCopy()
+  {
+    var tmp85 = new TSCloseOperationReq();
+    tmp85.SessionId = this.SessionId;
+    if(__isset.queryId)
+    {
+      tmp85.QueryId = this.QueryId;
+    }
+    tmp85.__isset.queryId = this.__isset.queryId;
+    if(__isset.statementId)
+    {
+      tmp85.StatementId = this.StatementId;
+    }
+    tmp85.__isset.statementId = this.__isset.statementId;
+    return tmp85;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

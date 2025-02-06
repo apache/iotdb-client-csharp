@@ -43,6 +43,13 @@ public partial class TSCloseSessionReq : TBase
     this.SessionId = sessionId;
   }
 
+  public TSCloseSessionReq DeepCopy()
+  {
+    var tmp71 = new TSCloseSessionReq();
+    tmp71.SessionId = this.SessionId;
+    return tmp71;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

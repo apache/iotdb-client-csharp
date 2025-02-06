@@ -109,6 +109,48 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
     this.Compressors = compressors;
   }
 
+  public TSCreateAlignedTimeseriesReq DeepCopy()
+  {
+    var tmp278 = new TSCreateAlignedTimeseriesReq();
+    tmp278.SessionId = this.SessionId;
+    if((PrefixPath != null))
+    {
+      tmp278.PrefixPath = this.PrefixPath;
+    }
+    if((Measurements != null))
+    {
+      tmp278.Measurements = this.Measurements.DeepCopy();
+    }
+    if((DataTypes != null))
+    {
+      tmp278.DataTypes = this.DataTypes.DeepCopy();
+    }
+    if((Encodings != null))
+    {
+      tmp278.Encodings = this.Encodings.DeepCopy();
+    }
+    if((Compressors != null))
+    {
+      tmp278.Compressors = this.Compressors.DeepCopy();
+    }
+    if((MeasurementAlias != null) && __isset.measurementAlias)
+    {
+      tmp278.MeasurementAlias = this.MeasurementAlias.DeepCopy();
+    }
+    tmp278.__isset.measurementAlias = this.__isset.measurementAlias;
+    if((TagsList != null) && __isset.tagsList)
+    {
+      tmp278.TagsList = this.TagsList.DeepCopy();
+    }
+    tmp278.__isset.tagsList = this.__isset.tagsList;
+    if((AttributesList != null) && __isset.attributesList)
+    {
+      tmp278.AttributesList = this.AttributesList.DeepCopy();
+    }
+    tmp278.__isset.attributesList = this.__isset.attributesList;
+    return tmp278;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -158,13 +200,13 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list250 = await iprot.ReadListBeginAsync(cancellationToken);
-                Measurements = new List<string>(_list250.Count);
-                for(int _i251 = 0; _i251 < _list250.Count; ++_i251)
+                TList _list279 = await iprot.ReadListBeginAsync(cancellationToken);
+                Measurements = new List<string>(_list279.Count);
+                for(int _i280 = 0; _i280 < _list279.Count; ++_i280)
                 {
-                  string _elem252;
-                  _elem252 = await iprot.ReadStringAsync(cancellationToken);
-                  Measurements.Add(_elem252);
+                  string _elem281;
+                  _elem281 = await iprot.ReadStringAsync(cancellationToken);
+                  Measurements.Add(_elem281);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -179,13 +221,13 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list253 = await iprot.ReadListBeginAsync(cancellationToken);
-                DataTypes = new List<int>(_list253.Count);
-                for(int _i254 = 0; _i254 < _list253.Count; ++_i254)
+                TList _list282 = await iprot.ReadListBeginAsync(cancellationToken);
+                DataTypes = new List<int>(_list282.Count);
+                for(int _i283 = 0; _i283 < _list282.Count; ++_i283)
                 {
-                  int _elem255;
-                  _elem255 = await iprot.ReadI32Async(cancellationToken);
-                  DataTypes.Add(_elem255);
+                  int _elem284;
+                  _elem284 = await iprot.ReadI32Async(cancellationToken);
+                  DataTypes.Add(_elem284);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -200,13 +242,13 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list256 = await iprot.ReadListBeginAsync(cancellationToken);
-                Encodings = new List<int>(_list256.Count);
-                for(int _i257 = 0; _i257 < _list256.Count; ++_i257)
+                TList _list285 = await iprot.ReadListBeginAsync(cancellationToken);
+                Encodings = new List<int>(_list285.Count);
+                for(int _i286 = 0; _i286 < _list285.Count; ++_i286)
                 {
-                  int _elem258;
-                  _elem258 = await iprot.ReadI32Async(cancellationToken);
-                  Encodings.Add(_elem258);
+                  int _elem287;
+                  _elem287 = await iprot.ReadI32Async(cancellationToken);
+                  Encodings.Add(_elem287);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -221,13 +263,13 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list259 = await iprot.ReadListBeginAsync(cancellationToken);
-                Compressors = new List<int>(_list259.Count);
-                for(int _i260 = 0; _i260 < _list259.Count; ++_i260)
+                TList _list288 = await iprot.ReadListBeginAsync(cancellationToken);
+                Compressors = new List<int>(_list288.Count);
+                for(int _i289 = 0; _i289 < _list288.Count; ++_i289)
                 {
-                  int _elem261;
-                  _elem261 = await iprot.ReadI32Async(cancellationToken);
-                  Compressors.Add(_elem261);
+                  int _elem290;
+                  _elem290 = await iprot.ReadI32Async(cancellationToken);
+                  Compressors.Add(_elem290);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -242,13 +284,13 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list262 = await iprot.ReadListBeginAsync(cancellationToken);
-                MeasurementAlias = new List<string>(_list262.Count);
-                for(int _i263 = 0; _i263 < _list262.Count; ++_i263)
+                TList _list291 = await iprot.ReadListBeginAsync(cancellationToken);
+                MeasurementAlias = new List<string>(_list291.Count);
+                for(int _i292 = 0; _i292 < _list291.Count; ++_i292)
                 {
-                  string _elem264;
-                  _elem264 = await iprot.ReadStringAsync(cancellationToken);
-                  MeasurementAlias.Add(_elem264);
+                  string _elem293;
+                  _elem293 = await iprot.ReadStringAsync(cancellationToken);
+                  MeasurementAlias.Add(_elem293);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -262,25 +304,25 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list265 = await iprot.ReadListBeginAsync(cancellationToken);
-                TagsList = new List<Dictionary<string, string>>(_list265.Count);
-                for(int _i266 = 0; _i266 < _list265.Count; ++_i266)
+                TList _list294 = await iprot.ReadListBeginAsync(cancellationToken);
+                TagsList = new List<Dictionary<string, string>>(_list294.Count);
+                for(int _i295 = 0; _i295 < _list294.Count; ++_i295)
                 {
-                  Dictionary<string, string> _elem267;
+                  Dictionary<string, string> _elem296;
                   {
-                    TMap _map268 = await iprot.ReadMapBeginAsync(cancellationToken);
-                    _elem267 = new Dictionary<string, string>(_map268.Count);
-                    for(int _i269 = 0; _i269 < _map268.Count; ++_i269)
+                    TMap _map297 = await iprot.ReadMapBeginAsync(cancellationToken);
+                    _elem296 = new Dictionary<string, string>(_map297.Count);
+                    for(int _i298 = 0; _i298 < _map297.Count; ++_i298)
                     {
-                      string _key270;
-                      string _val271;
-                      _key270 = await iprot.ReadStringAsync(cancellationToken);
-                      _val271 = await iprot.ReadStringAsync(cancellationToken);
-                      _elem267[_key270] = _val271;
+                      string _key299;
+                      string _val300;
+                      _key299 = await iprot.ReadStringAsync(cancellationToken);
+                      _val300 = await iprot.ReadStringAsync(cancellationToken);
+                      _elem296[_key299] = _val300;
                     }
                     await iprot.ReadMapEndAsync(cancellationToken);
                   }
-                  TagsList.Add(_elem267);
+                  TagsList.Add(_elem296);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -294,25 +336,25 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list272 = await iprot.ReadListBeginAsync(cancellationToken);
-                AttributesList = new List<Dictionary<string, string>>(_list272.Count);
-                for(int _i273 = 0; _i273 < _list272.Count; ++_i273)
+                TList _list301 = await iprot.ReadListBeginAsync(cancellationToken);
+                AttributesList = new List<Dictionary<string, string>>(_list301.Count);
+                for(int _i302 = 0; _i302 < _list301.Count; ++_i302)
                 {
-                  Dictionary<string, string> _elem274;
+                  Dictionary<string, string> _elem303;
                   {
-                    TMap _map275 = await iprot.ReadMapBeginAsync(cancellationToken);
-                    _elem274 = new Dictionary<string, string>(_map275.Count);
-                    for(int _i276 = 0; _i276 < _map275.Count; ++_i276)
+                    TMap _map304 = await iprot.ReadMapBeginAsync(cancellationToken);
+                    _elem303 = new Dictionary<string, string>(_map304.Count);
+                    for(int _i305 = 0; _i305 < _map304.Count; ++_i305)
                     {
-                      string _key277;
-                      string _val278;
-                      _key277 = await iprot.ReadStringAsync(cancellationToken);
-                      _val278 = await iprot.ReadStringAsync(cancellationToken);
-                      _elem274[_key277] = _val278;
+                      string _key306;
+                      string _val307;
+                      _key306 = await iprot.ReadStringAsync(cancellationToken);
+                      _val307 = await iprot.ReadStringAsync(cancellationToken);
+                      _elem303[_key306] = _val307;
                     }
                     await iprot.ReadMapEndAsync(cancellationToken);
                   }
-                  AttributesList.Add(_elem274);
+                  AttributesList.Add(_elem303);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -393,9 +435,9 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Measurements.Count), cancellationToken);
-          foreach (string _iter279 in Measurements)
+          foreach (string _iter308 in Measurements)
           {
-            await oprot.WriteStringAsync(_iter279, cancellationToken);
+            await oprot.WriteStringAsync(_iter308, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -409,9 +451,9 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I32, DataTypes.Count), cancellationToken);
-          foreach (int _iter280 in DataTypes)
+          foreach (int _iter309 in DataTypes)
           {
-            await oprot.WriteI32Async(_iter280, cancellationToken);
+            await oprot.WriteI32Async(_iter309, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -425,9 +467,9 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I32, Encodings.Count), cancellationToken);
-          foreach (int _iter281 in Encodings)
+          foreach (int _iter310 in Encodings)
           {
-            await oprot.WriteI32Async(_iter281, cancellationToken);
+            await oprot.WriteI32Async(_iter310, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -441,9 +483,9 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I32, Compressors.Count), cancellationToken);
-          foreach (int _iter282 in Compressors)
+          foreach (int _iter311 in Compressors)
           {
-            await oprot.WriteI32Async(_iter282, cancellationToken);
+            await oprot.WriteI32Async(_iter311, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -457,9 +499,9 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, MeasurementAlias.Count), cancellationToken);
-          foreach (string _iter283 in MeasurementAlias)
+          foreach (string _iter312 in MeasurementAlias)
           {
-            await oprot.WriteStringAsync(_iter283, cancellationToken);
+            await oprot.WriteStringAsync(_iter312, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -473,14 +515,14 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Map, TagsList.Count), cancellationToken);
-          foreach (Dictionary<string, string> _iter284 in TagsList)
+          foreach (Dictionary<string, string> _iter313 in TagsList)
           {
             {
-              await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, _iter284.Count), cancellationToken);
-              foreach (string _iter285 in _iter284.Keys)
+              await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, _iter313.Count), cancellationToken);
+              foreach (string _iter314 in _iter313.Keys)
               {
-                await oprot.WriteStringAsync(_iter285, cancellationToken);
-                await oprot.WriteStringAsync(_iter284[_iter285], cancellationToken);
+                await oprot.WriteStringAsync(_iter314, cancellationToken);
+                await oprot.WriteStringAsync(_iter313[_iter314], cancellationToken);
               }
               await oprot.WriteMapEndAsync(cancellationToken);
             }
@@ -497,14 +539,14 @@ public partial class TSCreateAlignedTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Map, AttributesList.Count), cancellationToken);
-          foreach (Dictionary<string, string> _iter286 in AttributesList)
+          foreach (Dictionary<string, string> _iter315 in AttributesList)
           {
             {
-              await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, _iter286.Count), cancellationToken);
-              foreach (string _iter287 in _iter286.Keys)
+              await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, _iter315.Count), cancellationToken);
+              foreach (string _iter316 in _iter315.Keys)
               {
-                await oprot.WriteStringAsync(_iter287, cancellationToken);
-                await oprot.WriteStringAsync(_iter286[_iter287], cancellationToken);
+                await oprot.WriteStringAsync(_iter316, cancellationToken);
+                await oprot.WriteStringAsync(_iter315[_iter316], cancellationToken);
               }
               await oprot.WriteMapEndAsync(cancellationToken);
             }

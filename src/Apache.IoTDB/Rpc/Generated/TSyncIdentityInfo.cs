@@ -52,6 +52,25 @@ public partial class TSyncIdentityInfo : TBase
     this.Database = database;
   }
 
+  public TSyncIdentityInfo DeepCopy()
+  {
+    var tmp445 = new TSyncIdentityInfo();
+    if((PipeName != null))
+    {
+      tmp445.PipeName = this.PipeName;
+    }
+    tmp445.CreateTime = this.CreateTime;
+    if((Version != null))
+    {
+      tmp445.Version = this.Version;
+    }
+    if((Database != null))
+    {
+      tmp445.Database = this.Database;
+    }
+    return tmp445;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

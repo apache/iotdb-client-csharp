@@ -187,6 +187,65 @@ public partial class TSTracingInfo : TBase
     this.ElapsedTimeList = elapsedTimeList;
   }
 
+  public TSTracingInfo DeepCopy()
+  {
+    var tmp20 = new TSTracingInfo();
+    if((ActivityList != null))
+    {
+      tmp20.ActivityList = this.ActivityList.DeepCopy();
+    }
+    if((ElapsedTimeList != null))
+    {
+      tmp20.ElapsedTimeList = this.ElapsedTimeList.DeepCopy();
+    }
+    if(__isset.seriesPathNum)
+    {
+      tmp20.SeriesPathNum = this.SeriesPathNum;
+    }
+    tmp20.__isset.seriesPathNum = this.__isset.seriesPathNum;
+    if(__isset.seqFileNum)
+    {
+      tmp20.SeqFileNum = this.SeqFileNum;
+    }
+    tmp20.__isset.seqFileNum = this.__isset.seqFileNum;
+    if(__isset.unSeqFileNum)
+    {
+      tmp20.UnSeqFileNum = this.UnSeqFileNum;
+    }
+    tmp20.__isset.unSeqFileNum = this.__isset.unSeqFileNum;
+    if(__isset.sequenceChunkNum)
+    {
+      tmp20.SequenceChunkNum = this.SequenceChunkNum;
+    }
+    tmp20.__isset.sequenceChunkNum = this.__isset.sequenceChunkNum;
+    if(__isset.sequenceChunkPointNum)
+    {
+      tmp20.SequenceChunkPointNum = this.SequenceChunkPointNum;
+    }
+    tmp20.__isset.sequenceChunkPointNum = this.__isset.sequenceChunkPointNum;
+    if(__isset.unsequenceChunkNum)
+    {
+      tmp20.UnsequenceChunkNum = this.UnsequenceChunkNum;
+    }
+    tmp20.__isset.unsequenceChunkNum = this.__isset.unsequenceChunkNum;
+    if(__isset.unsequenceChunkPointNum)
+    {
+      tmp20.UnsequenceChunkPointNum = this.UnsequenceChunkPointNum;
+    }
+    tmp20.__isset.unsequenceChunkPointNum = this.__isset.unsequenceChunkPointNum;
+    if(__isset.totalPageNum)
+    {
+      tmp20.TotalPageNum = this.TotalPageNum;
+    }
+    tmp20.__isset.totalPageNum = this.__isset.totalPageNum;
+    if(__isset.overlappedPageNum)
+    {
+      tmp20.OverlappedPageNum = this.OverlappedPageNum;
+    }
+    tmp20.__isset.overlappedPageNum = this.__isset.overlappedPageNum;
+    return tmp20;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -210,13 +269,13 @@ public partial class TSTracingInfo : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list18 = await iprot.ReadListBeginAsync(cancellationToken);
-                ActivityList = new List<string>(_list18.Count);
-                for(int _i19 = 0; _i19 < _list18.Count; ++_i19)
+                TList _list21 = await iprot.ReadListBeginAsync(cancellationToken);
+                ActivityList = new List<string>(_list21.Count);
+                for(int _i22 = 0; _i22 < _list21.Count; ++_i22)
                 {
-                  string _elem20;
-                  _elem20 = await iprot.ReadStringAsync(cancellationToken);
-                  ActivityList.Add(_elem20);
+                  string _elem23;
+                  _elem23 = await iprot.ReadStringAsync(cancellationToken);
+                  ActivityList.Add(_elem23);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -231,13 +290,13 @@ public partial class TSTracingInfo : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list21 = await iprot.ReadListBeginAsync(cancellationToken);
-                ElapsedTimeList = new List<long>(_list21.Count);
-                for(int _i22 = 0; _i22 < _list21.Count; ++_i22)
+                TList _list24 = await iprot.ReadListBeginAsync(cancellationToken);
+                ElapsedTimeList = new List<long>(_list24.Count);
+                for(int _i25 = 0; _i25 < _list24.Count; ++_i25)
                 {
-                  long _elem23;
-                  _elem23 = await iprot.ReadI64Async(cancellationToken);
-                  ElapsedTimeList.Add(_elem23);
+                  long _elem26;
+                  _elem26 = await iprot.ReadI64Async(cancellationToken);
+                  ElapsedTimeList.Add(_elem26);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -378,9 +437,9 @@ public partial class TSTracingInfo : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, ActivityList.Count), cancellationToken);
-          foreach (string _iter24 in ActivityList)
+          foreach (string _iter27 in ActivityList)
           {
-            await oprot.WriteStringAsync(_iter24, cancellationToken);
+            await oprot.WriteStringAsync(_iter27, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -394,9 +453,9 @@ public partial class TSTracingInfo : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I64, ElapsedTimeList.Count), cancellationToken);
-          foreach (long _iter25 in ElapsedTimeList)
+          foreach (long _iter28 in ElapsedTimeList)
           {
-            await oprot.WriteI64Async(_iter25, cancellationToken);
+            await oprot.WriteI64Async(_iter28, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

@@ -244,6 +244,81 @@ public partial class TSExecuteStatementResp : TBase
     this.Status = status;
   }
 
+  public TSExecuteStatementResp DeepCopy()
+  {
+    var tmp30 = new TSExecuteStatementResp();
+    if((Status != null))
+    {
+      tmp30.Status = (TSStatus)this.Status.DeepCopy();
+    }
+    if(__isset.queryId)
+    {
+      tmp30.QueryId = this.QueryId;
+    }
+    tmp30.__isset.queryId = this.__isset.queryId;
+    if((Columns != null) && __isset.columns)
+    {
+      tmp30.Columns = this.Columns.DeepCopy();
+    }
+    tmp30.__isset.columns = this.__isset.columns;
+    if((OperationType != null) && __isset.operationType)
+    {
+      tmp30.OperationType = this.OperationType;
+    }
+    tmp30.__isset.operationType = this.__isset.operationType;
+    if(__isset.ignoreTimeStamp)
+    {
+      tmp30.IgnoreTimeStamp = this.IgnoreTimeStamp;
+    }
+    tmp30.__isset.ignoreTimeStamp = this.__isset.ignoreTimeStamp;
+    if((DataTypeList != null) && __isset.dataTypeList)
+    {
+      tmp30.DataTypeList = this.DataTypeList.DeepCopy();
+    }
+    tmp30.__isset.dataTypeList = this.__isset.dataTypeList;
+    if((QueryDataSet != null) && __isset.queryDataSet)
+    {
+      tmp30.QueryDataSet = (TSQueryDataSet)this.QueryDataSet.DeepCopy();
+    }
+    tmp30.__isset.queryDataSet = this.__isset.queryDataSet;
+    if((NonAlignQueryDataSet != null) && __isset.nonAlignQueryDataSet)
+    {
+      tmp30.NonAlignQueryDataSet = (TSQueryNonAlignDataSet)this.NonAlignQueryDataSet.DeepCopy();
+    }
+    tmp30.__isset.nonAlignQueryDataSet = this.__isset.nonAlignQueryDataSet;
+    if((ColumnNameIndexMap != null) && __isset.columnNameIndexMap)
+    {
+      tmp30.ColumnNameIndexMap = this.ColumnNameIndexMap.DeepCopy();
+    }
+    tmp30.__isset.columnNameIndexMap = this.__isset.columnNameIndexMap;
+    if((SgColumns != null) && __isset.sgColumns)
+    {
+      tmp30.SgColumns = this.SgColumns.DeepCopy();
+    }
+    tmp30.__isset.sgColumns = this.__isset.sgColumns;
+    if((AliasColumns != null) && __isset.aliasColumns)
+    {
+      tmp30.AliasColumns = this.AliasColumns.DeepCopy();
+    }
+    tmp30.__isset.aliasColumns = this.__isset.aliasColumns;
+    if((TracingInfo != null) && __isset.tracingInfo)
+    {
+      tmp30.TracingInfo = (TSTracingInfo)this.TracingInfo.DeepCopy();
+    }
+    tmp30.__isset.tracingInfo = this.__isset.tracingInfo;
+    if((QueryResult != null) && __isset.queryResult)
+    {
+      tmp30.QueryResult = this.QueryResult.DeepCopy();
+    }
+    tmp30.__isset.queryResult = this.__isset.queryResult;
+    if(__isset.moreData)
+    {
+      tmp30.MoreData = this.MoreData;
+    }
+    tmp30.__isset.moreData = this.__isset.moreData;
+    return tmp30;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -288,13 +363,13 @@ public partial class TSExecuteStatementResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list27 = await iprot.ReadListBeginAsync(cancellationToken);
-                Columns = new List<string>(_list27.Count);
-                for(int _i28 = 0; _i28 < _list27.Count; ++_i28)
+                TList _list31 = await iprot.ReadListBeginAsync(cancellationToken);
+                Columns = new List<string>(_list31.Count);
+                for(int _i32 = 0; _i32 < _list31.Count; ++_i32)
                 {
-                  string _elem29;
-                  _elem29 = await iprot.ReadStringAsync(cancellationToken);
-                  Columns.Add(_elem29);
+                  string _elem33;
+                  _elem33 = await iprot.ReadStringAsync(cancellationToken);
+                  Columns.Add(_elem33);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -328,13 +403,13 @@ public partial class TSExecuteStatementResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list30 = await iprot.ReadListBeginAsync(cancellationToken);
-                DataTypeList = new List<string>(_list30.Count);
-                for(int _i31 = 0; _i31 < _list30.Count; ++_i31)
+                TList _list34 = await iprot.ReadListBeginAsync(cancellationToken);
+                DataTypeList = new List<string>(_list34.Count);
+                for(int _i35 = 0; _i35 < _list34.Count; ++_i35)
                 {
-                  string _elem32;
-                  _elem32 = await iprot.ReadStringAsync(cancellationToken);
-                  DataTypeList.Add(_elem32);
+                  string _elem36;
+                  _elem36 = await iprot.ReadStringAsync(cancellationToken);
+                  DataTypeList.Add(_elem36);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -370,15 +445,15 @@ public partial class TSExecuteStatementResp : TBase
             if (field.Type == TType.Map)
             {
               {
-                TMap _map33 = await iprot.ReadMapBeginAsync(cancellationToken);
-                ColumnNameIndexMap = new Dictionary<string, int>(_map33.Count);
-                for(int _i34 = 0; _i34 < _map33.Count; ++_i34)
+                TMap _map37 = await iprot.ReadMapBeginAsync(cancellationToken);
+                ColumnNameIndexMap = new Dictionary<string, int>(_map37.Count);
+                for(int _i38 = 0; _i38 < _map37.Count; ++_i38)
                 {
-                  string _key35;
-                  int _val36;
-                  _key35 = await iprot.ReadStringAsync(cancellationToken);
-                  _val36 = await iprot.ReadI32Async(cancellationToken);
-                  ColumnNameIndexMap[_key35] = _val36;
+                  string _key39;
+                  int _val40;
+                  _key39 = await iprot.ReadStringAsync(cancellationToken);
+                  _val40 = await iprot.ReadI32Async(cancellationToken);
+                  ColumnNameIndexMap[_key39] = _val40;
                 }
                 await iprot.ReadMapEndAsync(cancellationToken);
               }
@@ -392,13 +467,13 @@ public partial class TSExecuteStatementResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list37 = await iprot.ReadListBeginAsync(cancellationToken);
-                SgColumns = new List<string>(_list37.Count);
-                for(int _i38 = 0; _i38 < _list37.Count; ++_i38)
+                TList _list41 = await iprot.ReadListBeginAsync(cancellationToken);
+                SgColumns = new List<string>(_list41.Count);
+                for(int _i42 = 0; _i42 < _list41.Count; ++_i42)
                 {
-                  string _elem39;
-                  _elem39 = await iprot.ReadStringAsync(cancellationToken);
-                  SgColumns.Add(_elem39);
+                  string _elem43;
+                  _elem43 = await iprot.ReadStringAsync(cancellationToken);
+                  SgColumns.Add(_elem43);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -412,13 +487,13 @@ public partial class TSExecuteStatementResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list40 = await iprot.ReadListBeginAsync(cancellationToken);
-                AliasColumns = new List<sbyte>(_list40.Count);
-                for(int _i41 = 0; _i41 < _list40.Count; ++_i41)
+                TList _list44 = await iprot.ReadListBeginAsync(cancellationToken);
+                AliasColumns = new List<sbyte>(_list44.Count);
+                for(int _i45 = 0; _i45 < _list44.Count; ++_i45)
                 {
-                  sbyte _elem42;
-                  _elem42 = await iprot.ReadByteAsync(cancellationToken);
-                  AliasColumns.Add(_elem42);
+                  sbyte _elem46;
+                  _elem46 = await iprot.ReadByteAsync(cancellationToken);
+                  AliasColumns.Add(_elem46);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -443,13 +518,13 @@ public partial class TSExecuteStatementResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list43 = await iprot.ReadListBeginAsync(cancellationToken);
-                QueryResult = new List<byte[]>(_list43.Count);
-                for(int _i44 = 0; _i44 < _list43.Count; ++_i44)
+                TList _list47 = await iprot.ReadListBeginAsync(cancellationToken);
+                QueryResult = new List<byte[]>(_list47.Count);
+                for(int _i48 = 0; _i48 < _list47.Count; ++_i48)
                 {
-                  byte[] _elem45;
-                  _elem45 = await iprot.ReadBinaryAsync(cancellationToken);
-                  QueryResult.Add(_elem45);
+                  byte[] _elem49;
+                  _elem49 = await iprot.ReadBinaryAsync(cancellationToken);
+                  QueryResult.Add(_elem49);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -523,9 +598,9 @@ public partial class TSExecuteStatementResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Columns.Count), cancellationToken);
-          foreach (string _iter46 in Columns)
+          foreach (string _iter50 in Columns)
           {
-            await oprot.WriteStringAsync(_iter46, cancellationToken);
+            await oprot.WriteStringAsync(_iter50, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -557,9 +632,9 @@ public partial class TSExecuteStatementResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, DataTypeList.Count), cancellationToken);
-          foreach (string _iter47 in DataTypeList)
+          foreach (string _iter51 in DataTypeList)
           {
-            await oprot.WriteStringAsync(_iter47, cancellationToken);
+            await oprot.WriteStringAsync(_iter51, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -591,10 +666,10 @@ public partial class TSExecuteStatementResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.I32, ColumnNameIndexMap.Count), cancellationToken);
-          foreach (string _iter48 in ColumnNameIndexMap.Keys)
+          foreach (string _iter52 in ColumnNameIndexMap.Keys)
           {
-            await oprot.WriteStringAsync(_iter48, cancellationToken);
-            await oprot.WriteI32Async(ColumnNameIndexMap[_iter48], cancellationToken);
+            await oprot.WriteStringAsync(_iter52, cancellationToken);
+            await oprot.WriteI32Async(ColumnNameIndexMap[_iter52], cancellationToken);
           }
           await oprot.WriteMapEndAsync(cancellationToken);
         }
@@ -608,9 +683,9 @@ public partial class TSExecuteStatementResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, SgColumns.Count), cancellationToken);
-          foreach (string _iter49 in SgColumns)
+          foreach (string _iter53 in SgColumns)
           {
-            await oprot.WriteStringAsync(_iter49, cancellationToken);
+            await oprot.WriteStringAsync(_iter53, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -624,9 +699,9 @@ public partial class TSExecuteStatementResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Byte, AliasColumns.Count), cancellationToken);
-          foreach (sbyte _iter50 in AliasColumns)
+          foreach (sbyte _iter54 in AliasColumns)
           {
-            await oprot.WriteByteAsync(_iter50, cancellationToken);
+            await oprot.WriteByteAsync(_iter54, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -649,9 +724,9 @@ public partial class TSExecuteStatementResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, QueryResult.Count), cancellationToken);
-          foreach (byte[] _iter51 in QueryResult)
+          foreach (byte[] _iter55 in QueryResult)
           {
-            await oprot.WriteBinaryAsync(_iter51, cancellationToken);
+            await oprot.WriteBinaryAsync(_iter55, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

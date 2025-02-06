@@ -29,35 +29,32 @@ using Thrift.Processor;
 #pragma warning disable IDE1006  // parts of the code use IDL spelling
 
 
-public partial class TSGetTimeZoneResp : TBase
+public partial class TAINodeLocation : TBase
 {
 
-  public TSStatus Status { get; set; }
+  public int AiNodeId { get; set; }
 
-  public string TimeZone { get; set; }
+  public TEndPoint InternalEndPoint { get; set; }
 
-  public TSGetTimeZoneResp()
+  public TAINodeLocation()
   {
   }
 
-  public TSGetTimeZoneResp(TSStatus status, string timeZone) : this()
+  public TAINodeLocation(int aiNodeId, TEndPoint internalEndPoint) : this()
   {
-    this.Status = status;
-    this.TimeZone = timeZone;
+    this.AiNodeId = aiNodeId;
+    this.InternalEndPoint = internalEndPoint;
   }
 
-  public TSGetTimeZoneResp DeepCopy()
+  public TAINodeLocation DeepCopy()
   {
-    var tmp103 = new TSGetTimeZoneResp();
-    if((Status != null))
+    var tmp26 = new TAINodeLocation();
+    tmp26.AiNodeId = this.AiNodeId;
+    if((InternalEndPoint != null))
     {
-      tmp103.Status = (TSStatus)this.Status.DeepCopy();
+      tmp26.InternalEndPoint = (TEndPoint)this.InternalEndPoint.DeepCopy();
     }
-    if((TimeZone != null))
-    {
-      tmp103.TimeZone = this.TimeZone;
-    }
-    return tmp103;
+    return tmp26;
   }
 
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -65,8 +62,8 @@ public partial class TSGetTimeZoneResp : TBase
     iprot.IncrementRecursionDepth();
     try
     {
-      bool isset_status = false;
-      bool isset_timeZone = false;
+      bool isset_aiNodeId = false;
+      bool isset_internalEndPoint = false;
       TField field;
       await iprot.ReadStructBeginAsync(cancellationToken);
       while (true)
@@ -80,11 +77,10 @@ public partial class TSGetTimeZoneResp : TBase
         switch (field.ID)
         {
           case 1:
-            if (field.Type == TType.Struct)
+            if (field.Type == TType.I32)
             {
-              Status = new TSStatus();
-              await Status.ReadAsync(iprot, cancellationToken);
-              isset_status = true;
+              AiNodeId = await iprot.ReadI32Async(cancellationToken);
+              isset_aiNodeId = true;
             }
             else
             {
@@ -92,10 +88,11 @@ public partial class TSGetTimeZoneResp : TBase
             }
             break;
           case 2:
-            if (field.Type == TType.String)
+            if (field.Type == TType.Struct)
             {
-              TimeZone = await iprot.ReadStringAsync(cancellationToken);
-              isset_timeZone = true;
+              InternalEndPoint = new TEndPoint();
+              await InternalEndPoint.ReadAsync(iprot, cancellationToken);
+              isset_internalEndPoint = true;
             }
             else
             {
@@ -111,11 +108,11 @@ public partial class TSGetTimeZoneResp : TBase
       }
 
       await iprot.ReadStructEndAsync(cancellationToken);
-      if (!isset_status)
+      if (!isset_aiNodeId)
       {
         throw new TProtocolException(TProtocolException.INVALID_DATA);
       }
-      if (!isset_timeZone)
+      if (!isset_internalEndPoint)
       {
         throw new TProtocolException(TProtocolException.INVALID_DATA);
       }
@@ -131,25 +128,22 @@ public partial class TSGetTimeZoneResp : TBase
     oprot.IncrementRecursionDepth();
     try
     {
-      var struc = new TStruct("TSGetTimeZoneResp");
+      var struc = new TStruct("TAINodeLocation");
       await oprot.WriteStructBeginAsync(struc, cancellationToken);
       var field = new TField();
-      if((Status != null))
+      field.Name = "aiNodeId";
+      field.Type = TType.I32;
+      field.ID = 1;
+      await oprot.WriteFieldBeginAsync(field, cancellationToken);
+      await oprot.WriteI32Async(AiNodeId, cancellationToken);
+      await oprot.WriteFieldEndAsync(cancellationToken);
+      if((InternalEndPoint != null))
       {
-        field.Name = "status";
+        field.Name = "internalEndPoint";
         field.Type = TType.Struct;
-        field.ID = 1;
-        await oprot.WriteFieldBeginAsync(field, cancellationToken);
-        await Status.WriteAsync(oprot, cancellationToken);
-        await oprot.WriteFieldEndAsync(cancellationToken);
-      }
-      if((TimeZone != null))
-      {
-        field.Name = "timeZone";
-        field.Type = TType.String;
         field.ID = 2;
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
-        await oprot.WriteStringAsync(TimeZone, cancellationToken);
+        await InternalEndPoint.WriteAsync(oprot, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
       }
       await oprot.WriteFieldStopAsync(cancellationToken);
@@ -163,22 +157,19 @@ public partial class TSGetTimeZoneResp : TBase
 
   public override bool Equals(object that)
   {
-    if (!(that is TSGetTimeZoneResp other)) return false;
+    if (!(that is TAINodeLocation other)) return false;
     if (ReferenceEquals(this, other)) return true;
-    return System.Object.Equals(Status, other.Status)
-      && System.Object.Equals(TimeZone, other.TimeZone);
+    return System.Object.Equals(AiNodeId, other.AiNodeId)
+      && System.Object.Equals(InternalEndPoint, other.InternalEndPoint);
   }
 
   public override int GetHashCode() {
     int hashcode = 157;
     unchecked {
-      if((Status != null))
+      hashcode = (hashcode * 397) + AiNodeId.GetHashCode();
+      if((InternalEndPoint != null))
       {
-        hashcode = (hashcode * 397) + Status.GetHashCode();
-      }
-      if((TimeZone != null))
-      {
-        hashcode = (hashcode * 397) + TimeZone.GetHashCode();
+        hashcode = (hashcode * 397) + InternalEndPoint.GetHashCode();
       }
     }
     return hashcode;
@@ -186,16 +177,13 @@ public partial class TSGetTimeZoneResp : TBase
 
   public override string ToString()
   {
-    var sb = new StringBuilder("TSGetTimeZoneResp(");
-    if((Status != null))
+    var sb = new StringBuilder("TAINodeLocation(");
+    sb.Append(", AiNodeId: ");
+    AiNodeId.ToString(sb);
+    if((InternalEndPoint != null))
     {
-      sb.Append(", Status: ");
-      Status.ToString(sb);
-    }
-    if((TimeZone != null))
-    {
-      sb.Append(", TimeZone: ");
-      TimeZone.ToString(sb);
+      sb.Append(", InternalEndPoint: ");
+      InternalEndPoint.ToString(sb);
     }
     sb.Append(')');
     return sb.ToString();

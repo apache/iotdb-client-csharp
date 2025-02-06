@@ -46,6 +46,17 @@ public partial class TSyncTransportMetaInfo : TBase
     this.StartIndex = startIndex;
   }
 
+  public TSyncTransportMetaInfo DeepCopy()
+  {
+    var tmp447 = new TSyncTransportMetaInfo();
+    if((FileName != null))
+    {
+      tmp447.FileName = this.FileName;
+    }
+    tmp447.StartIndex = this.StartIndex;
+    return tmp447;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
