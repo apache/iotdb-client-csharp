@@ -370,7 +370,7 @@ namespace Apache.IoTDB.DataStructure
                             for (int j = 0; j < RowNumber; j++)
                             {
                                 var value = _values[j][i];
-                                buffer.AddBinary(value != null ? (byte[])value : []);
+                                buffer.AddBinary(value != null ? (byte[])value : new byte[] { });
                             }
                             break;
                         }
