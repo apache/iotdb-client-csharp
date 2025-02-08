@@ -101,7 +101,7 @@ namespace Apache.IoTDB
             {
                 throw new ArgumentException("Date must be between 10000101 and 99991231.");
             }
-            return new DateTime(dateInt / 10000, dateInt / 100 % 100, dateInt % 100);
+            return DateTime.TryParseExact(dateInt.ToString(), "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out DateTime date) ? date : throw new ArgumentException("Date must be between 10000101 and 99991231.");
         }
 
         public static int ParseDateToInt(DateTime? dateTime)
@@ -119,13 +119,7 @@ namespace Apache.IoTDB
 
         public static string ByteArrayToHexString(byte[] bytes)
         {
-            StringBuilder hex = new StringBuilder(bytes.Length * 2);
-            hex.Append("0x");
-            foreach (byte b in bytes)
-            {
-                hex.AppendFormat("{0:x2}", b);
-            }
-            return hex.ToString();
+            return "0x" + BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
         }
     }
 }
