@@ -230,7 +230,6 @@ namespace Apache.IoTDB.Samples
             Console.WriteLine("TestInsertTabletsWithNullValue Passed!");
         }
 
-        // InsertTablet 写入所有的数据类型
         public async Task TestInsertTabletWithAllType()
         {
             var session_pool = new SessionPool(host, port, pool_size);
