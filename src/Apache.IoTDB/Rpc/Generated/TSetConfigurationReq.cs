@@ -46,17 +46,6 @@ public partial class TSetConfigurationReq : TBase
     this.NodeId = nodeId;
   }
 
-  public TSetConfigurationReq DeepCopy()
-  {
-    var tmp46 = new TSetConfigurationReq();
-    if((Configs != null))
-    {
-      tmp46.Configs = this.Configs.DeepCopy();
-    }
-    tmp46.NodeId = this.NodeId;
-    return tmp46;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -80,15 +69,15 @@ public partial class TSetConfigurationReq : TBase
             if (field.Type == TType.Map)
             {
               {
-                TMap _map47 = await iprot.ReadMapBeginAsync(cancellationToken);
-                Configs = new Dictionary<string, string>(_map47.Count);
-                for(int _i48 = 0; _i48 < _map47.Count; ++_i48)
+                TMap _map31 = await iprot.ReadMapBeginAsync(cancellationToken);
+                Configs = new Dictionary<string, string>(_map31.Count);
+                for(int _i32 = 0; _i32 < _map31.Count; ++_i32)
                 {
-                  string _key49;
-                  string _val50;
-                  _key49 = await iprot.ReadStringAsync(cancellationToken);
-                  _val50 = await iprot.ReadStringAsync(cancellationToken);
-                  Configs[_key49] = _val50;
+                  string _key33;
+                  string _val34;
+                  _key33 = await iprot.ReadStringAsync(cancellationToken);
+                  _val34 = await iprot.ReadStringAsync(cancellationToken);
+                  Configs[_key33] = _val34;
                 }
                 await iprot.ReadMapEndAsync(cancellationToken);
               }
@@ -150,10 +139,10 @@ public partial class TSetConfigurationReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, Configs.Count), cancellationToken);
-          foreach (string _iter51 in Configs.Keys)
+          foreach (string _iter35 in Configs.Keys)
           {
-            await oprot.WriteStringAsync(_iter51, cancellationToken);
-            await oprot.WriteStringAsync(Configs[_iter51], cancellationToken);
+            await oprot.WriteStringAsync(_iter35, cancellationToken);
+            await oprot.WriteStringAsync(Configs[_iter35], cancellationToken);
           }
           await oprot.WriteMapEndAsync(cancellationToken);
         }

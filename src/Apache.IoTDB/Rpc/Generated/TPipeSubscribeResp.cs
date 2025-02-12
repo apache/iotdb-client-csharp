@@ -70,23 +70,6 @@ public partial class TPipeSubscribeResp : TBase
     this.Type = type;
   }
 
-  public TPipeSubscribeResp DeepCopy()
-  {
-    var tmp455 = new TPipeSubscribeResp();
-    if((Status != null))
-    {
-      tmp455.Status = (TSStatus)this.Status.DeepCopy();
-    }
-    tmp455.Version = this.Version;
-    tmp455.Type = this.Type;
-    if((Body != null) && __isset.body)
-    {
-      tmp455.Body = this.Body.DeepCopy();
-    }
-    tmp455.__isset.body = this.__isset.body;
-    return tmp455;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -145,13 +128,13 @@ public partial class TPipeSubscribeResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list456 = await iprot.ReadListBeginAsync(cancellationToken);
-                Body = new List<byte[]>(_list456.Count);
-                for(int _i457 = 0; _i457 < _list456.Count; ++_i457)
+                TList _list417 = await iprot.ReadListBeginAsync(cancellationToken);
+                Body = new List<byte[]>(_list417.Count);
+                for(int _i418 = 0; _i418 < _list417.Count; ++_i418)
                 {
-                  byte[] _elem458;
-                  _elem458 = await iprot.ReadBinaryAsync(cancellationToken);
-                  Body.Add(_elem458);
+                  byte[] _elem419;
+                  _elem419 = await iprot.ReadBinaryAsync(cancellationToken);
+                  Body.Add(_elem419);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -226,9 +209,9 @@ public partial class TPipeSubscribeResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Body.Count), cancellationToken);
-          foreach (byte[] _iter459 in Body)
+          foreach (byte[] _iter420 in Body)
           {
-            await oprot.WriteBinaryAsync(_iter459, cancellationToken);
+            await oprot.WriteBinaryAsync(_iter420, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

@@ -46,20 +46,6 @@ public partial class TFile : TBase
     this.File = file;
   }
 
-  public TFile DeepCopy()
-  {
-    var tmp65 = new TFile();
-    if((FileName != null))
-    {
-      tmp65.FileName = this.FileName;
-    }
-    if((File != null))
-    {
-      tmp65.File = this.File.ToArray();
-    }
-    return tmp65;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

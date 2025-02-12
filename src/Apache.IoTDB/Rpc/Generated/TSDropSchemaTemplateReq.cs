@@ -46,17 +46,6 @@ public partial class TSDropSchemaTemplateReq : TBase
     this.TemplateName = templateName;
   }
 
-  public TSDropSchemaTemplateReq DeepCopy()
-  {
-    var tmp437 = new TSDropSchemaTemplateReq();
-    tmp437.SessionId = this.SessionId;
-    if((TemplateName != null))
-    {
-      tmp437.TemplateName = this.TemplateName;
-    }
-    return tmp437;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

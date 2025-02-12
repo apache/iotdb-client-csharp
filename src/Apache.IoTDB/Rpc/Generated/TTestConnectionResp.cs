@@ -46,20 +46,6 @@ public partial class TTestConnectionResp : TBase
     this.ResultList = resultList;
   }
 
-  public TTestConnectionResp DeepCopy()
-  {
-    var tmp102 = new TTestConnectionResp();
-    if((Status != null))
-    {
-      tmp102.Status = (TSStatus)this.Status.DeepCopy();
-    }
-    if((ResultList != null))
-    {
-      tmp102.ResultList = this.ResultList.DeepCopy();
-    }
-    return tmp102;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -95,14 +81,14 @@ public partial class TTestConnectionResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list103 = await iprot.ReadListBeginAsync(cancellationToken);
-                ResultList = new List<TTestConnectionResult>(_list103.Count);
-                for(int _i104 = 0; _i104 < _list103.Count; ++_i104)
+                TList _list72 = await iprot.ReadListBeginAsync(cancellationToken);
+                ResultList = new List<TTestConnectionResult>(_list72.Count);
+                for(int _i73 = 0; _i73 < _list72.Count; ++_i73)
                 {
-                  TTestConnectionResult _elem105;
-                  _elem105 = new TTestConnectionResult();
-                  await _elem105.ReadAsync(iprot, cancellationToken);
-                  ResultList.Add(_elem105);
+                  TTestConnectionResult _elem74;
+                  _elem74 = new TTestConnectionResult();
+                  await _elem74.ReadAsync(iprot, cancellationToken);
+                  ResultList.Add(_elem74);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -162,9 +148,9 @@ public partial class TTestConnectionResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Struct, ResultList.Count), cancellationToken);
-          foreach (TTestConnectionResult _iter106 in ResultList)
+          foreach (TTestConnectionResult _iter75 in ResultList)
           {
-            await _iter106.WriteAsync(oprot, cancellationToken);
+            await _iter75.WriteAsync(oprot, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

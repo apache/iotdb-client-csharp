@@ -43,16 +43,6 @@ public partial class TSettleReq : TBase
     this.Paths = paths;
   }
 
-  public TSettleReq DeepCopy()
-  {
-    var tmp38 = new TSettleReq();
-    if((Paths != null))
-    {
-      tmp38.Paths = this.Paths.DeepCopy();
-    }
-    return tmp38;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -75,13 +65,13 @@ public partial class TSettleReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list39 = await iprot.ReadListBeginAsync(cancellationToken);
-                Paths = new List<string>(_list39.Count);
-                for(int _i40 = 0; _i40 < _list39.Count; ++_i40)
+                TList _list25 = await iprot.ReadListBeginAsync(cancellationToken);
+                Paths = new List<string>(_list25.Count);
+                for(int _i26 = 0; _i26 < _list25.Count; ++_i26)
                 {
-                  string _elem41;
-                  _elem41 = await iprot.ReadStringAsync(cancellationToken);
-                  Paths.Add(_elem41);
+                  string _elem27;
+                  _elem27 = await iprot.ReadStringAsync(cancellationToken);
+                  Paths.Add(_elem27);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -128,9 +118,9 @@ public partial class TSettleReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Paths.Count), cancellationToken);
-          foreach (string _iter42 in Paths)
+          foreach (string _iter28 in Paths)
           {
-            await oprot.WriteStringAsync(_iter42, cancellationToken);
+            await oprot.WriteStringAsync(_iter28, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

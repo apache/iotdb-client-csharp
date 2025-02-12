@@ -33,4 +33,10 @@ public enum TAggregationType
   MAX_BY = 20,
   MIN_BY = 21,
   UDAF = 22,
+  FIRST = 23,
+  LAST = 24,
+  FIRST_BY = 25,
+  LAST_BY = 26,
+  MIN = 27,
+  MAX = 28,
 }

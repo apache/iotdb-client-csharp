@@ -49,21 +49,6 @@ public partial class TSPruneSchemaTemplateReq : TBase
     this.Path = path;
   }
 
-  public TSPruneSchemaTemplateReq DeepCopy()
-  {
-    var tmp425 = new TSPruneSchemaTemplateReq();
-    tmp425.SessionId = this.SessionId;
-    if((Name != null))
-    {
-      tmp425.Name = this.Name;
-    }
-    if((Path != null))
-    {
-      tmp425.Path = this.Path;
-    }
-    return tmp425;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

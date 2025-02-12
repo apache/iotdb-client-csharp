@@ -49,21 +49,6 @@ public partial class TConfigNodeLocation : TBase
     this.ConsensusEndPoint = consensusEndPoint;
   }
 
-  public TConfigNodeLocation DeepCopy()
-  {
-    var tmp22 = new TConfigNodeLocation();
-    tmp22.ConfigNodeId = this.ConfigNodeId;
-    if((InternalEndPoint != null))
-    {
-      tmp22.InternalEndPoint = (TEndPoint)this.InternalEndPoint.DeepCopy();
-    }
-    if((ConsensusEndPoint != null))
-    {
-      tmp22.ConsensusEndPoint = (TEndPoint)this.ConsensusEndPoint.DeepCopy();
-    }
-    return tmp22;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

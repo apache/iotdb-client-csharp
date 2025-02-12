@@ -46,20 +46,6 @@ public partial class TFilesResp : TBase
     this.Files = files;
   }
 
-  public TFilesResp DeepCopy()
-  {
-    var tmp67 = new TFilesResp();
-    if((Status != null))
-    {
-      tmp67.Status = (TSStatus)this.Status.DeepCopy();
-    }
-    if((Files != null))
-    {
-      tmp67.Files = this.Files.DeepCopy();
-    }
-    return tmp67;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -95,14 +81,14 @@ public partial class TFilesResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list68 = await iprot.ReadListBeginAsync(cancellationToken);
-                Files = new List<TFile>(_list68.Count);
-                for(int _i69 = 0; _i69 < _list68.Count; ++_i69)
+                TList _list48 = await iprot.ReadListBeginAsync(cancellationToken);
+                Files = new List<TFile>(_list48.Count);
+                for(int _i49 = 0; _i49 < _list48.Count; ++_i49)
                 {
-                  TFile _elem70;
-                  _elem70 = new TFile();
-                  await _elem70.ReadAsync(iprot, cancellationToken);
-                  Files.Add(_elem70);
+                  TFile _elem50;
+                  _elem50 = new TFile();
+                  await _elem50.ReadAsync(iprot, cancellationToken);
+                  Files.Add(_elem50);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -162,9 +148,9 @@ public partial class TFilesResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Struct, Files.Count), cancellationToken);
-          foreach (TFile _iter71 in Files)
+          foreach (TFile _iter51 in Files)
           {
-            await _iter71.WriteAsync(oprot, cancellationToken);
+            await _iter51.WriteAsync(oprot, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

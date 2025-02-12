@@ -46,20 +46,6 @@ public partial class TAINodeConfiguration : TBase
     this.Resource = resource;
   }
 
-  public TAINodeConfiguration DeepCopy()
-  {
-    var tmp30 = new TAINodeConfiguration();
-    if((Location != null))
-    {
-      tmp30.Location = (TAINodeLocation)this.Location.DeepCopy();
-    }
-    if((Resource != null))
-    {
-      tmp30.Resource = (TNodeResource)this.Resource.DeepCopy();
-    }
-    return tmp30;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

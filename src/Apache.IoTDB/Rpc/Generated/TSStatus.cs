@@ -109,33 +109,6 @@ public partial class TSStatus : TBase
     this.Code = code;
   }
 
-  public TSStatus DeepCopy()
-  {
-    var tmp2 = new TSStatus();
-    tmp2.Code = this.Code;
-    if((Message != null) && __isset.message)
-    {
-      tmp2.Message = this.Message;
-    }
-    tmp2.__isset.message = this.__isset.message;
-    if((SubStatus != null) && __isset.subStatus)
-    {
-      tmp2.SubStatus = this.SubStatus.DeepCopy();
-    }
-    tmp2.__isset.subStatus = this.__isset.subStatus;
-    if((RedirectNode != null) && __isset.redirectNode)
-    {
-      tmp2.RedirectNode = (TEndPoint)this.RedirectNode.DeepCopy();
-    }
-    tmp2.__isset.redirectNode = this.__isset.redirectNode;
-    if(__isset.needRetry)
-    {
-      tmp2.NeedRetry = this.NeedRetry;
-    }
-    tmp2.__isset.needRetry = this.__isset.needRetry;
-    return tmp2;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -179,14 +152,14 @@ public partial class TSStatus : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list3 = await iprot.ReadListBeginAsync(cancellationToken);
-                SubStatus = new List<TSStatus>(_list3.Count);
-                for(int _i4 = 0; _i4 < _list3.Count; ++_i4)
+                TList _list1 = await iprot.ReadListBeginAsync(cancellationToken);
+                SubStatus = new List<TSStatus>(_list1.Count);
+                for(int _i2 = 0; _i2 < _list1.Count; ++_i2)
                 {
-                  TSStatus _elem5;
-                  _elem5 = new TSStatus();
-                  await _elem5.ReadAsync(iprot, cancellationToken);
-                  SubStatus.Add(_elem5);
+                  TSStatus _elem3;
+                  _elem3 = new TSStatus();
+                  await _elem3.ReadAsync(iprot, cancellationToken);
+                  SubStatus.Add(_elem3);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -268,9 +241,9 @@ public partial class TSStatus : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Struct, SubStatus.Count), cancellationToken);
-          foreach (TSStatus _iter6 in SubStatus)
+          foreach (TSStatus _iter4 in SubStatus)
           {
-            await _iter6.WriteAsync(oprot, cancellationToken);
+            await _iter4.WriteAsync(oprot, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

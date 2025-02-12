@@ -49,21 +49,6 @@ public partial class TSCreateSchemaTemplateReq : TBase
     this.SerializedTemplate = serializedTemplate;
   }
 
-  public TSCreateSchemaTemplateReq DeepCopy()
-  {
-    var tmp405 = new TSCreateSchemaTemplateReq();
-    tmp405.SessionId = this.SessionId;
-    if((Name != null))
-    {
-      tmp405.Name = this.Name;
-    }
-    if((SerializedTemplate != null))
-    {
-      tmp405.SerializedTemplate = this.SerializedTemplate.ToArray();
-    }
-    return tmp405;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

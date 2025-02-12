@@ -130,49 +130,6 @@ public partial class ServerProperties : TBase
     this.TimestampPrecision = timestampPrecision;
   }
 
-  public ServerProperties DeepCopy()
-  {
-    var tmp397 = new ServerProperties();
-    if((Version != null))
-    {
-      tmp397.Version = this.Version;
-    }
-    if((SupportedTimeAggregationOperations != null))
-    {
-      tmp397.SupportedTimeAggregationOperations = this.SupportedTimeAggregationOperations.DeepCopy();
-    }
-    if((TimestampPrecision != null))
-    {
-      tmp397.TimestampPrecision = this.TimestampPrecision;
-    }
-    if(__isset.maxConcurrentClientNum)
-    {
-      tmp397.MaxConcurrentClientNum = this.MaxConcurrentClientNum;
-    }
-    tmp397.__isset.maxConcurrentClientNum = this.__isset.maxConcurrentClientNum;
-    if(__isset.thriftMaxFrameSize)
-    {
-      tmp397.ThriftMaxFrameSize = this.ThriftMaxFrameSize;
-    }
-    tmp397.__isset.thriftMaxFrameSize = this.__isset.thriftMaxFrameSize;
-    if(__isset.isReadOnly)
-    {
-      tmp397.IsReadOnly = this.IsReadOnly;
-    }
-    tmp397.__isset.isReadOnly = this.__isset.isReadOnly;
-    if((BuildInfo != null) && __isset.buildInfo)
-    {
-      tmp397.BuildInfo = this.BuildInfo;
-    }
-    tmp397.__isset.buildInfo = this.__isset.buildInfo;
-    if((Logo != null) && __isset.logo)
-    {
-      tmp397.Logo = this.Logo;
-    }
-    tmp397.__isset.logo = this.__isset.logo;
-    return tmp397;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -208,13 +165,13 @@ public partial class ServerProperties : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list398 = await iprot.ReadListBeginAsync(cancellationToken);
-                SupportedTimeAggregationOperations = new List<string>(_list398.Count);
-                for(int _i399 = 0; _i399 < _list398.Count; ++_i399)
+                TList _list374 = await iprot.ReadListBeginAsync(cancellationToken);
+                SupportedTimeAggregationOperations = new List<string>(_list374.Count);
+                for(int _i375 = 0; _i375 < _list374.Count; ++_i375)
                 {
-                  string _elem400;
-                  _elem400 = await iprot.ReadStringAsync(cancellationToken);
-                  SupportedTimeAggregationOperations.Add(_elem400);
+                  string _elem376;
+                  _elem376 = await iprot.ReadStringAsync(cancellationToken);
+                  SupportedTimeAggregationOperations.Add(_elem376);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -339,9 +296,9 @@ public partial class ServerProperties : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, SupportedTimeAggregationOperations.Count), cancellationToken);
-          foreach (string _iter401 in SupportedTimeAggregationOperations)
+          foreach (string _iter377 in SupportedTimeAggregationOperations)
           {
-            await oprot.WriteStringAsync(_iter401, cancellationToken);
+            await oprot.WriteStringAsync(_iter377, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

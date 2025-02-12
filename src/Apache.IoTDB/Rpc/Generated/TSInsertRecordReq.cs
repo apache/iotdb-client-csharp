@@ -32,6 +32,8 @@ using Thrift.Processor;
 public partial class TSInsertRecordReq : TBase
 {
   private bool _isAligned;
+  private bool _isWriteToTable;
+  private List<sbyte> _columnCategoryies;
 
   public long SessionId { get; set; }
 
@@ -56,11 +58,39 @@ public partial class TSInsertRecordReq : TBase
     }
   }
 
+  public bool IsWriteToTable
+  {
+    get
+    {
+      return _isWriteToTable;
+    }
+    set
+    {
+      __isset.isWriteToTable = true;
+      this._isWriteToTable = value;
+    }
+  }
+
+  public List<sbyte> ColumnCategoryies
+  {
+    get
+    {
+      return _columnCategoryies;
+    }
+    set
+    {
+      __isset.columnCategoryies = true;
+      this._columnCategoryies = value;
+    }
+  }
+
 
   public Isset __isset;
   public struct Isset
   {
     public bool isAligned;
+    public bool isWriteToTable;
+    public bool columnCategoryies;
   }
 
   public TSInsertRecordReq()
@@ -74,31 +104,6 @@ public partial class TSInsertRecordReq : TBase
     this.Measurements = measurements;
     this.Values = values;
     this.Timestamp = timestamp;
-  }
-
-  public TSInsertRecordReq DeepCopy()
-  {
-    var tmp107 = new TSInsertRecordReq();
-    tmp107.SessionId = this.SessionId;
-    if((PrefixPath != null))
-    {
-      tmp107.PrefixPath = this.PrefixPath;
-    }
-    if((Measurements != null))
-    {
-      tmp107.Measurements = this.Measurements.DeepCopy();
-    }
-    if((Values != null))
-    {
-      tmp107.Values = this.Values.ToArray();
-    }
-    tmp107.Timestamp = this.Timestamp;
-    if(__isset.isAligned)
-    {
-      tmp107.IsAligned = this.IsAligned;
-    }
-    tmp107.__isset.isAligned = this.__isset.isAligned;
-    return tmp107;
   }
 
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -149,13 +154,13 @@ public partial class TSInsertRecordReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list108 = await iprot.ReadListBeginAsync(cancellationToken);
-                Measurements = new List<string>(_list108.Count);
-                for(int _i109 = 0; _i109 < _list108.Count; ++_i109)
+                TList _list93 = await iprot.ReadListBeginAsync(cancellationToken);
+                Measurements = new List<string>(_list93.Count);
+                for(int _i94 = 0; _i94 < _list93.Count; ++_i94)
                 {
-                  string _elem110;
-                  _elem110 = await iprot.ReadStringAsync(cancellationToken);
-                  Measurements.Add(_elem110);
+                  string _elem95;
+                  _elem95 = await iprot.ReadStringAsync(cancellationToken);
+                  Measurements.Add(_elem95);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -192,6 +197,36 @@ public partial class TSInsertRecordReq : TBase
             if (field.Type == TType.Bool)
             {
               IsAligned = await iprot.ReadBoolAsync(cancellationToken);
+            }
+            else
+            {
+              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
+            }
+            break;
+          case 7:
+            if (field.Type == TType.Bool)
+            {
+              IsWriteToTable = await iprot.ReadBoolAsync(cancellationToken);
+            }
+            else
+            {
+              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
+            }
+            break;
+          case 8:
+            if (field.Type == TType.List)
+            {
+              {
+                TList _list96 = await iprot.ReadListBeginAsync(cancellationToken);
+                ColumnCategoryies = new List<sbyte>(_list96.Count);
+                for(int _i97 = 0; _i97 < _list96.Count; ++_i97)
+                {
+                  sbyte _elem98;
+                  _elem98 = await iprot.ReadByteAsync(cancellationToken);
+                  ColumnCategoryies.Add(_elem98);
+                }
+                await iprot.ReadListEndAsync(cancellationToken);
+              }
             }
             else
             {
@@ -265,9 +300,9 @@ public partial class TSInsertRecordReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Measurements.Count), cancellationToken);
-          foreach (string _iter111 in Measurements)
+          foreach (string _iter99 in Measurements)
           {
-            await oprot.WriteStringAsync(_iter111, cancellationToken);
+            await oprot.WriteStringAsync(_iter99, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -297,6 +332,31 @@ public partial class TSInsertRecordReq : TBase
         await oprot.WriteBoolAsync(IsAligned, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
       }
+      if(__isset.isWriteToTable)
+      {
+        field.Name = "isWriteToTable";
+        field.Type = TType.Bool;
+        field.ID = 7;
+        await oprot.WriteFieldBeginAsync(field, cancellationToken);
+        await oprot.WriteBoolAsync(IsWriteToTable, cancellationToken);
+        await oprot.WriteFieldEndAsync(cancellationToken);
+      }
+      if((ColumnCategoryies != null) && __isset.columnCategoryies)
+      {
+        field.Name = "columnCategoryies";
+        field.Type = TType.List;
+        field.ID = 8;
+        await oprot.WriteFieldBeginAsync(field, cancellationToken);
+        {
+          await oprot.WriteListBeginAsync(new TList(TType.Byte, ColumnCategoryies.Count), cancellationToken);
+          foreach (sbyte _iter100 in ColumnCategoryies)
+          {
+            await oprot.WriteByteAsync(_iter100, cancellationToken);
+          }
+          await oprot.WriteListEndAsync(cancellationToken);
+        }
+        await oprot.WriteFieldEndAsync(cancellationToken);
+      }
       await oprot.WriteFieldStopAsync(cancellationToken);
       await oprot.WriteStructEndAsync(cancellationToken);
     }
@@ -315,7 +375,9 @@ public partial class TSInsertRecordReq : TBase
       && TCollections.Equals(Measurements, other.Measurements)
       && TCollections.Equals(Values, other.Values)
       && System.Object.Equals(Timestamp, other.Timestamp)
-      && ((__isset.isAligned == other.__isset.isAligned) && ((!__isset.isAligned) || (System.Object.Equals(IsAligned, other.IsAligned))));
+      && ((__isset.isAligned == other.__isset.isAligned) && ((!__isset.isAligned) || (System.Object.Equals(IsAligned, other.IsAligned))))
+      && ((__isset.isWriteToTable == other.__isset.isWriteToTable) && ((!__isset.isWriteToTable) || (System.Object.Equals(IsWriteToTable, other.IsWriteToTable))))
+      && ((__isset.columnCategoryies == other.__isset.columnCategoryies) && ((!__isset.columnCategoryies) || (TCollections.Equals(ColumnCategoryies, other.ColumnCategoryies))));
   }
 
   public override int GetHashCode() {
@@ -338,6 +400,14 @@ public partial class TSInsertRecordReq : TBase
       if(__isset.isAligned)
       {
         hashcode = (hashcode * 397) + IsAligned.GetHashCode();
+      }
+      if(__isset.isWriteToTable)
+      {
+        hashcode = (hashcode * 397) + IsWriteToTable.GetHashCode();
+      }
+      if((ColumnCategoryies != null) && __isset.columnCategoryies)
+      {
+        hashcode = (hashcode * 397) + TCollections.GetHashCode(ColumnCategoryies);
       }
     }
     return hashcode;
@@ -369,6 +439,16 @@ public partial class TSInsertRecordReq : TBase
     {
       sb.Append(", IsAligned: ");
       IsAligned.ToString(sb);
+    }
+    if(__isset.isWriteToTable)
+    {
+      sb.Append(", IsWriteToTable: ");
+      IsWriteToTable.ToString(sb);
+    }
+    if((ColumnCategoryies != null) && __isset.columnCategoryies)
+    {
+      sb.Append(", ColumnCategoryies: ");
+      ColumnCategoryies.ToString(sb);
     }
     sb.Append(')');
     return sb.ToString();

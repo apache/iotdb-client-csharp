@@ -37,18 +37,6 @@ public static class commonExtensions
   }
 
 
-  public static Dictionary<ThrottleType, TTimedQuota> DeepCopy(this Dictionary<ThrottleType, TTimedQuota> source)
-  {
-    if (source == null)
-      return null;
-
-    var tmp122 = new Dictionary<ThrottleType, TTimedQuota>(source.Count);
-    foreach (var pair in source)
-      tmp122.Add(pair.Key, (pair.Value != null) ? pair.Value.DeepCopy() : null);
-    return tmp122;
-  }
-
-
   public static bool Equals(this Dictionary<string, string> instance, object that)
   {
     if (!(that is Dictionary<string, string> other)) return false;
@@ -79,18 +67,6 @@ public static class commonExtensions
   }
 
 
-  public static List<TConfigNodeLocation> DeepCopy(this List<TConfigNodeLocation> source)
-  {
-    if (source == null)
-      return null;
-
-    var tmp124 = new List<TConfigNodeLocation>(source.Count);
-    foreach (var elem in source)
-      tmp124.Add((elem != null) ? elem.DeepCopy() : null);
-    return tmp124;
-  }
-
-
   public static bool Equals(this List<TDataNodeLocation> instance, object that)
   {
     if (!(that is List<TDataNodeLocation> other)) return false;
@@ -106,18 +82,6 @@ public static class commonExtensions
   }
 
 
-  public static List<TDataNodeLocation> DeepCopy(this List<TDataNodeLocation> source)
-  {
-    if (source == null)
-      return null;
-
-    var tmp125 = new List<TDataNodeLocation>(source.Count);
-    foreach (var elem in source)
-      tmp125.Add((elem != null) ? elem.DeepCopy() : null);
-    return tmp125;
-  }
-
-
   public static bool Equals(this List<TFile> instance, object that)
   {
     if (!(that is List<TFile> other)) return false;
@@ -130,18 +94,6 @@ public static class commonExtensions
   public static int GetHashCode(this List<TFile> instance)
   {
     return TCollections.GetHashCode(instance);
-  }
-
-
-  public static List<TFile> DeepCopy(this List<TFile> source)
-  {
-    if (source == null)
-      return null;
-
-    var tmp126 = new List<TFile>(source.Count);
-    foreach (var elem in source)
-      tmp126.Add((elem != null) ? elem.DeepCopy() : null);
-    return tmp126;
   }
 
 
@@ -172,18 +124,6 @@ public static class commonExtensions
   public static int GetHashCode(this List<TTestConnectionResult> instance)
   {
     return TCollections.GetHashCode(instance);
-  }
-
-
-  public static List<TTestConnectionResult> DeepCopy(this List<TTestConnectionResult> source)
-  {
-    if (source == null)
-      return null;
-
-    var tmp128 = new List<TTestConnectionResult>(source.Count);
-    foreach (var elem in source)
-      tmp128.Add((elem != null) ? elem.DeepCopy() : null);
-    return tmp128;
   }
 
 
