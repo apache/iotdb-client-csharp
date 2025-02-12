@@ -37,6 +37,18 @@ public static class clientExtensions
   }
 
 
+  public static Dictionary<string, int> DeepCopy(this Dictionary<string, int> source)
+  {
+    if (source == null)
+      return null;
+
+    var tmp743 = new Dictionary<string, int>(source.Count);
+    foreach (var pair in source)
+      tmp743.Add((pair.Key != null) ? pair.Key : null, pair.Value);
+    return tmp743;
+  }
+
+
   public static bool Equals(this Dictionary<string, string> instance, object that)
   {
     if (!(that is Dictionary<string, string> other)) return false;
@@ -49,6 +61,18 @@ public static class clientExtensions
   public static int GetHashCode(this Dictionary<string, string> instance)
   {
     return TCollections.GetHashCode(instance);
+  }
+
+
+  public static Dictionary<string, string> DeepCopy(this Dictionary<string, string> source)
+  {
+    if (source == null)
+      return null;
+
+    var tmp744 = new Dictionary<string, string>(source.Count);
+    foreach (var pair in source)
+      tmp744.Add((pair.Key != null) ? pair.Key : null, (pair.Value != null) ? pair.Value : null);
+    return tmp744;
   }
 
 
@@ -67,6 +91,18 @@ public static class clientExtensions
   }
 
 
+  public static List<Dictionary<string, string>> DeepCopy(this List<Dictionary<string, string>> source)
+  {
+    if (source == null)
+      return null;
+
+    var tmp745 = new List<Dictionary<string, string>>(source.Count);
+    foreach (var elem in source)
+      tmp745.Add((elem != null) ? elem.DeepCopy() : null);
+    return tmp745;
+  }
+
+
   public static bool Equals(this List<List<int>> instance, object that)
   {
     if (!(that is List<List<int>> other)) return false;
@@ -79,6 +115,18 @@ public static class clientExtensions
   public static int GetHashCode(this List<List<int>> instance)
   {
     return TCollections.GetHashCode(instance);
+  }
+
+
+  public static List<List<int>> DeepCopy(this List<List<int>> source)
+  {
+    if (source == null)
+      return null;
+
+    var tmp746 = new List<List<int>>(source.Count);
+    foreach (var elem in source)
+      tmp746.Add((elem != null) ? elem.DeepCopy() : null);
+    return tmp746;
   }
 
 
@@ -97,6 +145,18 @@ public static class clientExtensions
   }
 
 
+  public static List<List<string>> DeepCopy(this List<List<string>> source)
+  {
+    if (source == null)
+      return null;
+
+    var tmp747 = new List<List<string>>(source.Count);
+    foreach (var elem in source)
+      tmp747.Add((elem != null) ? elem.DeepCopy() : null);
+    return tmp747;
+  }
+
+
   public static bool Equals(this List<TAggregationType> instance, object that)
   {
     if (!(that is List<TAggregationType> other)) return false;
@@ -109,6 +169,18 @@ public static class clientExtensions
   public static int GetHashCode(this List<TAggregationType> instance)
   {
     return TCollections.GetHashCode(instance);
+  }
+
+
+  public static List<TAggregationType> DeepCopy(this List<TAggregationType> source)
+  {
+    if (source == null)
+      return null;
+
+    var tmp748 = new List<TAggregationType>(source.Count);
+    foreach (var elem in source)
+      tmp748.Add(elem);
+    return tmp748;
   }
 
 
@@ -127,6 +199,18 @@ public static class clientExtensions
   }
 
 
+  public static List<TSConnectionInfo> DeepCopy(this List<TSConnectionInfo> source)
+  {
+    if (source == null)
+      return null;
+
+    var tmp749 = new List<TSConnectionInfo>(source.Count);
+    foreach (var elem in source)
+      tmp749.Add((elem != null) ? elem.DeepCopy() : null);
+    return tmp749;
+  }
+
+
   public static bool Equals(this List<TSStatus> instance, object that)
   {
     if (!(that is List<TSStatus> other)) return false;
@@ -139,6 +223,18 @@ public static class clientExtensions
   public static int GetHashCode(this List<TSStatus> instance)
   {
     return TCollections.GetHashCode(instance);
+  }
+
+
+  public static List<TSStatus> DeepCopy(this List<TSStatus> source)
+  {
+    if (source == null)
+      return null;
+
+    var tmp750 = new List<TSStatus>(source.Count);
+    foreach (var elem in source)
+      tmp750.Add((elem != null) ? elem.DeepCopy() : null);
+    return tmp750;
   }
 
 
@@ -157,6 +253,18 @@ public static class clientExtensions
   }
 
 
+  public static List<byte[]> DeepCopy(this List<byte[]> source)
+  {
+    if (source == null)
+      return null;
+
+    var tmp751 = new List<byte[]>(source.Count);
+    foreach (var elem in source)
+      tmp751.Add((elem != null) ? elem.ToArray() : null);
+    return tmp751;
+  }
+
+
   public static bool Equals(this List<int> instance, object that)
   {
     if (!(that is List<int> other)) return false;
@@ -169,6 +277,18 @@ public static class clientExtensions
   public static int GetHashCode(this List<int> instance)
   {
     return TCollections.GetHashCode(instance);
+  }
+
+
+  public static List<int> DeepCopy(this List<int> source)
+  {
+    if (source == null)
+      return null;
+
+    var tmp752 = new List<int>(source.Count);
+    foreach (var elem in source)
+      tmp752.Add(elem);
+    return tmp752;
   }
 
 
@@ -187,6 +307,18 @@ public static class clientExtensions
   }
 
 
+  public static List<long> DeepCopy(this List<long> source)
+  {
+    if (source == null)
+      return null;
+
+    var tmp753 = new List<long>(source.Count);
+    foreach (var elem in source)
+      tmp753.Add(elem);
+    return tmp753;
+  }
+
+
   public static bool Equals(this List<sbyte> instance, object that)
   {
     if (!(that is List<sbyte> other)) return false;
@@ -202,6 +334,18 @@ public static class clientExtensions
   }
 
 
+  public static List<sbyte> DeepCopy(this List<sbyte> source)
+  {
+    if (source == null)
+      return null;
+
+    var tmp754 = new List<sbyte>(source.Count);
+    foreach (var elem in source)
+      tmp754.Add(elem);
+    return tmp754;
+  }
+
+
   public static bool Equals(this List<string> instance, object that)
   {
     if (!(that is List<string> other)) return false;
@@ -214,6 +358,18 @@ public static class clientExtensions
   public static int GetHashCode(this List<string> instance)
   {
     return TCollections.GetHashCode(instance);
+  }
+
+
+  public static List<string> DeepCopy(this List<string> source)
+  {
+    if (source == null)
+      return null;
+
+    var tmp755 = new List<string>(source.Count);
+    foreach (var elem in source)
+      tmp755.Add((elem != null) ? elem : null);
+    return tmp755;
   }
 
 

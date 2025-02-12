@@ -76,6 +76,25 @@ public partial class TSFetchResultsReq : TBase
     this.IsAlign = isAlign;
   }
 
+  public TSFetchResultsReq DeepCopy()
+  {
+    var tmp87 = new TSFetchResultsReq();
+    tmp87.SessionId = this.SessionId;
+    if((Statement != null))
+    {
+      tmp87.Statement = this.Statement;
+    }
+    tmp87.FetchSize = this.FetchSize;
+    tmp87.QueryId = this.QueryId;
+    tmp87.IsAlign = this.IsAlign;
+    if(__isset.timeout)
+    {
+      tmp87.Timeout = this.Timeout;
+    }
+    tmp87.__isset.timeout = this.__isset.timeout;
+    return tmp87;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

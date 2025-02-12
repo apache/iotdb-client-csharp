@@ -64,6 +64,21 @@ public partial class TPipeTransferResp : TBase
     this.Status = status;
   }
 
+  public TPipeTransferResp DeepCopy()
+  {
+    var tmp451 = new TPipeTransferResp();
+    if((Status != null))
+    {
+      tmp451.Status = (TSStatus)this.Status.DeepCopy();
+    }
+    if((Body != null) && __isset.body)
+    {
+      tmp451.Body = this.Body.ToArray();
+    }
+    tmp451.__isset.body = this.__isset.body;
+    return tmp451;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

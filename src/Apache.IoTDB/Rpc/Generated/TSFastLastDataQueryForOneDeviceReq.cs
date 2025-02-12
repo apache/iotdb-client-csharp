@@ -136,6 +136,51 @@ public partial class TSFastLastDataQueryForOneDeviceReq : TBase
     this.StatementId = statementId;
   }
 
+  public TSFastLastDataQueryForOneDeviceReq DeepCopy()
+  {
+    var tmp330 = new TSFastLastDataQueryForOneDeviceReq();
+    tmp330.SessionId = this.SessionId;
+    if((Db != null))
+    {
+      tmp330.Db = this.Db;
+    }
+    if((DeviceId != null))
+    {
+      tmp330.DeviceId = this.DeviceId;
+    }
+    if((Sensors != null))
+    {
+      tmp330.Sensors = this.Sensors.DeepCopy();
+    }
+    if(__isset.fetchSize)
+    {
+      tmp330.FetchSize = this.FetchSize;
+    }
+    tmp330.__isset.fetchSize = this.__isset.fetchSize;
+    tmp330.StatementId = this.StatementId;
+    if(__isset.enableRedirectQuery)
+    {
+      tmp330.EnableRedirectQuery = this.EnableRedirectQuery;
+    }
+    tmp330.__isset.enableRedirectQuery = this.__isset.enableRedirectQuery;
+    if(__isset.jdbcQuery)
+    {
+      tmp330.JdbcQuery = this.JdbcQuery;
+    }
+    tmp330.__isset.jdbcQuery = this.__isset.jdbcQuery;
+    if(__isset.timeout)
+    {
+      tmp330.Timeout = this.Timeout;
+    }
+    tmp330.__isset.timeout = this.__isset.timeout;
+    if(__isset.legalPathNodes)
+    {
+      tmp330.LegalPathNodes = this.LegalPathNodes;
+    }
+    tmp330.__isset.legalPathNodes = this.__isset.legalPathNodes;
+    return tmp330;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -195,13 +240,13 @@ public partial class TSFastLastDataQueryForOneDeviceReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list299 = await iprot.ReadListBeginAsync(cancellationToken);
-                Sensors = new List<string>(_list299.Count);
-                for(int _i300 = 0; _i300 < _list299.Count; ++_i300)
+                TList _list331 = await iprot.ReadListBeginAsync(cancellationToken);
+                Sensors = new List<string>(_list331.Count);
+                for(int _i332 = 0; _i332 < _list331.Count; ++_i332)
                 {
-                  string _elem301;
-                  _elem301 = await iprot.ReadStringAsync(cancellationToken);
-                  Sensors.Add(_elem301);
+                  string _elem333;
+                  _elem333 = await iprot.ReadStringAsync(cancellationToken);
+                  Sensors.Add(_elem333);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -349,9 +394,9 @@ public partial class TSFastLastDataQueryForOneDeviceReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Sensors.Count), cancellationToken);
-          foreach (string _iter302 in Sensors)
+          foreach (string _iter334 in Sensors)
           {
-            await oprot.WriteStringAsync(_iter302, cancellationToken);
+            await oprot.WriteStringAsync(_iter334, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

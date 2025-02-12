@@ -53,7 +53,7 @@ namespace Apache.IoTDB.UserCase
             var session_pool = new SessionPool(host, port, pool_size);
             await session_pool.Open(false);
 
-            await session_pool.DeleteStorageGroupAsync("root.ln.wf01.wt01");
+            await session_pool.DeleteDatabaseAsync("root.ln.wf01.wt01");
             var status = await session_pool.CreateTimeSeries("root.ln.wf01.wt01.status", TSDataType.BOOLEAN, TSEncoding.PLAIN, Compressor.SNAPPY);
             status = await session_pool.CreateTimeSeries("root.ln.wf01.wt01.temperature", TSDataType.DOUBLE, TSEncoding.PLAIN, Compressor.SNAPPY);
             status = await session_pool.CreateTimeSeries("root.ln.wf01.wt01.hardware", TSDataType.TEXT, TSEncoding.PLAIN, Compressor.SNAPPY);

@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Apache.IoTDB
 {
@@ -92,6 +93,33 @@ namespace Apache.IoTDB
                 throw new ArgumentException("No seed node URLs provided.");
             }
             return nodeUrls.Select(ParseTEndPointIpv4AndIpv6Url).ToList();
+        }
+
+        public static DateTime ParseIntToDate(int dateInt)
+        {
+            if (dateInt < 10000101 || dateInt > 99991231)
+            {
+                throw new ArgumentException("Date must be between 10000101 and 99991231.");
+            }
+            return DateTime.TryParseExact(dateInt.ToString(), "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out DateTime date) ? date : throw new ArgumentException("Date must be between 10000101 and 99991231.");
+        }
+
+        public static int ParseDateToInt(DateTime? dateTime)
+        {
+          if (dateTime == null)
+          {
+              throw new ArgumentException("Date expression is none or empty.");
+          }
+          if(dateTime.Value.Year<1000)
+          {
+              throw new ArgumentException("Year must be between 1000 and 9999.");
+          }
+          return dateTime.Value.Year * 10000 + dateTime.Value.Month * 100 + dateTime.Value.Day;
+        }
+
+        public static string ByteArrayToHexString(byte[] bytes)
+        {
+            return "0x" + BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
         }
     }
 }

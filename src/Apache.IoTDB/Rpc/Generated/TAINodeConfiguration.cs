@@ -29,35 +29,35 @@ using Thrift.Processor;
 #pragma warning disable IDE1006  // parts of the code use IDL spelling
 
 
-public partial class TSGetTimeZoneResp : TBase
+public partial class TAINodeConfiguration : TBase
 {
 
-  public TSStatus Status { get; set; }
+  public TAINodeLocation Location { get; set; }
 
-  public string TimeZone { get; set; }
+  public TNodeResource Resource { get; set; }
 
-  public TSGetTimeZoneResp()
+  public TAINodeConfiguration()
   {
   }
 
-  public TSGetTimeZoneResp(TSStatus status, string timeZone) : this()
+  public TAINodeConfiguration(TAINodeLocation location, TNodeResource resource) : this()
   {
-    this.Status = status;
-    this.TimeZone = timeZone;
+    this.Location = location;
+    this.Resource = resource;
   }
 
-  public TSGetTimeZoneResp DeepCopy()
+  public TAINodeConfiguration DeepCopy()
   {
-    var tmp103 = new TSGetTimeZoneResp();
-    if((Status != null))
+    var tmp30 = new TAINodeConfiguration();
+    if((Location != null))
     {
-      tmp103.Status = (TSStatus)this.Status.DeepCopy();
+      tmp30.Location = (TAINodeLocation)this.Location.DeepCopy();
     }
-    if((TimeZone != null))
+    if((Resource != null))
     {
-      tmp103.TimeZone = this.TimeZone;
+      tmp30.Resource = (TNodeResource)this.Resource.DeepCopy();
     }
-    return tmp103;
+    return tmp30;
   }
 
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -65,8 +65,8 @@ public partial class TSGetTimeZoneResp : TBase
     iprot.IncrementRecursionDepth();
     try
     {
-      bool isset_status = false;
-      bool isset_timeZone = false;
+      bool isset_location = false;
+      bool isset_resource = false;
       TField field;
       await iprot.ReadStructBeginAsync(cancellationToken);
       while (true)
@@ -82,9 +82,9 @@ public partial class TSGetTimeZoneResp : TBase
           case 1:
             if (field.Type == TType.Struct)
             {
-              Status = new TSStatus();
-              await Status.ReadAsync(iprot, cancellationToken);
-              isset_status = true;
+              Location = new TAINodeLocation();
+              await Location.ReadAsync(iprot, cancellationToken);
+              isset_location = true;
             }
             else
             {
@@ -92,10 +92,11 @@ public partial class TSGetTimeZoneResp : TBase
             }
             break;
           case 2:
-            if (field.Type == TType.String)
+            if (field.Type == TType.Struct)
             {
-              TimeZone = await iprot.ReadStringAsync(cancellationToken);
-              isset_timeZone = true;
+              Resource = new TNodeResource();
+              await Resource.ReadAsync(iprot, cancellationToken);
+              isset_resource = true;
             }
             else
             {
@@ -111,11 +112,11 @@ public partial class TSGetTimeZoneResp : TBase
       }
 
       await iprot.ReadStructEndAsync(cancellationToken);
-      if (!isset_status)
+      if (!isset_location)
       {
         throw new TProtocolException(TProtocolException.INVALID_DATA);
       }
-      if (!isset_timeZone)
+      if (!isset_resource)
       {
         throw new TProtocolException(TProtocolException.INVALID_DATA);
       }
@@ -131,25 +132,25 @@ public partial class TSGetTimeZoneResp : TBase
     oprot.IncrementRecursionDepth();
     try
     {
-      var struc = new TStruct("TSGetTimeZoneResp");
+      var struc = new TStruct("TAINodeConfiguration");
       await oprot.WriteStructBeginAsync(struc, cancellationToken);
       var field = new TField();
-      if((Status != null))
+      if((Location != null))
       {
-        field.Name = "status";
+        field.Name = "location";
         field.Type = TType.Struct;
         field.ID = 1;
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
-        await Status.WriteAsync(oprot, cancellationToken);
+        await Location.WriteAsync(oprot, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
       }
-      if((TimeZone != null))
+      if((Resource != null))
       {
-        field.Name = "timeZone";
-        field.Type = TType.String;
+        field.Name = "resource";
+        field.Type = TType.Struct;
         field.ID = 2;
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
-        await oprot.WriteStringAsync(TimeZone, cancellationToken);
+        await Resource.WriteAsync(oprot, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
       }
       await oprot.WriteFieldStopAsync(cancellationToken);
@@ -163,22 +164,22 @@ public partial class TSGetTimeZoneResp : TBase
 
   public override bool Equals(object that)
   {
-    if (!(that is TSGetTimeZoneResp other)) return false;
+    if (!(that is TAINodeConfiguration other)) return false;
     if (ReferenceEquals(this, other)) return true;
-    return System.Object.Equals(Status, other.Status)
-      && System.Object.Equals(TimeZone, other.TimeZone);
+    return System.Object.Equals(Location, other.Location)
+      && System.Object.Equals(Resource, other.Resource);
   }
 
   public override int GetHashCode() {
     int hashcode = 157;
     unchecked {
-      if((Status != null))
+      if((Location != null))
       {
-        hashcode = (hashcode * 397) + Status.GetHashCode();
+        hashcode = (hashcode * 397) + Location.GetHashCode();
       }
-      if((TimeZone != null))
+      if((Resource != null))
       {
-        hashcode = (hashcode * 397) + TimeZone.GetHashCode();
+        hashcode = (hashcode * 397) + Resource.GetHashCode();
       }
     }
     return hashcode;
@@ -186,16 +187,16 @@ public partial class TSGetTimeZoneResp : TBase
 
   public override string ToString()
   {
-    var sb = new StringBuilder("TSGetTimeZoneResp(");
-    if((Status != null))
+    var sb = new StringBuilder("TAINodeConfiguration(");
+    if((Location != null))
     {
-      sb.Append(", Status: ");
-      Status.ToString(sb);
+      sb.Append(", Location: ");
+      Location.ToString(sb);
     }
-    if((TimeZone != null))
+    if((Resource != null))
     {
-      sb.Append(", TimeZone: ");
-      TimeZone.ToString(sb);
+      sb.Append(", Resource: ");
+      Resource.ToString(sb);
     }
     sb.Append(')');
     return sb.ToString();

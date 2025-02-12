@@ -81,10 +81,10 @@ var tablet =
 
 | api name                   | parameters                                                   | notes                       | use example                                                  |
 | -------------------------- | ------------------------------------------------------------ | --------------------------- | ------------------------------------------------------------ |
-| SetStorageGroup            | string                                                       | set storage group           | session_pool.SetStorageGroup("root.97209_TEST_CSHARP_CLIENT_GROUP_01") |
+| SetStorageGroup            | string                                                       | set storage group           | session_pool.CreateDatabase("root.97209_TEST_CSHARP_CLIENT_GROUP_01") |
 | CreateTimeSeries           | string, TSDataType, TSEncoding, Compressor                   | create time series          | session_pool.InsertTabletsAsync(tablets)                     |
-| DeleteStorageGroupAsync    | string                                                       | delete single storage group | session_pool.DeleteStorageGroupAsync("root.97209_TEST_CSHARP_CLIENT_GROUP_01") |
-| DeleteStorageGroupsAsync   | List<string>                                                 | delete storage group        | session_pool.DeleteStorageGroupAsync("root.97209_TEST_CSHARP_CLIENT_GROUP") |
+| DeleteStorageGroupAsync    | string                                                       | delete single storage group | session_pool.DeleteDatabaseAsync("root.97209_TEST_CSHARP_CLIENT_GROUP_01") |
+| DeleteStorageGroupsAsync   | List<string>                                                 | delete storage group        | session_pool.DeleteDatabaseAsync("root.97209_TEST_CSHARP_CLIENT_GROUP") |
 | CreateMultiTimeSeriesAsync | List<string>, List<TSDataType> , List<TSEncoding> , List<Compressor> | create multi time series    | session_pool.CreateMultiTimeSeriesAsync(ts_path_lst, data_type_lst, encoding_lst, compressor_lst); |
 | DeleteTimeSeriesAsync      | List<string>                                                 | delete time series          |                                                              |
 | DeleteTimeSeriesAsync      | string                                                       | delete time series          |                                                              |

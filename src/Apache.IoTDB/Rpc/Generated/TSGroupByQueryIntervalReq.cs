@@ -158,6 +158,54 @@ public partial class TSGroupByQueryIntervalReq : TBase
     this.AggregationType = aggregationType;
   }
 
+  public TSGroupByQueryIntervalReq DeepCopy()
+  {
+    var tmp346 = new TSGroupByQueryIntervalReq();
+    tmp346.SessionId = this.SessionId;
+    tmp346.StatementId = this.StatementId;
+    if((Device != null))
+    {
+      tmp346.Device = this.Device;
+    }
+    if((Measurement != null))
+    {
+      tmp346.Measurement = this.Measurement;
+    }
+    tmp346.DataType = this.DataType;
+    tmp346.AggregationType = this.AggregationType;
+    if((Database != null) && __isset.database)
+    {
+      tmp346.Database = this.Database;
+    }
+    tmp346.__isset.database = this.__isset.database;
+    if(__isset.startTime)
+    {
+      tmp346.StartTime = this.StartTime;
+    }
+    tmp346.__isset.startTime = this.__isset.startTime;
+    if(__isset.endTime)
+    {
+      tmp346.EndTime = this.EndTime;
+    }
+    tmp346.__isset.endTime = this.__isset.endTime;
+    if(__isset.interval)
+    {
+      tmp346.Interval = this.Interval;
+    }
+    tmp346.__isset.interval = this.__isset.interval;
+    if(__isset.fetchSize)
+    {
+      tmp346.FetchSize = this.FetchSize;
+    }
+    tmp346.__isset.fetchSize = this.__isset.fetchSize;
+    if(__isset.timeout)
+    {
+      tmp346.Timeout = this.Timeout;
+    }
+    tmp346.__isset.timeout = this.__isset.timeout;
+    return tmp346;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

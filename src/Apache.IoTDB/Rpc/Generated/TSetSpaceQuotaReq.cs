@@ -46,6 +46,20 @@ public partial class TSetSpaceQuotaReq : TBase
     this.SpaceLimit = spaceLimit;
   }
 
+  public TSetSpaceQuotaReq DeepCopy()
+  {
+    var tmp84 = new TSetSpaceQuotaReq();
+    if((Database != null))
+    {
+      tmp84.Database = this.Database.DeepCopy();
+    }
+    if((SpaceLimit != null))
+    {
+      tmp84.SpaceLimit = (TSpaceQuota)this.SpaceLimit.DeepCopy();
+    }
+    return tmp84;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -69,13 +83,13 @@ public partial class TSetSpaceQuotaReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list59 = await iprot.ReadListBeginAsync(cancellationToken);
-                Database = new List<string>(_list59.Count);
-                for(int _i60 = 0; _i60 < _list59.Count; ++_i60)
+                TList _list85 = await iprot.ReadListBeginAsync(cancellationToken);
+                Database = new List<string>(_list85.Count);
+                for(int _i86 = 0; _i86 < _list85.Count; ++_i86)
                 {
-                  string _elem61;
-                  _elem61 = await iprot.ReadStringAsync(cancellationToken);
-                  Database.Add(_elem61);
+                  string _elem87;
+                  _elem87 = await iprot.ReadStringAsync(cancellationToken);
+                  Database.Add(_elem87);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -138,9 +152,9 @@ public partial class TSetSpaceQuotaReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Database.Count), cancellationToken);
-          foreach (string _iter62 in Database)
+          foreach (string _iter88 in Database)
           {
-            await oprot.WriteStringAsync(_iter62, cancellationToken);
+            await oprot.WriteStringAsync(_iter88, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

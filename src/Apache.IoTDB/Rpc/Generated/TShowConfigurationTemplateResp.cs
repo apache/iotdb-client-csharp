@@ -46,6 +46,20 @@ public partial class TShowConfigurationTemplateResp : TBase
     this.Content = content;
   }
 
+  public TShowConfigurationTemplateResp DeepCopy()
+  {
+    var tmp118 = new TShowConfigurationTemplateResp();
+    if((Status != null))
+    {
+      tmp118.Status = (TSStatus)this.Status.DeepCopy();
+    }
+    if((Content != null))
+    {
+      tmp118.Content = this.Content;
+    }
+    return tmp118;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

@@ -67,6 +67,19 @@ public partial class TPipeSubscribeReq : TBase
     this.Type = type;
   }
 
+  public TPipeSubscribeReq DeepCopy()
+  {
+    var tmp453 = new TPipeSubscribeReq();
+    tmp453.Version = this.Version;
+    tmp453.Type = this.Type;
+    if((Body != null) && __isset.body)
+    {
+      tmp453.Body = this.Body.ToArray();
+    }
+    tmp453.__isset.body = this.__isset.body;
+    return tmp453;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

@@ -46,6 +46,20 @@ public partial class TRegionReplicaSet : TBase
     this.DataNodeLocations = dataNodeLocations;
   }
 
+  public TRegionReplicaSet DeepCopy()
+  {
+    var tmp14 = new TRegionReplicaSet();
+    if((RegionId != null))
+    {
+      tmp14.RegionId = (TConsensusGroupId)this.RegionId.DeepCopy();
+    }
+    if((DataNodeLocations != null))
+    {
+      tmp14.DataNodeLocations = this.DataNodeLocations.DeepCopy();
+    }
+    return tmp14;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -81,14 +95,14 @@ public partial class TRegionReplicaSet : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list9 = await iprot.ReadListBeginAsync(cancellationToken);
-                DataNodeLocations = new List<TDataNodeLocation>(_list9.Count);
-                for(int _i10 = 0; _i10 < _list9.Count; ++_i10)
+                TList _list15 = await iprot.ReadListBeginAsync(cancellationToken);
+                DataNodeLocations = new List<TDataNodeLocation>(_list15.Count);
+                for(int _i16 = 0; _i16 < _list15.Count; ++_i16)
                 {
-                  TDataNodeLocation _elem11;
-                  _elem11 = new TDataNodeLocation();
-                  await _elem11.ReadAsync(iprot, cancellationToken);
-                  DataNodeLocations.Add(_elem11);
+                  TDataNodeLocation _elem17;
+                  _elem17 = new TDataNodeLocation();
+                  await _elem17.ReadAsync(iprot, cancellationToken);
+                  DataNodeLocations.Add(_elem17);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -148,9 +162,9 @@ public partial class TRegionReplicaSet : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Struct, DataNodeLocations.Count), cancellationToken);
-          foreach (TDataNodeLocation _iter12 in DataNodeLocations)
+          foreach (TDataNodeLocation _iter18 in DataNodeLocations)
           {
-            await _iter12.WriteAsync(oprot, cancellationToken);
+            await _iter18.WriteAsync(oprot, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

@@ -46,6 +46,17 @@ public partial class TSSetTimeZoneReq : TBase
     this.TimeZone = timeZone;
   }
 
+  public TSSetTimeZoneReq DeepCopy()
+  {
+    var tmp105 = new TSSetTimeZoneReq();
+    tmp105.SessionId = this.SessionId;
+    if((TimeZone != null))
+    {
+      tmp105.TimeZone = this.TimeZone;
+    }
+    return tmp105;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

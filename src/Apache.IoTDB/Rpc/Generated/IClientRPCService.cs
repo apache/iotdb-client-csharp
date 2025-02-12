@@ -4354,6 +4354,17 @@ public partial class IClientRPCService
       {
       }
 
+      public executeQueryStatementV2Args DeepCopy()
+      {
+        var tmp471 = new executeQueryStatementV2Args();
+        if((Req != null) && __isset.req)
+        {
+          tmp471.Req = (TSExecuteStatementReq)this.Req.DeepCopy();
+        }
+        tmp471.__isset.req = this.__isset.req;
+        return tmp471;
+      }
+
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
       {
         iprot.IncrementRecursionDepth();
@@ -4445,10 +4456,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeQueryStatementV2_args(");
-        int tmp417 = 0;
+        int tmp472 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp417++) { sb.Append(", "); }
+          if(0 < tmp472++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -4484,6 +4495,17 @@ public partial class IClientRPCService
 
       public executeQueryStatementV2Result()
       {
+      }
+
+      public executeQueryStatementV2Result DeepCopy()
+      {
+        var tmp473 = new executeQueryStatementV2Result();
+        if((Success != null) && __isset.success)
+        {
+          tmp473.Success = (TSExecuteStatementResp)this.Success.DeepCopy();
+        }
+        tmp473.__isset.success = this.__isset.success;
+        return tmp473;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -4581,10 +4603,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeQueryStatementV2_result(");
-        int tmp418 = 0;
+        int tmp474 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp418++) { sb.Append(", "); }
+          if(0 < tmp474++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -4620,6 +4642,17 @@ public partial class IClientRPCService
 
       public executeUpdateStatementV2Args()
       {
+      }
+
+      public executeUpdateStatementV2Args DeepCopy()
+      {
+        var tmp475 = new executeUpdateStatementV2Args();
+        if((Req != null) && __isset.req)
+        {
+          tmp475.Req = (TSExecuteStatementReq)this.Req.DeepCopy();
+        }
+        tmp475.__isset.req = this.__isset.req;
+        return tmp475;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -4713,10 +4746,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeUpdateStatementV2_args(");
-        int tmp419 = 0;
+        int tmp476 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp419++) { sb.Append(", "); }
+          if(0 < tmp476++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -4752,6 +4785,17 @@ public partial class IClientRPCService
 
       public executeUpdateStatementV2Result()
       {
+      }
+
+      public executeUpdateStatementV2Result DeepCopy()
+      {
+        var tmp477 = new executeUpdateStatementV2Result();
+        if((Success != null) && __isset.success)
+        {
+          tmp477.Success = (TSExecuteStatementResp)this.Success.DeepCopy();
+        }
+        tmp477.__isset.success = this.__isset.success;
+        return tmp477;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -4849,10 +4893,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeUpdateStatementV2_result(");
-        int tmp420 = 0;
+        int tmp478 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp420++) { sb.Append(", "); }
+          if(0 < tmp478++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -4888,6 +4932,17 @@ public partial class IClientRPCService
 
       public executeStatementV2Args()
       {
+      }
+
+      public executeStatementV2Args DeepCopy()
+      {
+        var tmp479 = new executeStatementV2Args();
+        if((Req != null) && __isset.req)
+        {
+          tmp479.Req = (TSExecuteStatementReq)this.Req.DeepCopy();
+        }
+        tmp479.__isset.req = this.__isset.req;
+        return tmp479;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -4981,10 +5036,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeStatementV2_args(");
-        int tmp421 = 0;
+        int tmp480 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp421++) { sb.Append(", "); }
+          if(0 < tmp480++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -5020,6 +5075,17 @@ public partial class IClientRPCService
 
       public executeStatementV2Result()
       {
+      }
+
+      public executeStatementV2Result DeepCopy()
+      {
+        var tmp481 = new executeStatementV2Result();
+        if((Success != null) && __isset.success)
+        {
+          tmp481.Success = (TSExecuteStatementResp)this.Success.DeepCopy();
+        }
+        tmp481.__isset.success = this.__isset.success;
+        return tmp481;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -5117,10 +5183,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeStatementV2_result(");
-        int tmp422 = 0;
+        int tmp482 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp422++) { sb.Append(", "); }
+          if(0 < tmp482++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -5156,6 +5222,17 @@ public partial class IClientRPCService
 
       public executeRawDataQueryV2Args()
       {
+      }
+
+      public executeRawDataQueryV2Args DeepCopy()
+      {
+        var tmp483 = new executeRawDataQueryV2Args();
+        if((Req != null) && __isset.req)
+        {
+          tmp483.Req = (TSRawDataQueryReq)this.Req.DeepCopy();
+        }
+        tmp483.__isset.req = this.__isset.req;
+        return tmp483;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -5249,10 +5326,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeRawDataQueryV2_args(");
-        int tmp423 = 0;
+        int tmp484 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp423++) { sb.Append(", "); }
+          if(0 < tmp484++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -5288,6 +5365,17 @@ public partial class IClientRPCService
 
       public executeRawDataQueryV2Result()
       {
+      }
+
+      public executeRawDataQueryV2Result DeepCopy()
+      {
+        var tmp485 = new executeRawDataQueryV2Result();
+        if((Success != null) && __isset.success)
+        {
+          tmp485.Success = (TSExecuteStatementResp)this.Success.DeepCopy();
+        }
+        tmp485.__isset.success = this.__isset.success;
+        return tmp485;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -5385,10 +5473,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeRawDataQueryV2_result(");
-        int tmp424 = 0;
+        int tmp486 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp424++) { sb.Append(", "); }
+          if(0 < tmp486++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -5424,6 +5512,17 @@ public partial class IClientRPCService
 
       public executeLastDataQueryV2Args()
       {
+      }
+
+      public executeLastDataQueryV2Args DeepCopy()
+      {
+        var tmp487 = new executeLastDataQueryV2Args();
+        if((Req != null) && __isset.req)
+        {
+          tmp487.Req = (TSLastDataQueryReq)this.Req.DeepCopy();
+        }
+        tmp487.__isset.req = this.__isset.req;
+        return tmp487;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -5517,10 +5616,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeLastDataQueryV2_args(");
-        int tmp425 = 0;
+        int tmp488 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp425++) { sb.Append(", "); }
+          if(0 < tmp488++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -5556,6 +5655,17 @@ public partial class IClientRPCService
 
       public executeLastDataQueryV2Result()
       {
+      }
+
+      public executeLastDataQueryV2Result DeepCopy()
+      {
+        var tmp489 = new executeLastDataQueryV2Result();
+        if((Success != null) && __isset.success)
+        {
+          tmp489.Success = (TSExecuteStatementResp)this.Success.DeepCopy();
+        }
+        tmp489.__isset.success = this.__isset.success;
+        return tmp489;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -5653,10 +5763,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeLastDataQueryV2_result(");
-        int tmp426 = 0;
+        int tmp490 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp426++) { sb.Append(", "); }
+          if(0 < tmp490++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -5692,6 +5802,17 @@ public partial class IClientRPCService
 
       public executeFastLastDataQueryForOneDeviceV2Args()
       {
+      }
+
+      public executeFastLastDataQueryForOneDeviceV2Args DeepCopy()
+      {
+        var tmp491 = new executeFastLastDataQueryForOneDeviceV2Args();
+        if((Req != null) && __isset.req)
+        {
+          tmp491.Req = (TSFastLastDataQueryForOneDeviceReq)this.Req.DeepCopy();
+        }
+        tmp491.__isset.req = this.__isset.req;
+        return tmp491;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -5785,10 +5906,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeFastLastDataQueryForOneDeviceV2_args(");
-        int tmp427 = 0;
+        int tmp492 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp427++) { sb.Append(", "); }
+          if(0 < tmp492++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -5824,6 +5945,17 @@ public partial class IClientRPCService
 
       public executeFastLastDataQueryForOneDeviceV2Result()
       {
+      }
+
+      public executeFastLastDataQueryForOneDeviceV2Result DeepCopy()
+      {
+        var tmp493 = new executeFastLastDataQueryForOneDeviceV2Result();
+        if((Success != null) && __isset.success)
+        {
+          tmp493.Success = (TSExecuteStatementResp)this.Success.DeepCopy();
+        }
+        tmp493.__isset.success = this.__isset.success;
+        return tmp493;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -5921,10 +6053,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeFastLastDataQueryForOneDeviceV2_result(");
-        int tmp428 = 0;
+        int tmp494 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp428++) { sb.Append(", "); }
+          if(0 < tmp494++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -5960,6 +6092,17 @@ public partial class IClientRPCService
 
       public executeAggregationQueryV2Args()
       {
+      }
+
+      public executeAggregationQueryV2Args DeepCopy()
+      {
+        var tmp495 = new executeAggregationQueryV2Args();
+        if((Req != null) && __isset.req)
+        {
+          tmp495.Req = (TSAggregationQueryReq)this.Req.DeepCopy();
+        }
+        tmp495.__isset.req = this.__isset.req;
+        return tmp495;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -6053,10 +6196,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeAggregationQueryV2_args(");
-        int tmp429 = 0;
+        int tmp496 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp429++) { sb.Append(", "); }
+          if(0 < tmp496++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -6092,6 +6235,17 @@ public partial class IClientRPCService
 
       public executeAggregationQueryV2Result()
       {
+      }
+
+      public executeAggregationQueryV2Result DeepCopy()
+      {
+        var tmp497 = new executeAggregationQueryV2Result();
+        if((Success != null) && __isset.success)
+        {
+          tmp497.Success = (TSExecuteStatementResp)this.Success.DeepCopy();
+        }
+        tmp497.__isset.success = this.__isset.success;
+        return tmp497;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -6189,10 +6343,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeAggregationQueryV2_result(");
-        int tmp430 = 0;
+        int tmp498 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp430++) { sb.Append(", "); }
+          if(0 < tmp498++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -6228,6 +6382,17 @@ public partial class IClientRPCService
 
       public executeGroupByQueryIntervalQueryArgs()
       {
+      }
+
+      public executeGroupByQueryIntervalQueryArgs DeepCopy()
+      {
+        var tmp499 = new executeGroupByQueryIntervalQueryArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp499.Req = (TSGroupByQueryIntervalReq)this.Req.DeepCopy();
+        }
+        tmp499.__isset.req = this.__isset.req;
+        return tmp499;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -6321,10 +6486,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeGroupByQueryIntervalQuery_args(");
-        int tmp431 = 0;
+        int tmp500 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp431++) { sb.Append(", "); }
+          if(0 < tmp500++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -6360,6 +6525,17 @@ public partial class IClientRPCService
 
       public executeGroupByQueryIntervalQueryResult()
       {
+      }
+
+      public executeGroupByQueryIntervalQueryResult DeepCopy()
+      {
+        var tmp501 = new executeGroupByQueryIntervalQueryResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp501.Success = (TSExecuteStatementResp)this.Success.DeepCopy();
+        }
+        tmp501.__isset.success = this.__isset.success;
+        return tmp501;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -6457,10 +6633,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeGroupByQueryIntervalQuery_result(");
-        int tmp432 = 0;
+        int tmp502 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp432++) { sb.Append(", "); }
+          if(0 < tmp502++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -6496,6 +6672,17 @@ public partial class IClientRPCService
 
       public fetchResultsV2Args()
       {
+      }
+
+      public fetchResultsV2Args DeepCopy()
+      {
+        var tmp503 = new fetchResultsV2Args();
+        if((Req != null) && __isset.req)
+        {
+          tmp503.Req = (TSFetchResultsReq)this.Req.DeepCopy();
+        }
+        tmp503.__isset.req = this.__isset.req;
+        return tmp503;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -6589,10 +6776,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("fetchResultsV2_args(");
-        int tmp433 = 0;
+        int tmp504 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp433++) { sb.Append(", "); }
+          if(0 < tmp504++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -6628,6 +6815,17 @@ public partial class IClientRPCService
 
       public fetchResultsV2Result()
       {
+      }
+
+      public fetchResultsV2Result DeepCopy()
+      {
+        var tmp505 = new fetchResultsV2Result();
+        if((Success != null) && __isset.success)
+        {
+          tmp505.Success = (TSFetchResultsResp)this.Success.DeepCopy();
+        }
+        tmp505.__isset.success = this.__isset.success;
+        return tmp505;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -6725,10 +6923,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("fetchResultsV2_result(");
-        int tmp434 = 0;
+        int tmp506 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp434++) { sb.Append(", "); }
+          if(0 < tmp506++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -6764,6 +6962,17 @@ public partial class IClientRPCService
 
       public openSessionArgs()
       {
+      }
+
+      public openSessionArgs DeepCopy()
+      {
+        var tmp507 = new openSessionArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp507.Req = (TSOpenSessionReq)this.Req.DeepCopy();
+        }
+        tmp507.__isset.req = this.__isset.req;
+        return tmp507;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -6857,10 +7066,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("openSession_args(");
-        int tmp435 = 0;
+        int tmp508 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp435++) { sb.Append(", "); }
+          if(0 < tmp508++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -6896,6 +7105,17 @@ public partial class IClientRPCService
 
       public openSessionResult()
       {
+      }
+
+      public openSessionResult DeepCopy()
+      {
+        var tmp509 = new openSessionResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp509.Success = (TSOpenSessionResp)this.Success.DeepCopy();
+        }
+        tmp509.__isset.success = this.__isset.success;
+        return tmp509;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -6993,10 +7213,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("openSession_result(");
-        int tmp436 = 0;
+        int tmp510 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp436++) { sb.Append(", "); }
+          if(0 < tmp510++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -7032,6 +7252,17 @@ public partial class IClientRPCService
 
       public closeSessionArgs()
       {
+      }
+
+      public closeSessionArgs DeepCopy()
+      {
+        var tmp511 = new closeSessionArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp511.Req = (TSCloseSessionReq)this.Req.DeepCopy();
+        }
+        tmp511.__isset.req = this.__isset.req;
+        return tmp511;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -7125,10 +7356,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("closeSession_args(");
-        int tmp437 = 0;
+        int tmp512 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp437++) { sb.Append(", "); }
+          if(0 < tmp512++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -7164,6 +7395,17 @@ public partial class IClientRPCService
 
       public closeSessionResult()
       {
+      }
+
+      public closeSessionResult DeepCopy()
+      {
+        var tmp513 = new closeSessionResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp513.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp513.__isset.success = this.__isset.success;
+        return tmp513;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -7261,10 +7503,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("closeSession_result(");
-        int tmp438 = 0;
+        int tmp514 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp438++) { sb.Append(", "); }
+          if(0 < tmp514++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -7300,6 +7542,17 @@ public partial class IClientRPCService
 
       public executeStatementArgs()
       {
+      }
+
+      public executeStatementArgs DeepCopy()
+      {
+        var tmp515 = new executeStatementArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp515.Req = (TSExecuteStatementReq)this.Req.DeepCopy();
+        }
+        tmp515.__isset.req = this.__isset.req;
+        return tmp515;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -7393,10 +7646,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeStatement_args(");
-        int tmp439 = 0;
+        int tmp516 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp439++) { sb.Append(", "); }
+          if(0 < tmp516++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -7432,6 +7685,17 @@ public partial class IClientRPCService
 
       public executeStatementResult()
       {
+      }
+
+      public executeStatementResult DeepCopy()
+      {
+        var tmp517 = new executeStatementResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp517.Success = (TSExecuteStatementResp)this.Success.DeepCopy();
+        }
+        tmp517.__isset.success = this.__isset.success;
+        return tmp517;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -7529,10 +7793,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeStatement_result(");
-        int tmp440 = 0;
+        int tmp518 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp440++) { sb.Append(", "); }
+          if(0 < tmp518++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -7568,6 +7832,17 @@ public partial class IClientRPCService
 
       public executeBatchStatementArgs()
       {
+      }
+
+      public executeBatchStatementArgs DeepCopy()
+      {
+        var tmp519 = new executeBatchStatementArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp519.Req = (TSExecuteBatchStatementReq)this.Req.DeepCopy();
+        }
+        tmp519.__isset.req = this.__isset.req;
+        return tmp519;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -7661,10 +7936,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeBatchStatement_args(");
-        int tmp441 = 0;
+        int tmp520 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp441++) { sb.Append(", "); }
+          if(0 < tmp520++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -7700,6 +7975,17 @@ public partial class IClientRPCService
 
       public executeBatchStatementResult()
       {
+      }
+
+      public executeBatchStatementResult DeepCopy()
+      {
+        var tmp521 = new executeBatchStatementResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp521.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp521.__isset.success = this.__isset.success;
+        return tmp521;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -7797,10 +8083,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeBatchStatement_result(");
-        int tmp442 = 0;
+        int tmp522 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp442++) { sb.Append(", "); }
+          if(0 < tmp522++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -7836,6 +8122,17 @@ public partial class IClientRPCService
 
       public executeQueryStatementArgs()
       {
+      }
+
+      public executeQueryStatementArgs DeepCopy()
+      {
+        var tmp523 = new executeQueryStatementArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp523.Req = (TSExecuteStatementReq)this.Req.DeepCopy();
+        }
+        tmp523.__isset.req = this.__isset.req;
+        return tmp523;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -7929,10 +8226,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeQueryStatement_args(");
-        int tmp443 = 0;
+        int tmp524 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp443++) { sb.Append(", "); }
+          if(0 < tmp524++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -7968,6 +8265,17 @@ public partial class IClientRPCService
 
       public executeQueryStatementResult()
       {
+      }
+
+      public executeQueryStatementResult DeepCopy()
+      {
+        var tmp525 = new executeQueryStatementResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp525.Success = (TSExecuteStatementResp)this.Success.DeepCopy();
+        }
+        tmp525.__isset.success = this.__isset.success;
+        return tmp525;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -8065,10 +8373,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeQueryStatement_result(");
-        int tmp444 = 0;
+        int tmp526 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp444++) { sb.Append(", "); }
+          if(0 < tmp526++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -8104,6 +8412,17 @@ public partial class IClientRPCService
 
       public executeUpdateStatementArgs()
       {
+      }
+
+      public executeUpdateStatementArgs DeepCopy()
+      {
+        var tmp527 = new executeUpdateStatementArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp527.Req = (TSExecuteStatementReq)this.Req.DeepCopy();
+        }
+        tmp527.__isset.req = this.__isset.req;
+        return tmp527;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -8197,10 +8516,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeUpdateStatement_args(");
-        int tmp445 = 0;
+        int tmp528 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp445++) { sb.Append(", "); }
+          if(0 < tmp528++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -8236,6 +8555,17 @@ public partial class IClientRPCService
 
       public executeUpdateStatementResult()
       {
+      }
+
+      public executeUpdateStatementResult DeepCopy()
+      {
+        var tmp529 = new executeUpdateStatementResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp529.Success = (TSExecuteStatementResp)this.Success.DeepCopy();
+        }
+        tmp529.__isset.success = this.__isset.success;
+        return tmp529;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -8333,10 +8663,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeUpdateStatement_result(");
-        int tmp446 = 0;
+        int tmp530 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp446++) { sb.Append(", "); }
+          if(0 < tmp530++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -8372,6 +8702,17 @@ public partial class IClientRPCService
 
       public fetchResultsArgs()
       {
+      }
+
+      public fetchResultsArgs DeepCopy()
+      {
+        var tmp531 = new fetchResultsArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp531.Req = (TSFetchResultsReq)this.Req.DeepCopy();
+        }
+        tmp531.__isset.req = this.__isset.req;
+        return tmp531;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -8465,10 +8806,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("fetchResults_args(");
-        int tmp447 = 0;
+        int tmp532 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp447++) { sb.Append(", "); }
+          if(0 < tmp532++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -8504,6 +8845,17 @@ public partial class IClientRPCService
 
       public fetchResultsResult()
       {
+      }
+
+      public fetchResultsResult DeepCopy()
+      {
+        var tmp533 = new fetchResultsResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp533.Success = (TSFetchResultsResp)this.Success.DeepCopy();
+        }
+        tmp533.__isset.success = this.__isset.success;
+        return tmp533;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -8601,10 +8953,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("fetchResults_result(");
-        int tmp448 = 0;
+        int tmp534 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp448++) { sb.Append(", "); }
+          if(0 < tmp534++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -8640,6 +8992,17 @@ public partial class IClientRPCService
 
       public fetchMetadataArgs()
       {
+      }
+
+      public fetchMetadataArgs DeepCopy()
+      {
+        var tmp535 = new fetchMetadataArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp535.Req = (TSFetchMetadataReq)this.Req.DeepCopy();
+        }
+        tmp535.__isset.req = this.__isset.req;
+        return tmp535;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -8733,10 +9096,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("fetchMetadata_args(");
-        int tmp449 = 0;
+        int tmp536 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp449++) { sb.Append(", "); }
+          if(0 < tmp536++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -8772,6 +9135,17 @@ public partial class IClientRPCService
 
       public fetchMetadataResult()
       {
+      }
+
+      public fetchMetadataResult DeepCopy()
+      {
+        var tmp537 = new fetchMetadataResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp537.Success = (TSFetchMetadataResp)this.Success.DeepCopy();
+        }
+        tmp537.__isset.success = this.__isset.success;
+        return tmp537;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -8869,10 +9243,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("fetchMetadata_result(");
-        int tmp450 = 0;
+        int tmp538 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp450++) { sb.Append(", "); }
+          if(0 < tmp538++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -8908,6 +9282,17 @@ public partial class IClientRPCService
 
       public cancelOperationArgs()
       {
+      }
+
+      public cancelOperationArgs DeepCopy()
+      {
+        var tmp539 = new cancelOperationArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp539.Req = (TSCancelOperationReq)this.Req.DeepCopy();
+        }
+        tmp539.__isset.req = this.__isset.req;
+        return tmp539;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -9001,10 +9386,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("cancelOperation_args(");
-        int tmp451 = 0;
+        int tmp540 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp451++) { sb.Append(", "); }
+          if(0 < tmp540++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -9040,6 +9425,17 @@ public partial class IClientRPCService
 
       public cancelOperationResult()
       {
+      }
+
+      public cancelOperationResult DeepCopy()
+      {
+        var tmp541 = new cancelOperationResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp541.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp541.__isset.success = this.__isset.success;
+        return tmp541;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -9137,10 +9533,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("cancelOperation_result(");
-        int tmp452 = 0;
+        int tmp542 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp452++) { sb.Append(", "); }
+          if(0 < tmp542++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -9176,6 +9572,17 @@ public partial class IClientRPCService
 
       public closeOperationArgs()
       {
+      }
+
+      public closeOperationArgs DeepCopy()
+      {
+        var tmp543 = new closeOperationArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp543.Req = (TSCloseOperationReq)this.Req.DeepCopy();
+        }
+        tmp543.__isset.req = this.__isset.req;
+        return tmp543;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -9269,10 +9676,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("closeOperation_args(");
-        int tmp453 = 0;
+        int tmp544 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp453++) { sb.Append(", "); }
+          if(0 < tmp544++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -9308,6 +9715,17 @@ public partial class IClientRPCService
 
       public closeOperationResult()
       {
+      }
+
+      public closeOperationResult DeepCopy()
+      {
+        var tmp545 = new closeOperationResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp545.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp545.__isset.success = this.__isset.success;
+        return tmp545;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -9405,10 +9823,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("closeOperation_result(");
-        int tmp454 = 0;
+        int tmp546 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp454++) { sb.Append(", "); }
+          if(0 < tmp546++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -9444,6 +9862,17 @@ public partial class IClientRPCService
 
       public getTimeZoneArgs()
       {
+      }
+
+      public getTimeZoneArgs DeepCopy()
+      {
+        var tmp547 = new getTimeZoneArgs();
+        if(__isset.sessionId)
+        {
+          tmp547.SessionId = this.SessionId;
+        }
+        tmp547.__isset.sessionId = this.__isset.sessionId;
+        return tmp547;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -9536,10 +9965,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("getTimeZone_args(");
-        int tmp455 = 0;
+        int tmp548 = 0;
         if(__isset.sessionId)
         {
-          if(0 < tmp455++) { sb.Append(", "); }
+          if(0 < tmp548++) { sb.Append(", "); }
           sb.Append("SessionId: ");
           SessionId.ToString(sb);
         }
@@ -9575,6 +10004,17 @@ public partial class IClientRPCService
 
       public getTimeZoneResult()
       {
+      }
+
+      public getTimeZoneResult DeepCopy()
+      {
+        var tmp549 = new getTimeZoneResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp549.Success = (TSGetTimeZoneResp)this.Success.DeepCopy();
+        }
+        tmp549.__isset.success = this.__isset.success;
+        return tmp549;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -9672,10 +10112,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("getTimeZone_result(");
-        int tmp456 = 0;
+        int tmp550 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp456++) { sb.Append(", "); }
+          if(0 < tmp550++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -9711,6 +10151,17 @@ public partial class IClientRPCService
 
       public setTimeZoneArgs()
       {
+      }
+
+      public setTimeZoneArgs DeepCopy()
+      {
+        var tmp551 = new setTimeZoneArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp551.Req = (TSSetTimeZoneReq)this.Req.DeepCopy();
+        }
+        tmp551.__isset.req = this.__isset.req;
+        return tmp551;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -9804,10 +10255,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("setTimeZone_args(");
-        int tmp457 = 0;
+        int tmp552 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp457++) { sb.Append(", "); }
+          if(0 < tmp552++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -9843,6 +10294,17 @@ public partial class IClientRPCService
 
       public setTimeZoneResult()
       {
+      }
+
+      public setTimeZoneResult DeepCopy()
+      {
+        var tmp553 = new setTimeZoneResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp553.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp553.__isset.success = this.__isset.success;
+        return tmp553;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -9940,10 +10402,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("setTimeZone_result(");
-        int tmp458 = 0;
+        int tmp554 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp458++) { sb.Append(", "); }
+          if(0 < tmp554++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -9958,6 +10420,12 @@ public partial class IClientRPCService
 
       public getPropertiesArgs()
       {
+      }
+
+      public getPropertiesArgs DeepCopy()
+      {
+        var tmp555 = new getPropertiesArgs();
+        return tmp555;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -10060,6 +10528,17 @@ public partial class IClientRPCService
       {
       }
 
+      public getPropertiesResult DeepCopy()
+      {
+        var tmp557 = new getPropertiesResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp557.Success = (ServerProperties)this.Success.DeepCopy();
+        }
+        tmp557.__isset.success = this.__isset.success;
+        return tmp557;
+      }
+
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
       {
         iprot.IncrementRecursionDepth();
@@ -10155,10 +10634,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("getProperties_result(");
-        int tmp460 = 0;
+        int tmp558 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp460++) { sb.Append(", "); }
+          if(0 < tmp558++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -10209,6 +10688,22 @@ public partial class IClientRPCService
 
       public setStorageGroupArgs()
       {
+      }
+
+      public setStorageGroupArgs DeepCopy()
+      {
+        var tmp559 = new setStorageGroupArgs();
+        if(__isset.sessionId)
+        {
+          tmp559.SessionId = this.SessionId;
+        }
+        tmp559.__isset.sessionId = this.__isset.sessionId;
+        if((StorageGroup != null) && __isset.storageGroup)
+        {
+          tmp559.StorageGroup = this.StorageGroup;
+        }
+        tmp559.__isset.storageGroup = this.__isset.storageGroup;
+        return tmp559;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -10325,16 +10820,16 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("setStorageGroup_args(");
-        int tmp461 = 0;
+        int tmp560 = 0;
         if(__isset.sessionId)
         {
-          if(0 < tmp461++) { sb.Append(", "); }
+          if(0 < tmp560++) { sb.Append(", "); }
           sb.Append("SessionId: ");
           SessionId.ToString(sb);
         }
         if((StorageGroup != null) && __isset.storageGroup)
         {
-          if(0 < tmp461++) { sb.Append(", "); }
+          if(0 < tmp560++) { sb.Append(", "); }
           sb.Append("StorageGroup: ");
           StorageGroup.ToString(sb);
         }
@@ -10370,6 +10865,17 @@ public partial class IClientRPCService
 
       public setStorageGroupResult()
       {
+      }
+
+      public setStorageGroupResult DeepCopy()
+      {
+        var tmp561 = new setStorageGroupResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp561.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp561.__isset.success = this.__isset.success;
+        return tmp561;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -10467,10 +10973,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("setStorageGroup_result(");
-        int tmp462 = 0;
+        int tmp562 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp462++) { sb.Append(", "); }
+          if(0 < tmp562++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -10506,6 +11012,17 @@ public partial class IClientRPCService
 
       public createTimeseriesArgs()
       {
+      }
+
+      public createTimeseriesArgs DeepCopy()
+      {
+        var tmp563 = new createTimeseriesArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp563.Req = (TSCreateTimeseriesReq)this.Req.DeepCopy();
+        }
+        tmp563.__isset.req = this.__isset.req;
+        return tmp563;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -10599,10 +11116,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("createTimeseries_args(");
-        int tmp463 = 0;
+        int tmp564 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp463++) { sb.Append(", "); }
+          if(0 < tmp564++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -10638,6 +11155,17 @@ public partial class IClientRPCService
 
       public createTimeseriesResult()
       {
+      }
+
+      public createTimeseriesResult DeepCopy()
+      {
+        var tmp565 = new createTimeseriesResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp565.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp565.__isset.success = this.__isset.success;
+        return tmp565;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -10735,10 +11263,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("createTimeseries_result(");
-        int tmp464 = 0;
+        int tmp566 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp464++) { sb.Append(", "); }
+          if(0 < tmp566++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -10774,6 +11302,17 @@ public partial class IClientRPCService
 
       public createAlignedTimeseriesArgs()
       {
+      }
+
+      public createAlignedTimeseriesArgs DeepCopy()
+      {
+        var tmp567 = new createAlignedTimeseriesArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp567.Req = (TSCreateAlignedTimeseriesReq)this.Req.DeepCopy();
+        }
+        tmp567.__isset.req = this.__isset.req;
+        return tmp567;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -10867,10 +11406,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("createAlignedTimeseries_args(");
-        int tmp465 = 0;
+        int tmp568 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp465++) { sb.Append(", "); }
+          if(0 < tmp568++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -10906,6 +11445,17 @@ public partial class IClientRPCService
 
       public createAlignedTimeseriesResult()
       {
+      }
+
+      public createAlignedTimeseriesResult DeepCopy()
+      {
+        var tmp569 = new createAlignedTimeseriesResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp569.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp569.__isset.success = this.__isset.success;
+        return tmp569;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -11003,10 +11553,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("createAlignedTimeseries_result(");
-        int tmp466 = 0;
+        int tmp570 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp466++) { sb.Append(", "); }
+          if(0 < tmp570++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -11042,6 +11592,17 @@ public partial class IClientRPCService
 
       public createMultiTimeseriesArgs()
       {
+      }
+
+      public createMultiTimeseriesArgs DeepCopy()
+      {
+        var tmp571 = new createMultiTimeseriesArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp571.Req = (TSCreateMultiTimeseriesReq)this.Req.DeepCopy();
+        }
+        tmp571.__isset.req = this.__isset.req;
+        return tmp571;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -11135,10 +11696,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("createMultiTimeseries_args(");
-        int tmp467 = 0;
+        int tmp572 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp467++) { sb.Append(", "); }
+          if(0 < tmp572++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -11174,6 +11735,17 @@ public partial class IClientRPCService
 
       public createMultiTimeseriesResult()
       {
+      }
+
+      public createMultiTimeseriesResult DeepCopy()
+      {
+        var tmp573 = new createMultiTimeseriesResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp573.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp573.__isset.success = this.__isset.success;
+        return tmp573;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -11271,10 +11843,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("createMultiTimeseries_result(");
-        int tmp468 = 0;
+        int tmp574 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp468++) { sb.Append(", "); }
+          if(0 < tmp574++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -11327,6 +11899,22 @@ public partial class IClientRPCService
       {
       }
 
+      public deleteTimeseriesArgs DeepCopy()
+      {
+        var tmp575 = new deleteTimeseriesArgs();
+        if(__isset.sessionId)
+        {
+          tmp575.SessionId = this.SessionId;
+        }
+        tmp575.__isset.sessionId = this.__isset.sessionId;
+        if((Path != null) && __isset.path)
+        {
+          tmp575.Path = this.Path.DeepCopy();
+        }
+        tmp575.__isset.path = this.__isset.path;
+        return tmp575;
+      }
+
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
       {
         iprot.IncrementRecursionDepth();
@@ -11358,13 +11946,13 @@ public partial class IClientRPCService
                 if (field.Type == TType.List)
                 {
                   {
-                    TList _list469 = await iprot.ReadListBeginAsync(cancellationToken);
-                    Path = new List<string>(_list469.Count);
-                    for(int _i470 = 0; _i470 < _list469.Count; ++_i470)
+                    TList _list576 = await iprot.ReadListBeginAsync(cancellationToken);
+                    Path = new List<string>(_list576.Count);
+                    for(int _i577 = 0; _i577 < _list576.Count; ++_i577)
                     {
-                      string _elem471;
-                      _elem471 = await iprot.ReadStringAsync(cancellationToken);
-                      Path.Add(_elem471);
+                      string _elem578;
+                      _elem578 = await iprot.ReadStringAsync(cancellationToken);
+                      Path.Add(_elem578);
                     }
                     await iprot.ReadListEndAsync(cancellationToken);
                   }
@@ -11415,9 +12003,9 @@ public partial class IClientRPCService
             await oprot.WriteFieldBeginAsync(field, cancellationToken);
             {
               await oprot.WriteListBeginAsync(new TList(TType.String, Path.Count), cancellationToken);
-              foreach (string _iter472 in Path)
+              foreach (string _iter579 in Path)
               {
-                await oprot.WriteStringAsync(_iter472, cancellationToken);
+                await oprot.WriteStringAsync(_iter579, cancellationToken);
               }
               await oprot.WriteListEndAsync(cancellationToken);
             }
@@ -11458,16 +12046,16 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("deleteTimeseries_args(");
-        int tmp473 = 0;
+        int tmp580 = 0;
         if(__isset.sessionId)
         {
-          if(0 < tmp473++) { sb.Append(", "); }
+          if(0 < tmp580++) { sb.Append(", "); }
           sb.Append("SessionId: ");
           SessionId.ToString(sb);
         }
         if((Path != null) && __isset.path)
         {
-          if(0 < tmp473++) { sb.Append(", "); }
+          if(0 < tmp580++) { sb.Append(", "); }
           sb.Append("Path: ");
           Path.ToString(sb);
         }
@@ -11503,6 +12091,17 @@ public partial class IClientRPCService
 
       public deleteTimeseriesResult()
       {
+      }
+
+      public deleteTimeseriesResult DeepCopy()
+      {
+        var tmp581 = new deleteTimeseriesResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp581.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp581.__isset.success = this.__isset.success;
+        return tmp581;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -11600,10 +12199,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("deleteTimeseries_result(");
-        int tmp474 = 0;
+        int tmp582 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp474++) { sb.Append(", "); }
+          if(0 < tmp582++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -11656,6 +12255,22 @@ public partial class IClientRPCService
       {
       }
 
+      public deleteStorageGroupsArgs DeepCopy()
+      {
+        var tmp583 = new deleteStorageGroupsArgs();
+        if(__isset.sessionId)
+        {
+          tmp583.SessionId = this.SessionId;
+        }
+        tmp583.__isset.sessionId = this.__isset.sessionId;
+        if((StorageGroup != null) && __isset.storageGroup)
+        {
+          tmp583.StorageGroup = this.StorageGroup.DeepCopy();
+        }
+        tmp583.__isset.storageGroup = this.__isset.storageGroup;
+        return tmp583;
+      }
+
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
       {
         iprot.IncrementRecursionDepth();
@@ -11687,13 +12302,13 @@ public partial class IClientRPCService
                 if (field.Type == TType.List)
                 {
                   {
-                    TList _list475 = await iprot.ReadListBeginAsync(cancellationToken);
-                    StorageGroup = new List<string>(_list475.Count);
-                    for(int _i476 = 0; _i476 < _list475.Count; ++_i476)
+                    TList _list584 = await iprot.ReadListBeginAsync(cancellationToken);
+                    StorageGroup = new List<string>(_list584.Count);
+                    for(int _i585 = 0; _i585 < _list584.Count; ++_i585)
                     {
-                      string _elem477;
-                      _elem477 = await iprot.ReadStringAsync(cancellationToken);
-                      StorageGroup.Add(_elem477);
+                      string _elem586;
+                      _elem586 = await iprot.ReadStringAsync(cancellationToken);
+                      StorageGroup.Add(_elem586);
                     }
                     await iprot.ReadListEndAsync(cancellationToken);
                   }
@@ -11744,9 +12359,9 @@ public partial class IClientRPCService
             await oprot.WriteFieldBeginAsync(field, cancellationToken);
             {
               await oprot.WriteListBeginAsync(new TList(TType.String, StorageGroup.Count), cancellationToken);
-              foreach (string _iter478 in StorageGroup)
+              foreach (string _iter587 in StorageGroup)
               {
-                await oprot.WriteStringAsync(_iter478, cancellationToken);
+                await oprot.WriteStringAsync(_iter587, cancellationToken);
               }
               await oprot.WriteListEndAsync(cancellationToken);
             }
@@ -11787,16 +12402,16 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("deleteStorageGroups_args(");
-        int tmp479 = 0;
+        int tmp588 = 0;
         if(__isset.sessionId)
         {
-          if(0 < tmp479++) { sb.Append(", "); }
+          if(0 < tmp588++) { sb.Append(", "); }
           sb.Append("SessionId: ");
           SessionId.ToString(sb);
         }
         if((StorageGroup != null) && __isset.storageGroup)
         {
-          if(0 < tmp479++) { sb.Append(", "); }
+          if(0 < tmp588++) { sb.Append(", "); }
           sb.Append("StorageGroup: ");
           StorageGroup.ToString(sb);
         }
@@ -11832,6 +12447,17 @@ public partial class IClientRPCService
 
       public deleteStorageGroupsResult()
       {
+      }
+
+      public deleteStorageGroupsResult DeepCopy()
+      {
+        var tmp589 = new deleteStorageGroupsResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp589.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp589.__isset.success = this.__isset.success;
+        return tmp589;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -11929,10 +12555,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("deleteStorageGroups_result(");
-        int tmp480 = 0;
+        int tmp590 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp480++) { sb.Append(", "); }
+          if(0 < tmp590++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -11968,6 +12594,17 @@ public partial class IClientRPCService
 
       public insertRecordArgs()
       {
+      }
+
+      public insertRecordArgs DeepCopy()
+      {
+        var tmp591 = new insertRecordArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp591.Req = (TSInsertRecordReq)this.Req.DeepCopy();
+        }
+        tmp591.__isset.req = this.__isset.req;
+        return tmp591;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -12061,10 +12698,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertRecord_args(");
-        int tmp481 = 0;
+        int tmp592 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp481++) { sb.Append(", "); }
+          if(0 < tmp592++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -12100,6 +12737,17 @@ public partial class IClientRPCService
 
       public insertRecordResult()
       {
+      }
+
+      public insertRecordResult DeepCopy()
+      {
+        var tmp593 = new insertRecordResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp593.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp593.__isset.success = this.__isset.success;
+        return tmp593;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -12197,10 +12845,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertRecord_result(");
-        int tmp482 = 0;
+        int tmp594 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp482++) { sb.Append(", "); }
+          if(0 < tmp594++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -12236,6 +12884,17 @@ public partial class IClientRPCService
 
       public insertStringRecordArgs()
       {
+      }
+
+      public insertStringRecordArgs DeepCopy()
+      {
+        var tmp595 = new insertStringRecordArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp595.Req = (TSInsertStringRecordReq)this.Req.DeepCopy();
+        }
+        tmp595.__isset.req = this.__isset.req;
+        return tmp595;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -12329,10 +12988,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertStringRecord_args(");
-        int tmp483 = 0;
+        int tmp596 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp483++) { sb.Append(", "); }
+          if(0 < tmp596++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -12368,6 +13027,17 @@ public partial class IClientRPCService
 
       public insertStringRecordResult()
       {
+      }
+
+      public insertStringRecordResult DeepCopy()
+      {
+        var tmp597 = new insertStringRecordResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp597.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp597.__isset.success = this.__isset.success;
+        return tmp597;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -12465,10 +13135,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertStringRecord_result(");
-        int tmp484 = 0;
+        int tmp598 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp484++) { sb.Append(", "); }
+          if(0 < tmp598++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -12504,6 +13174,17 @@ public partial class IClientRPCService
 
       public insertTabletArgs()
       {
+      }
+
+      public insertTabletArgs DeepCopy()
+      {
+        var tmp599 = new insertTabletArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp599.Req = (TSInsertTabletReq)this.Req.DeepCopy();
+        }
+        tmp599.__isset.req = this.__isset.req;
+        return tmp599;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -12597,10 +13278,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertTablet_args(");
-        int tmp485 = 0;
+        int tmp600 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp485++) { sb.Append(", "); }
+          if(0 < tmp600++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -12636,6 +13317,17 @@ public partial class IClientRPCService
 
       public insertTabletResult()
       {
+      }
+
+      public insertTabletResult DeepCopy()
+      {
+        var tmp601 = new insertTabletResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp601.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp601.__isset.success = this.__isset.success;
+        return tmp601;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -12733,10 +13425,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertTablet_result(");
-        int tmp486 = 0;
+        int tmp602 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp486++) { sb.Append(", "); }
+          if(0 < tmp602++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -12772,6 +13464,17 @@ public partial class IClientRPCService
 
       public insertTabletsArgs()
       {
+      }
+
+      public insertTabletsArgs DeepCopy()
+      {
+        var tmp603 = new insertTabletsArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp603.Req = (TSInsertTabletsReq)this.Req.DeepCopy();
+        }
+        tmp603.__isset.req = this.__isset.req;
+        return tmp603;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -12865,10 +13568,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertTablets_args(");
-        int tmp487 = 0;
+        int tmp604 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp487++) { sb.Append(", "); }
+          if(0 < tmp604++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -12904,6 +13607,17 @@ public partial class IClientRPCService
 
       public insertTabletsResult()
       {
+      }
+
+      public insertTabletsResult DeepCopy()
+      {
+        var tmp605 = new insertTabletsResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp605.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp605.__isset.success = this.__isset.success;
+        return tmp605;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -13001,10 +13715,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertTablets_result(");
-        int tmp488 = 0;
+        int tmp606 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp488++) { sb.Append(", "); }
+          if(0 < tmp606++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -13040,6 +13754,17 @@ public partial class IClientRPCService
 
       public insertRecordsArgs()
       {
+      }
+
+      public insertRecordsArgs DeepCopy()
+      {
+        var tmp607 = new insertRecordsArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp607.Req = (TSInsertRecordsReq)this.Req.DeepCopy();
+        }
+        tmp607.__isset.req = this.__isset.req;
+        return tmp607;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -13133,10 +13858,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertRecords_args(");
-        int tmp489 = 0;
+        int tmp608 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp489++) { sb.Append(", "); }
+          if(0 < tmp608++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -13172,6 +13897,17 @@ public partial class IClientRPCService
 
       public insertRecordsResult()
       {
+      }
+
+      public insertRecordsResult DeepCopy()
+      {
+        var tmp609 = new insertRecordsResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp609.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp609.__isset.success = this.__isset.success;
+        return tmp609;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -13269,10 +14005,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertRecords_result(");
-        int tmp490 = 0;
+        int tmp610 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp490++) { sb.Append(", "); }
+          if(0 < tmp610++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -13308,6 +14044,17 @@ public partial class IClientRPCService
 
       public insertRecordsOfOneDeviceArgs()
       {
+      }
+
+      public insertRecordsOfOneDeviceArgs DeepCopy()
+      {
+        var tmp611 = new insertRecordsOfOneDeviceArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp611.Req = (TSInsertRecordsOfOneDeviceReq)this.Req.DeepCopy();
+        }
+        tmp611.__isset.req = this.__isset.req;
+        return tmp611;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -13401,10 +14148,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertRecordsOfOneDevice_args(");
-        int tmp491 = 0;
+        int tmp612 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp491++) { sb.Append(", "); }
+          if(0 < tmp612++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -13440,6 +14187,17 @@ public partial class IClientRPCService
 
       public insertRecordsOfOneDeviceResult()
       {
+      }
+
+      public insertRecordsOfOneDeviceResult DeepCopy()
+      {
+        var tmp613 = new insertRecordsOfOneDeviceResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp613.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp613.__isset.success = this.__isset.success;
+        return tmp613;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -13537,10 +14295,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertRecordsOfOneDevice_result(");
-        int tmp492 = 0;
+        int tmp614 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp492++) { sb.Append(", "); }
+          if(0 < tmp614++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -13576,6 +14334,17 @@ public partial class IClientRPCService
 
       public insertStringRecordsOfOneDeviceArgs()
       {
+      }
+
+      public insertStringRecordsOfOneDeviceArgs DeepCopy()
+      {
+        var tmp615 = new insertStringRecordsOfOneDeviceArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp615.Req = (TSInsertStringRecordsOfOneDeviceReq)this.Req.DeepCopy();
+        }
+        tmp615.__isset.req = this.__isset.req;
+        return tmp615;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -13669,10 +14438,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertStringRecordsOfOneDevice_args(");
-        int tmp493 = 0;
+        int tmp616 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp493++) { sb.Append(", "); }
+          if(0 < tmp616++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -13708,6 +14477,17 @@ public partial class IClientRPCService
 
       public insertStringRecordsOfOneDeviceResult()
       {
+      }
+
+      public insertStringRecordsOfOneDeviceResult DeepCopy()
+      {
+        var tmp617 = new insertStringRecordsOfOneDeviceResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp617.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp617.__isset.success = this.__isset.success;
+        return tmp617;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -13805,10 +14585,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertStringRecordsOfOneDevice_result(");
-        int tmp494 = 0;
+        int tmp618 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp494++) { sb.Append(", "); }
+          if(0 < tmp618++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -13844,6 +14624,17 @@ public partial class IClientRPCService
 
       public insertStringRecordsArgs()
       {
+      }
+
+      public insertStringRecordsArgs DeepCopy()
+      {
+        var tmp619 = new insertStringRecordsArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp619.Req = (TSInsertStringRecordsReq)this.Req.DeepCopy();
+        }
+        tmp619.__isset.req = this.__isset.req;
+        return tmp619;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -13937,10 +14728,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertStringRecords_args(");
-        int tmp495 = 0;
+        int tmp620 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp495++) { sb.Append(", "); }
+          if(0 < tmp620++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -13976,6 +14767,17 @@ public partial class IClientRPCService
 
       public insertStringRecordsResult()
       {
+      }
+
+      public insertStringRecordsResult DeepCopy()
+      {
+        var tmp621 = new insertStringRecordsResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp621.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp621.__isset.success = this.__isset.success;
+        return tmp621;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -14073,10 +14875,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("insertStringRecords_result(");
-        int tmp496 = 0;
+        int tmp622 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp496++) { sb.Append(", "); }
+          if(0 < tmp622++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -14112,6 +14914,17 @@ public partial class IClientRPCService
 
       public testInsertTabletArgs()
       {
+      }
+
+      public testInsertTabletArgs DeepCopy()
+      {
+        var tmp623 = new testInsertTabletArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp623.Req = (TSInsertTabletReq)this.Req.DeepCopy();
+        }
+        tmp623.__isset.req = this.__isset.req;
+        return tmp623;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -14205,10 +15018,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testInsertTablet_args(");
-        int tmp497 = 0;
+        int tmp624 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp497++) { sb.Append(", "); }
+          if(0 < tmp624++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -14244,6 +15057,17 @@ public partial class IClientRPCService
 
       public testInsertTabletResult()
       {
+      }
+
+      public testInsertTabletResult DeepCopy()
+      {
+        var tmp625 = new testInsertTabletResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp625.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp625.__isset.success = this.__isset.success;
+        return tmp625;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -14341,10 +15165,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testInsertTablet_result(");
-        int tmp498 = 0;
+        int tmp626 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp498++) { sb.Append(", "); }
+          if(0 < tmp626++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -14380,6 +15204,17 @@ public partial class IClientRPCService
 
       public testInsertTabletsArgs()
       {
+      }
+
+      public testInsertTabletsArgs DeepCopy()
+      {
+        var tmp627 = new testInsertTabletsArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp627.Req = (TSInsertTabletsReq)this.Req.DeepCopy();
+        }
+        tmp627.__isset.req = this.__isset.req;
+        return tmp627;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -14473,10 +15308,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testInsertTablets_args(");
-        int tmp499 = 0;
+        int tmp628 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp499++) { sb.Append(", "); }
+          if(0 < tmp628++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -14512,6 +15347,17 @@ public partial class IClientRPCService
 
       public testInsertTabletsResult()
       {
+      }
+
+      public testInsertTabletsResult DeepCopy()
+      {
+        var tmp629 = new testInsertTabletsResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp629.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp629.__isset.success = this.__isset.success;
+        return tmp629;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -14609,10 +15455,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testInsertTablets_result(");
-        int tmp500 = 0;
+        int tmp630 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp500++) { sb.Append(", "); }
+          if(0 < tmp630++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -14648,6 +15494,17 @@ public partial class IClientRPCService
 
       public testInsertRecordArgs()
       {
+      }
+
+      public testInsertRecordArgs DeepCopy()
+      {
+        var tmp631 = new testInsertRecordArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp631.Req = (TSInsertRecordReq)this.Req.DeepCopy();
+        }
+        tmp631.__isset.req = this.__isset.req;
+        return tmp631;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -14741,10 +15598,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testInsertRecord_args(");
-        int tmp501 = 0;
+        int tmp632 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp501++) { sb.Append(", "); }
+          if(0 < tmp632++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -14780,6 +15637,17 @@ public partial class IClientRPCService
 
       public testInsertRecordResult()
       {
+      }
+
+      public testInsertRecordResult DeepCopy()
+      {
+        var tmp633 = new testInsertRecordResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp633.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp633.__isset.success = this.__isset.success;
+        return tmp633;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -14877,10 +15745,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testInsertRecord_result(");
-        int tmp502 = 0;
+        int tmp634 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp502++) { sb.Append(", "); }
+          if(0 < tmp634++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -14916,6 +15784,17 @@ public partial class IClientRPCService
 
       public testInsertStringRecordArgs()
       {
+      }
+
+      public testInsertStringRecordArgs DeepCopy()
+      {
+        var tmp635 = new testInsertStringRecordArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp635.Req = (TSInsertStringRecordReq)this.Req.DeepCopy();
+        }
+        tmp635.__isset.req = this.__isset.req;
+        return tmp635;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -15009,10 +15888,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testInsertStringRecord_args(");
-        int tmp503 = 0;
+        int tmp636 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp503++) { sb.Append(", "); }
+          if(0 < tmp636++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -15048,6 +15927,17 @@ public partial class IClientRPCService
 
       public testInsertStringRecordResult()
       {
+      }
+
+      public testInsertStringRecordResult DeepCopy()
+      {
+        var tmp637 = new testInsertStringRecordResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp637.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp637.__isset.success = this.__isset.success;
+        return tmp637;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -15145,10 +16035,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testInsertStringRecord_result(");
-        int tmp504 = 0;
+        int tmp638 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp504++) { sb.Append(", "); }
+          if(0 < tmp638++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -15184,6 +16074,17 @@ public partial class IClientRPCService
 
       public testInsertRecordsArgs()
       {
+      }
+
+      public testInsertRecordsArgs DeepCopy()
+      {
+        var tmp639 = new testInsertRecordsArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp639.Req = (TSInsertRecordsReq)this.Req.DeepCopy();
+        }
+        tmp639.__isset.req = this.__isset.req;
+        return tmp639;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -15277,10 +16178,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testInsertRecords_args(");
-        int tmp505 = 0;
+        int tmp640 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp505++) { sb.Append(", "); }
+          if(0 < tmp640++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -15316,6 +16217,17 @@ public partial class IClientRPCService
 
       public testInsertRecordsResult()
       {
+      }
+
+      public testInsertRecordsResult DeepCopy()
+      {
+        var tmp641 = new testInsertRecordsResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp641.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp641.__isset.success = this.__isset.success;
+        return tmp641;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -15413,10 +16325,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testInsertRecords_result(");
-        int tmp506 = 0;
+        int tmp642 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp506++) { sb.Append(", "); }
+          if(0 < tmp642++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -15452,6 +16364,17 @@ public partial class IClientRPCService
 
       public testInsertRecordsOfOneDeviceArgs()
       {
+      }
+
+      public testInsertRecordsOfOneDeviceArgs DeepCopy()
+      {
+        var tmp643 = new testInsertRecordsOfOneDeviceArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp643.Req = (TSInsertRecordsOfOneDeviceReq)this.Req.DeepCopy();
+        }
+        tmp643.__isset.req = this.__isset.req;
+        return tmp643;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -15545,10 +16468,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testInsertRecordsOfOneDevice_args(");
-        int tmp507 = 0;
+        int tmp644 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp507++) { sb.Append(", "); }
+          if(0 < tmp644++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -15584,6 +16507,17 @@ public partial class IClientRPCService
 
       public testInsertRecordsOfOneDeviceResult()
       {
+      }
+
+      public testInsertRecordsOfOneDeviceResult DeepCopy()
+      {
+        var tmp645 = new testInsertRecordsOfOneDeviceResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp645.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp645.__isset.success = this.__isset.success;
+        return tmp645;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -15681,10 +16615,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testInsertRecordsOfOneDevice_result(");
-        int tmp508 = 0;
+        int tmp646 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp508++) { sb.Append(", "); }
+          if(0 < tmp646++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -15720,6 +16654,17 @@ public partial class IClientRPCService
 
       public testInsertStringRecordsArgs()
       {
+      }
+
+      public testInsertStringRecordsArgs DeepCopy()
+      {
+        var tmp647 = new testInsertStringRecordsArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp647.Req = (TSInsertStringRecordsReq)this.Req.DeepCopy();
+        }
+        tmp647.__isset.req = this.__isset.req;
+        return tmp647;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -15813,10 +16758,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testInsertStringRecords_args(");
-        int tmp509 = 0;
+        int tmp648 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp509++) { sb.Append(", "); }
+          if(0 < tmp648++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -15852,6 +16797,17 @@ public partial class IClientRPCService
 
       public testInsertStringRecordsResult()
       {
+      }
+
+      public testInsertStringRecordsResult DeepCopy()
+      {
+        var tmp649 = new testInsertStringRecordsResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp649.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp649.__isset.success = this.__isset.success;
+        return tmp649;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -15949,10 +16905,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testInsertStringRecords_result(");
-        int tmp510 = 0;
+        int tmp650 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp510++) { sb.Append(", "); }
+          if(0 < tmp650++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -15988,6 +16944,17 @@ public partial class IClientRPCService
 
       public deleteDataArgs()
       {
+      }
+
+      public deleteDataArgs DeepCopy()
+      {
+        var tmp651 = new deleteDataArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp651.Req = (TSDeleteDataReq)this.Req.DeepCopy();
+        }
+        tmp651.__isset.req = this.__isset.req;
+        return tmp651;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -16081,10 +17048,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("deleteData_args(");
-        int tmp511 = 0;
+        int tmp652 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp511++) { sb.Append(", "); }
+          if(0 < tmp652++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -16120,6 +17087,17 @@ public partial class IClientRPCService
 
       public deleteDataResult()
       {
+      }
+
+      public deleteDataResult DeepCopy()
+      {
+        var tmp653 = new deleteDataResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp653.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp653.__isset.success = this.__isset.success;
+        return tmp653;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -16217,10 +17195,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("deleteData_result(");
-        int tmp512 = 0;
+        int tmp654 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp512++) { sb.Append(", "); }
+          if(0 < tmp654++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -16256,6 +17234,17 @@ public partial class IClientRPCService
 
       public executeRawDataQueryArgs()
       {
+      }
+
+      public executeRawDataQueryArgs DeepCopy()
+      {
+        var tmp655 = new executeRawDataQueryArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp655.Req = (TSRawDataQueryReq)this.Req.DeepCopy();
+        }
+        tmp655.__isset.req = this.__isset.req;
+        return tmp655;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -16349,10 +17338,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeRawDataQuery_args(");
-        int tmp513 = 0;
+        int tmp656 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp513++) { sb.Append(", "); }
+          if(0 < tmp656++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -16388,6 +17377,17 @@ public partial class IClientRPCService
 
       public executeRawDataQueryResult()
       {
+      }
+
+      public executeRawDataQueryResult DeepCopy()
+      {
+        var tmp657 = new executeRawDataQueryResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp657.Success = (TSExecuteStatementResp)this.Success.DeepCopy();
+        }
+        tmp657.__isset.success = this.__isset.success;
+        return tmp657;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -16485,10 +17485,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeRawDataQuery_result(");
-        int tmp514 = 0;
+        int tmp658 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp514++) { sb.Append(", "); }
+          if(0 < tmp658++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -16524,6 +17524,17 @@ public partial class IClientRPCService
 
       public executeLastDataQueryArgs()
       {
+      }
+
+      public executeLastDataQueryArgs DeepCopy()
+      {
+        var tmp659 = new executeLastDataQueryArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp659.Req = (TSLastDataQueryReq)this.Req.DeepCopy();
+        }
+        tmp659.__isset.req = this.__isset.req;
+        return tmp659;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -16617,10 +17628,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeLastDataQuery_args(");
-        int tmp515 = 0;
+        int tmp660 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp515++) { sb.Append(", "); }
+          if(0 < tmp660++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -16656,6 +17667,17 @@ public partial class IClientRPCService
 
       public executeLastDataQueryResult()
       {
+      }
+
+      public executeLastDataQueryResult DeepCopy()
+      {
+        var tmp661 = new executeLastDataQueryResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp661.Success = (TSExecuteStatementResp)this.Success.DeepCopy();
+        }
+        tmp661.__isset.success = this.__isset.success;
+        return tmp661;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -16753,10 +17775,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeLastDataQuery_result(");
-        int tmp516 = 0;
+        int tmp662 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp516++) { sb.Append(", "); }
+          if(0 < tmp662++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -16792,6 +17814,17 @@ public partial class IClientRPCService
 
       public executeAggregationQueryArgs()
       {
+      }
+
+      public executeAggregationQueryArgs DeepCopy()
+      {
+        var tmp663 = new executeAggregationQueryArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp663.Req = (TSAggregationQueryReq)this.Req.DeepCopy();
+        }
+        tmp663.__isset.req = this.__isset.req;
+        return tmp663;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -16885,10 +17918,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeAggregationQuery_args(");
-        int tmp517 = 0;
+        int tmp664 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp517++) { sb.Append(", "); }
+          if(0 < tmp664++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -16924,6 +17957,17 @@ public partial class IClientRPCService
 
       public executeAggregationQueryResult()
       {
+      }
+
+      public executeAggregationQueryResult DeepCopy()
+      {
+        var tmp665 = new executeAggregationQueryResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp665.Success = (TSExecuteStatementResp)this.Success.DeepCopy();
+        }
+        tmp665.__isset.success = this.__isset.success;
+        return tmp665;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -17021,10 +18065,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("executeAggregationQuery_result(");
-        int tmp518 = 0;
+        int tmp666 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp518++) { sb.Append(", "); }
+          if(0 < tmp666++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -17060,6 +18104,17 @@ public partial class IClientRPCService
 
       public requestStatementIdArgs()
       {
+      }
+
+      public requestStatementIdArgs DeepCopy()
+      {
+        var tmp667 = new requestStatementIdArgs();
+        if(__isset.sessionId)
+        {
+          tmp667.SessionId = this.SessionId;
+        }
+        tmp667.__isset.sessionId = this.__isset.sessionId;
+        return tmp667;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -17152,10 +18207,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("requestStatementId_args(");
-        int tmp519 = 0;
+        int tmp668 = 0;
         if(__isset.sessionId)
         {
-          if(0 < tmp519++) { sb.Append(", "); }
+          if(0 < tmp668++) { sb.Append(", "); }
           sb.Append("SessionId: ");
           SessionId.ToString(sb);
         }
@@ -17191,6 +18246,17 @@ public partial class IClientRPCService
 
       public requestStatementIdResult()
       {
+      }
+
+      public requestStatementIdResult DeepCopy()
+      {
+        var tmp669 = new requestStatementIdResult();
+        if(__isset.success)
+        {
+          tmp669.Success = this.Success;
+        }
+        tmp669.__isset.success = this.__isset.success;
+        return tmp669;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -17284,10 +18350,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("requestStatementId_result(");
-        int tmp520 = 0;
+        int tmp670 = 0;
         if(__isset.success)
         {
-          if(0 < tmp520++) { sb.Append(", "); }
+          if(0 < tmp670++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -17323,6 +18389,17 @@ public partial class IClientRPCService
 
       public createSchemaTemplateArgs()
       {
+      }
+
+      public createSchemaTemplateArgs DeepCopy()
+      {
+        var tmp671 = new createSchemaTemplateArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp671.Req = (TSCreateSchemaTemplateReq)this.Req.DeepCopy();
+        }
+        tmp671.__isset.req = this.__isset.req;
+        return tmp671;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -17416,10 +18493,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("createSchemaTemplate_args(");
-        int tmp521 = 0;
+        int tmp672 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp521++) { sb.Append(", "); }
+          if(0 < tmp672++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -17455,6 +18532,17 @@ public partial class IClientRPCService
 
       public createSchemaTemplateResult()
       {
+      }
+
+      public createSchemaTemplateResult DeepCopy()
+      {
+        var tmp673 = new createSchemaTemplateResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp673.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp673.__isset.success = this.__isset.success;
+        return tmp673;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -17552,10 +18640,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("createSchemaTemplate_result(");
-        int tmp522 = 0;
+        int tmp674 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp522++) { sb.Append(", "); }
+          if(0 < tmp674++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -17591,6 +18679,17 @@ public partial class IClientRPCService
 
       public appendSchemaTemplateArgs()
       {
+      }
+
+      public appendSchemaTemplateArgs DeepCopy()
+      {
+        var tmp675 = new appendSchemaTemplateArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp675.Req = (TSAppendSchemaTemplateReq)this.Req.DeepCopy();
+        }
+        tmp675.__isset.req = this.__isset.req;
+        return tmp675;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -17684,10 +18783,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("appendSchemaTemplate_args(");
-        int tmp523 = 0;
+        int tmp676 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp523++) { sb.Append(", "); }
+          if(0 < tmp676++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -17723,6 +18822,17 @@ public partial class IClientRPCService
 
       public appendSchemaTemplateResult()
       {
+      }
+
+      public appendSchemaTemplateResult DeepCopy()
+      {
+        var tmp677 = new appendSchemaTemplateResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp677.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp677.__isset.success = this.__isset.success;
+        return tmp677;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -17820,10 +18930,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("appendSchemaTemplate_result(");
-        int tmp524 = 0;
+        int tmp678 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp524++) { sb.Append(", "); }
+          if(0 < tmp678++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -17859,6 +18969,17 @@ public partial class IClientRPCService
 
       public pruneSchemaTemplateArgs()
       {
+      }
+
+      public pruneSchemaTemplateArgs DeepCopy()
+      {
+        var tmp679 = new pruneSchemaTemplateArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp679.Req = (TSPruneSchemaTemplateReq)this.Req.DeepCopy();
+        }
+        tmp679.__isset.req = this.__isset.req;
+        return tmp679;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -17952,10 +19073,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("pruneSchemaTemplate_args(");
-        int tmp525 = 0;
+        int tmp680 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp525++) { sb.Append(", "); }
+          if(0 < tmp680++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -17991,6 +19112,17 @@ public partial class IClientRPCService
 
       public pruneSchemaTemplateResult()
       {
+      }
+
+      public pruneSchemaTemplateResult DeepCopy()
+      {
+        var tmp681 = new pruneSchemaTemplateResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp681.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp681.__isset.success = this.__isset.success;
+        return tmp681;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -18088,10 +19220,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("pruneSchemaTemplate_result(");
-        int tmp526 = 0;
+        int tmp682 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp526++) { sb.Append(", "); }
+          if(0 < tmp682++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -18127,6 +19259,17 @@ public partial class IClientRPCService
 
       public querySchemaTemplateArgs()
       {
+      }
+
+      public querySchemaTemplateArgs DeepCopy()
+      {
+        var tmp683 = new querySchemaTemplateArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp683.Req = (TSQueryTemplateReq)this.Req.DeepCopy();
+        }
+        tmp683.__isset.req = this.__isset.req;
+        return tmp683;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -18220,10 +19363,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("querySchemaTemplate_args(");
-        int tmp527 = 0;
+        int tmp684 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp527++) { sb.Append(", "); }
+          if(0 < tmp684++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -18259,6 +19402,17 @@ public partial class IClientRPCService
 
       public querySchemaTemplateResult()
       {
+      }
+
+      public querySchemaTemplateResult DeepCopy()
+      {
+        var tmp685 = new querySchemaTemplateResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp685.Success = (TSQueryTemplateResp)this.Success.DeepCopy();
+        }
+        tmp685.__isset.success = this.__isset.success;
+        return tmp685;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -18356,10 +19510,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("querySchemaTemplate_result(");
-        int tmp528 = 0;
+        int tmp686 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp528++) { sb.Append(", "); }
+          if(0 < tmp686++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -18374,6 +19528,12 @@ public partial class IClientRPCService
 
       public showConfigurationTemplateArgs()
       {
+      }
+
+      public showConfigurationTemplateArgs DeepCopy()
+      {
+        var tmp687 = new showConfigurationTemplateArgs();
+        return tmp687;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -18476,6 +19636,17 @@ public partial class IClientRPCService
       {
       }
 
+      public showConfigurationTemplateResult DeepCopy()
+      {
+        var tmp689 = new showConfigurationTemplateResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp689.Success = (TShowConfigurationTemplateResp)this.Success.DeepCopy();
+        }
+        tmp689.__isset.success = this.__isset.success;
+        return tmp689;
+      }
+
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
       {
         iprot.IncrementRecursionDepth();
@@ -18571,10 +19742,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("showConfigurationTemplate_result(");
-        int tmp530 = 0;
+        int tmp690 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp530++) { sb.Append(", "); }
+          if(0 < tmp690++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -18610,6 +19781,17 @@ public partial class IClientRPCService
 
       public showConfigurationArgs()
       {
+      }
+
+      public showConfigurationArgs DeepCopy()
+      {
+        var tmp691 = new showConfigurationArgs();
+        if(__isset.nodeId)
+        {
+          tmp691.NodeId = this.NodeId;
+        }
+        tmp691.__isset.nodeId = this.__isset.nodeId;
+        return tmp691;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -18702,10 +19884,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("showConfiguration_args(");
-        int tmp531 = 0;
+        int tmp692 = 0;
         if(__isset.nodeId)
         {
-          if(0 < tmp531++) { sb.Append(", "); }
+          if(0 < tmp692++) { sb.Append(", "); }
           sb.Append("NodeId: ");
           NodeId.ToString(sb);
         }
@@ -18741,6 +19923,17 @@ public partial class IClientRPCService
 
       public showConfigurationResult()
       {
+      }
+
+      public showConfigurationResult DeepCopy()
+      {
+        var tmp693 = new showConfigurationResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp693.Success = (TShowConfigurationResp)this.Success.DeepCopy();
+        }
+        tmp693.__isset.success = this.__isset.success;
+        return tmp693;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -18838,10 +20031,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("showConfiguration_result(");
-        int tmp532 = 0;
+        int tmp694 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp532++) { sb.Append(", "); }
+          if(0 < tmp694++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -18877,6 +20070,17 @@ public partial class IClientRPCService
 
       public setSchemaTemplateArgs()
       {
+      }
+
+      public setSchemaTemplateArgs DeepCopy()
+      {
+        var tmp695 = new setSchemaTemplateArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp695.Req = (TSSetSchemaTemplateReq)this.Req.DeepCopy();
+        }
+        tmp695.__isset.req = this.__isset.req;
+        return tmp695;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -18970,10 +20174,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("setSchemaTemplate_args(");
-        int tmp533 = 0;
+        int tmp696 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp533++) { sb.Append(", "); }
+          if(0 < tmp696++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -19009,6 +20213,17 @@ public partial class IClientRPCService
 
       public setSchemaTemplateResult()
       {
+      }
+
+      public setSchemaTemplateResult DeepCopy()
+      {
+        var tmp697 = new setSchemaTemplateResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp697.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp697.__isset.success = this.__isset.success;
+        return tmp697;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -19106,10 +20321,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("setSchemaTemplate_result(");
-        int tmp534 = 0;
+        int tmp698 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp534++) { sb.Append(", "); }
+          if(0 < tmp698++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -19145,6 +20360,17 @@ public partial class IClientRPCService
 
       public unsetSchemaTemplateArgs()
       {
+      }
+
+      public unsetSchemaTemplateArgs DeepCopy()
+      {
+        var tmp699 = new unsetSchemaTemplateArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp699.Req = (TSUnsetSchemaTemplateReq)this.Req.DeepCopy();
+        }
+        tmp699.__isset.req = this.__isset.req;
+        return tmp699;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -19238,10 +20464,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("unsetSchemaTemplate_args(");
-        int tmp535 = 0;
+        int tmp700 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp535++) { sb.Append(", "); }
+          if(0 < tmp700++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -19277,6 +20503,17 @@ public partial class IClientRPCService
 
       public unsetSchemaTemplateResult()
       {
+      }
+
+      public unsetSchemaTemplateResult DeepCopy()
+      {
+        var tmp701 = new unsetSchemaTemplateResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp701.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp701.__isset.success = this.__isset.success;
+        return tmp701;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -19374,10 +20611,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("unsetSchemaTemplate_result(");
-        int tmp536 = 0;
+        int tmp702 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp536++) { sb.Append(", "); }
+          if(0 < tmp702++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -19413,6 +20650,17 @@ public partial class IClientRPCService
 
       public dropSchemaTemplateArgs()
       {
+      }
+
+      public dropSchemaTemplateArgs DeepCopy()
+      {
+        var tmp703 = new dropSchemaTemplateArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp703.Req = (TSDropSchemaTemplateReq)this.Req.DeepCopy();
+        }
+        tmp703.__isset.req = this.__isset.req;
+        return tmp703;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -19506,10 +20754,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("dropSchemaTemplate_args(");
-        int tmp537 = 0;
+        int tmp704 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp537++) { sb.Append(", "); }
+          if(0 < tmp704++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -19545,6 +20793,17 @@ public partial class IClientRPCService
 
       public dropSchemaTemplateResult()
       {
+      }
+
+      public dropSchemaTemplateResult DeepCopy()
+      {
+        var tmp705 = new dropSchemaTemplateResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp705.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp705.__isset.success = this.__isset.success;
+        return tmp705;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -19642,10 +20901,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("dropSchemaTemplate_result(");
-        int tmp538 = 0;
+        int tmp706 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp538++) { sb.Append(", "); }
+          if(0 < tmp706++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -19681,6 +20940,17 @@ public partial class IClientRPCService
 
       public createTimeseriesUsingSchemaTemplateArgs()
       {
+      }
+
+      public createTimeseriesUsingSchemaTemplateArgs DeepCopy()
+      {
+        var tmp707 = new createTimeseriesUsingSchemaTemplateArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp707.Req = (TCreateTimeseriesUsingSchemaTemplateReq)this.Req.DeepCopy();
+        }
+        tmp707.__isset.req = this.__isset.req;
+        return tmp707;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -19774,10 +21044,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("createTimeseriesUsingSchemaTemplate_args(");
-        int tmp539 = 0;
+        int tmp708 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp539++) { sb.Append(", "); }
+          if(0 < tmp708++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -19813,6 +21083,17 @@ public partial class IClientRPCService
 
       public createTimeseriesUsingSchemaTemplateResult()
       {
+      }
+
+      public createTimeseriesUsingSchemaTemplateResult DeepCopy()
+      {
+        var tmp709 = new createTimeseriesUsingSchemaTemplateResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp709.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp709.__isset.success = this.__isset.success;
+        return tmp709;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -19910,10 +21191,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("createTimeseriesUsingSchemaTemplate_result(");
-        int tmp540 = 0;
+        int tmp710 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp540++) { sb.Append(", "); }
+          if(0 < tmp710++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -19949,6 +21230,17 @@ public partial class IClientRPCService
 
       public handshakeArgs()
       {
+      }
+
+      public handshakeArgs DeepCopy()
+      {
+        var tmp711 = new handshakeArgs();
+        if((Info != null) && __isset.info)
+        {
+          tmp711.Info = (TSyncIdentityInfo)this.Info.DeepCopy();
+        }
+        tmp711.__isset.info = this.__isset.info;
+        return tmp711;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -20042,10 +21334,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("handshake_args(");
-        int tmp541 = 0;
+        int tmp712 = 0;
         if((Info != null) && __isset.info)
         {
-          if(0 < tmp541++) { sb.Append(", "); }
+          if(0 < tmp712++) { sb.Append(", "); }
           sb.Append("Info: ");
           Info.ToString(sb);
         }
@@ -20081,6 +21373,17 @@ public partial class IClientRPCService
 
       public handshakeResult()
       {
+      }
+
+      public handshakeResult DeepCopy()
+      {
+        var tmp713 = new handshakeResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp713.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp713.__isset.success = this.__isset.success;
+        return tmp713;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -20178,10 +21481,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("handshake_result(");
-        int tmp542 = 0;
+        int tmp714 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp542++) { sb.Append(", "); }
+          if(0 < tmp714++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -20217,6 +21520,17 @@ public partial class IClientRPCService
 
       public sendPipeDataArgs()
       {
+      }
+
+      public sendPipeDataArgs DeepCopy()
+      {
+        var tmp715 = new sendPipeDataArgs();
+        if((Buff != null) && __isset.buff)
+        {
+          tmp715.Buff = this.Buff.ToArray();
+        }
+        tmp715.__isset.buff = this.__isset.buff;
+        return tmp715;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -20309,10 +21623,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("sendPipeData_args(");
-        int tmp543 = 0;
+        int tmp716 = 0;
         if((Buff != null) && __isset.buff)
         {
-          if(0 < tmp543++) { sb.Append(", "); }
+          if(0 < tmp716++) { sb.Append(", "); }
           sb.Append("Buff: ");
           Buff.ToString(sb);
         }
@@ -20348,6 +21662,17 @@ public partial class IClientRPCService
 
       public sendPipeDataResult()
       {
+      }
+
+      public sendPipeDataResult DeepCopy()
+      {
+        var tmp717 = new sendPipeDataResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp717.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp717.__isset.success = this.__isset.success;
+        return tmp717;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -20445,10 +21770,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("sendPipeData_result(");
-        int tmp544 = 0;
+        int tmp718 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp544++) { sb.Append(", "); }
+          if(0 < tmp718++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -20499,6 +21824,22 @@ public partial class IClientRPCService
 
       public sendFileArgs()
       {
+      }
+
+      public sendFileArgs DeepCopy()
+      {
+        var tmp719 = new sendFileArgs();
+        if((MetaInfo != null) && __isset.metaInfo)
+        {
+          tmp719.MetaInfo = (TSyncTransportMetaInfo)this.MetaInfo.DeepCopy();
+        }
+        tmp719.__isset.metaInfo = this.__isset.metaInfo;
+        if((Buff != null) && __isset.buff)
+        {
+          tmp719.Buff = this.Buff.ToArray();
+        }
+        tmp719.__isset.buff = this.__isset.buff;
+        return tmp719;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -20616,16 +21957,16 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("sendFile_args(");
-        int tmp545 = 0;
+        int tmp720 = 0;
         if((MetaInfo != null) && __isset.metaInfo)
         {
-          if(0 < tmp545++) { sb.Append(", "); }
+          if(0 < tmp720++) { sb.Append(", "); }
           sb.Append("MetaInfo: ");
           MetaInfo.ToString(sb);
         }
         if((Buff != null) && __isset.buff)
         {
-          if(0 < tmp545++) { sb.Append(", "); }
+          if(0 < tmp720++) { sb.Append(", "); }
           sb.Append("Buff: ");
           Buff.ToString(sb);
         }
@@ -20661,6 +22002,17 @@ public partial class IClientRPCService
 
       public sendFileResult()
       {
+      }
+
+      public sendFileResult DeepCopy()
+      {
+        var tmp721 = new sendFileResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp721.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp721.__isset.success = this.__isset.success;
+        return tmp721;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -20758,10 +22110,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("sendFile_result(");
-        int tmp546 = 0;
+        int tmp722 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp546++) { sb.Append(", "); }
+          if(0 < tmp722++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -20797,6 +22149,17 @@ public partial class IClientRPCService
 
       public pipeTransferArgs()
       {
+      }
+
+      public pipeTransferArgs DeepCopy()
+      {
+        var tmp723 = new pipeTransferArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp723.Req = (TPipeTransferReq)this.Req.DeepCopy();
+        }
+        tmp723.__isset.req = this.__isset.req;
+        return tmp723;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -20890,10 +22253,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("pipeTransfer_args(");
-        int tmp547 = 0;
+        int tmp724 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp547++) { sb.Append(", "); }
+          if(0 < tmp724++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -20929,6 +22292,17 @@ public partial class IClientRPCService
 
       public pipeTransferResult()
       {
+      }
+
+      public pipeTransferResult DeepCopy()
+      {
+        var tmp725 = new pipeTransferResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp725.Success = (TPipeTransferResp)this.Success.DeepCopy();
+        }
+        tmp725.__isset.success = this.__isset.success;
+        return tmp725;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -21026,10 +22400,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("pipeTransfer_result(");
-        int tmp548 = 0;
+        int tmp726 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp548++) { sb.Append(", "); }
+          if(0 < tmp726++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -21065,6 +22439,17 @@ public partial class IClientRPCService
 
       public pipeSubscribeArgs()
       {
+      }
+
+      public pipeSubscribeArgs DeepCopy()
+      {
+        var tmp727 = new pipeSubscribeArgs();
+        if((Req != null) && __isset.req)
+        {
+          tmp727.Req = (TPipeSubscribeReq)this.Req.DeepCopy();
+        }
+        tmp727.__isset.req = this.__isset.req;
+        return tmp727;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -21158,10 +22543,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("pipeSubscribe_args(");
-        int tmp549 = 0;
+        int tmp728 = 0;
         if((Req != null) && __isset.req)
         {
-          if(0 < tmp549++) { sb.Append(", "); }
+          if(0 < tmp728++) { sb.Append(", "); }
           sb.Append("Req: ");
           Req.ToString(sb);
         }
@@ -21197,6 +22582,17 @@ public partial class IClientRPCService
 
       public pipeSubscribeResult()
       {
+      }
+
+      public pipeSubscribeResult DeepCopy()
+      {
+        var tmp729 = new pipeSubscribeResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp729.Success = (TPipeSubscribeResp)this.Success.DeepCopy();
+        }
+        tmp729.__isset.success = this.__isset.success;
+        return tmp729;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -21294,10 +22690,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("pipeSubscribe_result(");
-        int tmp550 = 0;
+        int tmp730 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp550++) { sb.Append(", "); }
+          if(0 < tmp730++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -21312,6 +22708,12 @@ public partial class IClientRPCService
 
       public getBackupConfigurationArgs()
       {
+      }
+
+      public getBackupConfigurationArgs DeepCopy()
+      {
+        var tmp731 = new getBackupConfigurationArgs();
+        return tmp731;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -21414,6 +22816,17 @@ public partial class IClientRPCService
       {
       }
 
+      public getBackupConfigurationResult DeepCopy()
+      {
+        var tmp733 = new getBackupConfigurationResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp733.Success = (TSBackupConfigurationResp)this.Success.DeepCopy();
+        }
+        tmp733.__isset.success = this.__isset.success;
+        return tmp733;
+      }
+
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
       {
         iprot.IncrementRecursionDepth();
@@ -21509,10 +22922,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("getBackupConfiguration_result(");
-        int tmp552 = 0;
+        int tmp734 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp552++) { sb.Append(", "); }
+          if(0 < tmp734++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -21527,6 +22940,12 @@ public partial class IClientRPCService
 
       public fetchAllConnectionsInfoArgs()
       {
+      }
+
+      public fetchAllConnectionsInfoArgs DeepCopy()
+      {
+        var tmp735 = new fetchAllConnectionsInfoArgs();
+        return tmp735;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -21629,6 +23048,17 @@ public partial class IClientRPCService
       {
       }
 
+      public fetchAllConnectionsInfoResult DeepCopy()
+      {
+        var tmp737 = new fetchAllConnectionsInfoResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp737.Success = (TSConnectionInfoResp)this.Success.DeepCopy();
+        }
+        tmp737.__isset.success = this.__isset.success;
+        return tmp737;
+      }
+
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
       {
         iprot.IncrementRecursionDepth();
@@ -21724,10 +23154,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("fetchAllConnectionsInfo_result(");
-        int tmp554 = 0;
+        int tmp738 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp554++) { sb.Append(", "); }
+          if(0 < tmp738++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }
@@ -21742,6 +23172,12 @@ public partial class IClientRPCService
 
       public testConnectionEmptyRPCArgs()
       {
+      }
+
+      public testConnectionEmptyRPCArgs DeepCopy()
+      {
+        var tmp739 = new testConnectionEmptyRPCArgs();
+        return tmp739;
       }
 
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -21844,6 +23280,17 @@ public partial class IClientRPCService
       {
       }
 
+      public testConnectionEmptyRPCResult DeepCopy()
+      {
+        var tmp741 = new testConnectionEmptyRPCResult();
+        if((Success != null) && __isset.success)
+        {
+          tmp741.Success = (TSStatus)this.Success.DeepCopy();
+        }
+        tmp741.__isset.success = this.__isset.success;
+        return tmp741;
+      }
+
       public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
       {
         iprot.IncrementRecursionDepth();
@@ -21939,10 +23386,10 @@ public partial class IClientRPCService
       public override string ToString()
       {
         var sb = new StringBuilder("testConnectionEmptyRPC_result(");
-        int tmp556 = 0;
+        int tmp742 = 0;
         if((Success != null) && __isset.success)
         {
-          if(0 < tmp556++) { sb.Append(", "); }
+          if(0 < tmp742++) { sb.Append(", "); }
           sb.Append("Success: ");
           Success.ToString(sb);
         }

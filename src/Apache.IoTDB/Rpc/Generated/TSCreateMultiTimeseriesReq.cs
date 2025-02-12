@@ -121,6 +121,49 @@ public partial class TSCreateMultiTimeseriesReq : TBase
     this.Compressors = compressors;
   }
 
+  public TSCreateMultiTimeseriesReq DeepCopy()
+  {
+    var tmp348 = new TSCreateMultiTimeseriesReq();
+    tmp348.SessionId = this.SessionId;
+    if((Paths != null))
+    {
+      tmp348.Paths = this.Paths.DeepCopy();
+    }
+    if((DataTypes != null))
+    {
+      tmp348.DataTypes = this.DataTypes.DeepCopy();
+    }
+    if((Encodings != null))
+    {
+      tmp348.Encodings = this.Encodings.DeepCopy();
+    }
+    if((Compressors != null))
+    {
+      tmp348.Compressors = this.Compressors.DeepCopy();
+    }
+    if((PropsList != null) && __isset.propsList)
+    {
+      tmp348.PropsList = this.PropsList.DeepCopy();
+    }
+    tmp348.__isset.propsList = this.__isset.propsList;
+    if((TagsList != null) && __isset.tagsList)
+    {
+      tmp348.TagsList = this.TagsList.DeepCopy();
+    }
+    tmp348.__isset.tagsList = this.__isset.tagsList;
+    if((AttributesList != null) && __isset.attributesList)
+    {
+      tmp348.AttributesList = this.AttributesList.DeepCopy();
+    }
+    tmp348.__isset.attributesList = this.__isset.attributesList;
+    if((MeasurementAliasList != null) && __isset.measurementAliasList)
+    {
+      tmp348.MeasurementAliasList = this.MeasurementAliasList.DeepCopy();
+    }
+    tmp348.__isset.measurementAliasList = this.__isset.measurementAliasList;
+    return tmp348;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -158,13 +201,13 @@ public partial class TSCreateMultiTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list314 = await iprot.ReadListBeginAsync(cancellationToken);
-                Paths = new List<string>(_list314.Count);
-                for(int _i315 = 0; _i315 < _list314.Count; ++_i315)
+                TList _list349 = await iprot.ReadListBeginAsync(cancellationToken);
+                Paths = new List<string>(_list349.Count);
+                for(int _i350 = 0; _i350 < _list349.Count; ++_i350)
                 {
-                  string _elem316;
-                  _elem316 = await iprot.ReadStringAsync(cancellationToken);
-                  Paths.Add(_elem316);
+                  string _elem351;
+                  _elem351 = await iprot.ReadStringAsync(cancellationToken);
+                  Paths.Add(_elem351);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -179,13 +222,13 @@ public partial class TSCreateMultiTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list317 = await iprot.ReadListBeginAsync(cancellationToken);
-                DataTypes = new List<int>(_list317.Count);
-                for(int _i318 = 0; _i318 < _list317.Count; ++_i318)
+                TList _list352 = await iprot.ReadListBeginAsync(cancellationToken);
+                DataTypes = new List<int>(_list352.Count);
+                for(int _i353 = 0; _i353 < _list352.Count; ++_i353)
                 {
-                  int _elem319;
-                  _elem319 = await iprot.ReadI32Async(cancellationToken);
-                  DataTypes.Add(_elem319);
+                  int _elem354;
+                  _elem354 = await iprot.ReadI32Async(cancellationToken);
+                  DataTypes.Add(_elem354);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -200,13 +243,13 @@ public partial class TSCreateMultiTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list320 = await iprot.ReadListBeginAsync(cancellationToken);
-                Encodings = new List<int>(_list320.Count);
-                for(int _i321 = 0; _i321 < _list320.Count; ++_i321)
+                TList _list355 = await iprot.ReadListBeginAsync(cancellationToken);
+                Encodings = new List<int>(_list355.Count);
+                for(int _i356 = 0; _i356 < _list355.Count; ++_i356)
                 {
-                  int _elem322;
-                  _elem322 = await iprot.ReadI32Async(cancellationToken);
-                  Encodings.Add(_elem322);
+                  int _elem357;
+                  _elem357 = await iprot.ReadI32Async(cancellationToken);
+                  Encodings.Add(_elem357);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -221,13 +264,13 @@ public partial class TSCreateMultiTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list323 = await iprot.ReadListBeginAsync(cancellationToken);
-                Compressors = new List<int>(_list323.Count);
-                for(int _i324 = 0; _i324 < _list323.Count; ++_i324)
+                TList _list358 = await iprot.ReadListBeginAsync(cancellationToken);
+                Compressors = new List<int>(_list358.Count);
+                for(int _i359 = 0; _i359 < _list358.Count; ++_i359)
                 {
-                  int _elem325;
-                  _elem325 = await iprot.ReadI32Async(cancellationToken);
-                  Compressors.Add(_elem325);
+                  int _elem360;
+                  _elem360 = await iprot.ReadI32Async(cancellationToken);
+                  Compressors.Add(_elem360);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -242,25 +285,25 @@ public partial class TSCreateMultiTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list326 = await iprot.ReadListBeginAsync(cancellationToken);
-                PropsList = new List<Dictionary<string, string>>(_list326.Count);
-                for(int _i327 = 0; _i327 < _list326.Count; ++_i327)
+                TList _list361 = await iprot.ReadListBeginAsync(cancellationToken);
+                PropsList = new List<Dictionary<string, string>>(_list361.Count);
+                for(int _i362 = 0; _i362 < _list361.Count; ++_i362)
                 {
-                  Dictionary<string, string> _elem328;
+                  Dictionary<string, string> _elem363;
                   {
-                    TMap _map329 = await iprot.ReadMapBeginAsync(cancellationToken);
-                    _elem328 = new Dictionary<string, string>(_map329.Count);
-                    for(int _i330 = 0; _i330 < _map329.Count; ++_i330)
+                    TMap _map364 = await iprot.ReadMapBeginAsync(cancellationToken);
+                    _elem363 = new Dictionary<string, string>(_map364.Count);
+                    for(int _i365 = 0; _i365 < _map364.Count; ++_i365)
                     {
-                      string _key331;
-                      string _val332;
-                      _key331 = await iprot.ReadStringAsync(cancellationToken);
-                      _val332 = await iprot.ReadStringAsync(cancellationToken);
-                      _elem328[_key331] = _val332;
+                      string _key366;
+                      string _val367;
+                      _key366 = await iprot.ReadStringAsync(cancellationToken);
+                      _val367 = await iprot.ReadStringAsync(cancellationToken);
+                      _elem363[_key366] = _val367;
                     }
                     await iprot.ReadMapEndAsync(cancellationToken);
                   }
-                  PropsList.Add(_elem328);
+                  PropsList.Add(_elem363);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -274,25 +317,25 @@ public partial class TSCreateMultiTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list333 = await iprot.ReadListBeginAsync(cancellationToken);
-                TagsList = new List<Dictionary<string, string>>(_list333.Count);
-                for(int _i334 = 0; _i334 < _list333.Count; ++_i334)
+                TList _list368 = await iprot.ReadListBeginAsync(cancellationToken);
+                TagsList = new List<Dictionary<string, string>>(_list368.Count);
+                for(int _i369 = 0; _i369 < _list368.Count; ++_i369)
                 {
-                  Dictionary<string, string> _elem335;
+                  Dictionary<string, string> _elem370;
                   {
-                    TMap _map336 = await iprot.ReadMapBeginAsync(cancellationToken);
-                    _elem335 = new Dictionary<string, string>(_map336.Count);
-                    for(int _i337 = 0; _i337 < _map336.Count; ++_i337)
+                    TMap _map371 = await iprot.ReadMapBeginAsync(cancellationToken);
+                    _elem370 = new Dictionary<string, string>(_map371.Count);
+                    for(int _i372 = 0; _i372 < _map371.Count; ++_i372)
                     {
-                      string _key338;
-                      string _val339;
-                      _key338 = await iprot.ReadStringAsync(cancellationToken);
-                      _val339 = await iprot.ReadStringAsync(cancellationToken);
-                      _elem335[_key338] = _val339;
+                      string _key373;
+                      string _val374;
+                      _key373 = await iprot.ReadStringAsync(cancellationToken);
+                      _val374 = await iprot.ReadStringAsync(cancellationToken);
+                      _elem370[_key373] = _val374;
                     }
                     await iprot.ReadMapEndAsync(cancellationToken);
                   }
-                  TagsList.Add(_elem335);
+                  TagsList.Add(_elem370);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -306,25 +349,25 @@ public partial class TSCreateMultiTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list340 = await iprot.ReadListBeginAsync(cancellationToken);
-                AttributesList = new List<Dictionary<string, string>>(_list340.Count);
-                for(int _i341 = 0; _i341 < _list340.Count; ++_i341)
+                TList _list375 = await iprot.ReadListBeginAsync(cancellationToken);
+                AttributesList = new List<Dictionary<string, string>>(_list375.Count);
+                for(int _i376 = 0; _i376 < _list375.Count; ++_i376)
                 {
-                  Dictionary<string, string> _elem342;
+                  Dictionary<string, string> _elem377;
                   {
-                    TMap _map343 = await iprot.ReadMapBeginAsync(cancellationToken);
-                    _elem342 = new Dictionary<string, string>(_map343.Count);
-                    for(int _i344 = 0; _i344 < _map343.Count; ++_i344)
+                    TMap _map378 = await iprot.ReadMapBeginAsync(cancellationToken);
+                    _elem377 = new Dictionary<string, string>(_map378.Count);
+                    for(int _i379 = 0; _i379 < _map378.Count; ++_i379)
                     {
-                      string _key345;
-                      string _val346;
-                      _key345 = await iprot.ReadStringAsync(cancellationToken);
-                      _val346 = await iprot.ReadStringAsync(cancellationToken);
-                      _elem342[_key345] = _val346;
+                      string _key380;
+                      string _val381;
+                      _key380 = await iprot.ReadStringAsync(cancellationToken);
+                      _val381 = await iprot.ReadStringAsync(cancellationToken);
+                      _elem377[_key380] = _val381;
                     }
                     await iprot.ReadMapEndAsync(cancellationToken);
                   }
-                  AttributesList.Add(_elem342);
+                  AttributesList.Add(_elem377);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -338,13 +381,13 @@ public partial class TSCreateMultiTimeseriesReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list347 = await iprot.ReadListBeginAsync(cancellationToken);
-                MeasurementAliasList = new List<string>(_list347.Count);
-                for(int _i348 = 0; _i348 < _list347.Count; ++_i348)
+                TList _list382 = await iprot.ReadListBeginAsync(cancellationToken);
+                MeasurementAliasList = new List<string>(_list382.Count);
+                for(int _i383 = 0; _i383 < _list382.Count; ++_i383)
                 {
-                  string _elem349;
-                  _elem349 = await iprot.ReadStringAsync(cancellationToken);
-                  MeasurementAliasList.Add(_elem349);
+                  string _elem384;
+                  _elem384 = await iprot.ReadStringAsync(cancellationToken);
+                  MeasurementAliasList.Add(_elem384);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -412,9 +455,9 @@ public partial class TSCreateMultiTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Paths.Count), cancellationToken);
-          foreach (string _iter350 in Paths)
+          foreach (string _iter385 in Paths)
           {
-            await oprot.WriteStringAsync(_iter350, cancellationToken);
+            await oprot.WriteStringAsync(_iter385, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -428,9 +471,9 @@ public partial class TSCreateMultiTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I32, DataTypes.Count), cancellationToken);
-          foreach (int _iter351 in DataTypes)
+          foreach (int _iter386 in DataTypes)
           {
-            await oprot.WriteI32Async(_iter351, cancellationToken);
+            await oprot.WriteI32Async(_iter386, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -444,9 +487,9 @@ public partial class TSCreateMultiTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I32, Encodings.Count), cancellationToken);
-          foreach (int _iter352 in Encodings)
+          foreach (int _iter387 in Encodings)
           {
-            await oprot.WriteI32Async(_iter352, cancellationToken);
+            await oprot.WriteI32Async(_iter387, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -460,9 +503,9 @@ public partial class TSCreateMultiTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I32, Compressors.Count), cancellationToken);
-          foreach (int _iter353 in Compressors)
+          foreach (int _iter388 in Compressors)
           {
-            await oprot.WriteI32Async(_iter353, cancellationToken);
+            await oprot.WriteI32Async(_iter388, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -476,14 +519,14 @@ public partial class TSCreateMultiTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Map, PropsList.Count), cancellationToken);
-          foreach (Dictionary<string, string> _iter354 in PropsList)
+          foreach (Dictionary<string, string> _iter389 in PropsList)
           {
             {
-              await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, _iter354.Count), cancellationToken);
-              foreach (string _iter355 in _iter354.Keys)
+              await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, _iter389.Count), cancellationToken);
+              foreach (string _iter390 in _iter389.Keys)
               {
-                await oprot.WriteStringAsync(_iter355, cancellationToken);
-                await oprot.WriteStringAsync(_iter354[_iter355], cancellationToken);
+                await oprot.WriteStringAsync(_iter390, cancellationToken);
+                await oprot.WriteStringAsync(_iter389[_iter390], cancellationToken);
               }
               await oprot.WriteMapEndAsync(cancellationToken);
             }
@@ -500,14 +543,14 @@ public partial class TSCreateMultiTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Map, TagsList.Count), cancellationToken);
-          foreach (Dictionary<string, string> _iter356 in TagsList)
+          foreach (Dictionary<string, string> _iter391 in TagsList)
           {
             {
-              await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, _iter356.Count), cancellationToken);
-              foreach (string _iter357 in _iter356.Keys)
+              await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, _iter391.Count), cancellationToken);
+              foreach (string _iter392 in _iter391.Keys)
               {
-                await oprot.WriteStringAsync(_iter357, cancellationToken);
-                await oprot.WriteStringAsync(_iter356[_iter357], cancellationToken);
+                await oprot.WriteStringAsync(_iter392, cancellationToken);
+                await oprot.WriteStringAsync(_iter391[_iter392], cancellationToken);
               }
               await oprot.WriteMapEndAsync(cancellationToken);
             }
@@ -524,14 +567,14 @@ public partial class TSCreateMultiTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Map, AttributesList.Count), cancellationToken);
-          foreach (Dictionary<string, string> _iter358 in AttributesList)
+          foreach (Dictionary<string, string> _iter393 in AttributesList)
           {
             {
-              await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, _iter358.Count), cancellationToken);
-              foreach (string _iter359 in _iter358.Keys)
+              await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, _iter393.Count), cancellationToken);
+              foreach (string _iter394 in _iter393.Keys)
               {
-                await oprot.WriteStringAsync(_iter359, cancellationToken);
-                await oprot.WriteStringAsync(_iter358[_iter359], cancellationToken);
+                await oprot.WriteStringAsync(_iter394, cancellationToken);
+                await oprot.WriteStringAsync(_iter393[_iter394], cancellationToken);
               }
               await oprot.WriteMapEndAsync(cancellationToken);
             }
@@ -548,9 +591,9 @@ public partial class TSCreateMultiTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, MeasurementAliasList.Count), cancellationToken);
-          foreach (string _iter360 in MeasurementAliasList)
+          foreach (string _iter395 in MeasurementAliasList)
           {
-            await oprot.WriteStringAsync(_iter360, cancellationToken);
+            await oprot.WriteStringAsync(_iter395, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

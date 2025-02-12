@@ -34,9 +34,9 @@ namespace Apache.IoTDB.Samples
             if (debug) session_pool.OpenDebugMode();
 
             System.Diagnostics.Debug.Assert(session_pool.IsOpen());
-            status = await session_pool.DeleteStorageGroupAsync(test_group_name);
+            status = await session_pool.DeleteDatabaseAsync(test_database_name);
 
-            string prefixPath = string.Format("{0}.{1}", test_group_name, test_device);
+            string prefixPath = string.Format("{0}.{1}", test_database_name, test_device);
             var measurements = new List<string> { test_measurements[1], test_measurements[2], test_measurements[3] };
             var types = new List<TSDataType> { TSDataType.TEXT, TSDataType.BOOLEAN, TSDataType.INT32 };
             var encodings = new List<TSEncoding> { TSEncoding.PLAIN, TSEncoding.PLAIN, TSEncoding.PLAIN };
@@ -53,13 +53,13 @@ namespace Apache.IoTDB.Samples
             {
                 var rowRecord = new RowRecord(timestamp, values, measures);
                 var task = session_pool.InsertAlignedRecordAsync(
-                    string.Format("{0}.{1}", test_group_name, test_device), rowRecord);
+                    string.Format("{0}.{1}", test_database_name, test_device), rowRecord);
                 tasks.Add(task);
             }
             Task.WaitAll(tasks.ToArray());
             var end_ms = DateTime.Now.Ticks / 10000;
             Console.WriteLine(string.Format("total insert record time is {0}", end_ms - start_ms));
-            status = await session_pool.DeleteStorageGroupAsync(test_group_name);
+            status = await session_pool.DeleteDatabaseAsync(test_database_name);
             await session_pool.Close();
             Console.WriteLine("TestInsertAlignedRecordAsync Passed");
         }
@@ -71,10 +71,10 @@ namespace Apache.IoTDB.Samples
             if (debug) session_pool.OpenDebugMode();
 
             System.Diagnostics.Debug.Assert(session_pool.IsOpen());
-            await session_pool.DeleteStorageGroupAsync(test_group_name);
+            await session_pool.DeleteDatabaseAsync(test_database_name);
 
             status = await session_pool.CreateAlignedTimeseriesAsync(
-                string.Format("{0}.{1}", test_group_name, test_device),
+                string.Format("{0}.{1}", test_database_name, test_device),
                 new List<string>() { test_measurements[0], test_measurements[1], test_measurements[2] },
                 new List<TSDataType>() { TSDataType.TEXT, TSDataType.TEXT, TSDataType.TEXT },
                 new List<TSEncoding>() { TSEncoding.PLAIN, TSEncoding.PLAIN, TSEncoding.PLAIN },
@@ -89,14 +89,14 @@ namespace Apache.IoTDB.Samples
             for (var timestamp = 1; timestamp <= fetch_size * processed_size; timestamp++)
             {
                 var task = session_pool.InsertAlignedStringRecordAsync(
-                    string.Format("{0}.{1}", test_group_name, test_device), measurements, values, timestamp);
+                    string.Format("{0}.{1}", test_database_name, test_device), measurements, values, timestamp);
                 tasks.Add(task);
             }
 
             Task.WaitAll(tasks.ToArray());
             var end_ms = DateTime.Now.Ticks / 10000;
             Console.WriteLine(string.Format("total insert aligned string record time is {0}", end_ms - start_ms));
-            var res = await session_pool.ExecuteQueryStatementAsync("select * from " + string.Format("{0}.{1}", test_group_name, test_device));
+            var res = await session_pool.ExecuteQueryStatementAsync("select * from " + string.Format("{0}.{1}", test_database_name, test_device));
             var res_cnt = 0;
             while (res.HasNext())
             {
@@ -105,7 +105,7 @@ namespace Apache.IoTDB.Samples
             }
             Console.WriteLine(res_cnt + " " + fetch_size * processed_size);
             System.Diagnostics.Debug.Assert(res_cnt == fetch_size * processed_size);
-            await session_pool.DeleteStorageGroupAsync(test_group_name);
+            await session_pool.DeleteDatabaseAsync(test_database_name);
             await session_pool.Close();
             Console.WriteLine("TestInsertAlignedStringRecordAsync Passed");
         }
@@ -117,9 +117,9 @@ namespace Apache.IoTDB.Samples
 
             System.Diagnostics.Debug.Assert(session_pool.IsOpen());
             var status = 0;
-            await session_pool.DeleteStorageGroupAsync(test_group_name);
+            await session_pool.DeleteDatabaseAsync(test_database_name);
 
-            string prefixPath = string.Format("{0}.{1}", test_group_name, test_device);
+            string prefixPath = string.Format("{0}.{1}", test_database_name, test_device);
             var measurement_lst = new List<string>()
             {
                 test_measurements[1],
@@ -149,7 +149,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
 
             var device_id = new List<string>() { };
-            for (var i = 0; i < 3; i++) device_id.Add(string.Format("{0}.{1}", test_group_name, test_device));
+            for (var i = 0; i < 3; i++) device_id.Add(string.Format("{0}.{1}", test_database_name, test_device));
             var measurements_lst = new List<List<string>>() { };
             measurements_lst.Add(new List<string>() { test_measurements[1], test_measurements[2] });
             measurements_lst.Add(new List<string>()
@@ -184,7 +184,7 @@ namespace Apache.IoTDB.Samples
             status = await session_pool.InsertAlignedRecordsAsync(device_id, rowRecords);
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
-                "select * from " + string.Format("{0}.{1}", test_group_name, test_device) + " where time<10");
+                "select * from " + string.Format("{0}.{1}", test_database_name, test_device) + " where time<10");
             res.ShowTableNames();
             while (res.HasNext()) Console.WriteLine(res.Next());
 
@@ -197,7 +197,7 @@ namespace Apache.IoTDB.Samples
             var tasks = new List<Task<int>>();
             for (var timestamp = 4; timestamp <= fetch_size * processed_size; timestamp++)
             {
-                device_id.Add(string.Format("{0}.{1}", test_group_name, test_device));
+                device_id.Add(string.Format("{0}.{1}", test_database_name, test_device));
                 rowRecords.Add(new RowRecord(timestamp, new List<object>() { true, (int)123 },
                     new List<string>() { test_measurements[1], test_measurements[2] }));
                 if (timestamp % fetch_size == 0)
@@ -210,7 +210,7 @@ namespace Apache.IoTDB.Samples
 
             Task.WaitAll(tasks.ToArray());
             res = await session_pool.ExecuteQueryStatementAsync(
-                "select * from " + string.Format("{0}.{1}", test_group_name, test_device));
+                "select * from " + string.Format("{0}.{1}", test_database_name, test_device));
             res.ShowTableNames();
             var record_count = fetch_size * processed_size;
             var res_count = 0;
@@ -225,7 +225,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(res_count == record_count);
             System.Diagnostics.Debug.Assert(status == 0);
 
-            status = await session_pool.DeleteStorageGroupAsync(test_group_name);
+            status = await session_pool.DeleteDatabaseAsync(test_database_name);
             System.Diagnostics.Debug.Assert(status == 0);
             await session_pool.Close();
             Console.WriteLine("TestInsertAlignedRecords Passed!");
@@ -238,9 +238,9 @@ namespace Apache.IoTDB.Samples
 
             System.Diagnostics.Debug.Assert(session_pool.IsOpen());
             var status = 0;
-            await session_pool.DeleteStorageGroupAsync(test_group_name);
+            await session_pool.DeleteDatabaseAsync(test_database_name);
 
-            string prefixPath = string.Format("{0}.{1}", test_group_name, test_device);
+            string prefixPath = string.Format("{0}.{1}", test_database_name, test_device);
             var measurement_lst = new List<string>() { test_measurements[1], test_measurements[2] };
             var data_type_lst = new List<TSDataType>() { TSDataType.TEXT, TSDataType.TEXT };
             var encoding_lst = new List<TSEncoding>() { TSEncoding.PLAIN, TSEncoding.PLAIN };
@@ -250,7 +250,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
 
             var device_id = new List<string>() { };
-            for (var i = 0; i < 3; i++) device_id.Add(string.Format("{0}.{1}", test_group_name, test_device));
+            for (var i = 0; i < 3; i++) device_id.Add(string.Format("{0}.{1}", test_database_name, test_device));
             var measurements_lst = new List<List<string>>() { };
             measurements_lst.Add(new List<string>() { test_measurements[1], test_measurements[2] });
             measurements_lst.Add(new List<string>() { test_measurements[1], test_measurements[2] });
@@ -264,7 +264,7 @@ namespace Apache.IoTDB.Samples
             status = await session_pool.InsertAlignedStringRecordsAsync(device_id, measurements_lst, values_lst, timestamp_lst);
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
-                "select * from " + string.Format("{0}.{1}", test_group_name, test_device) + " where time<10");
+                "select * from " + string.Format("{0}.{1}", test_database_name, test_device) + " where time<10");
             res.ShowTableNames();
             while (res.HasNext()) Console.WriteLine(res.Next());
 
@@ -278,7 +278,7 @@ namespace Apache.IoTDB.Samples
             List<Task<int>> tasks = new List<Task<int>>();
             for (var timestamp = 4; timestamp <= fetch_size * processed_size; timestamp++)
             {
-                device_id.Add(string.Format("{0}.{1}", test_group_name, test_device));
+                device_id.Add(string.Format("{0}.{1}", test_database_name, test_device));
                 measurements_lst.Add(new List<string>() { test_measurements[1], test_measurements[2] });
                 values_lst.Add(new List<string>() { "test1", "test2" });
                 timestamp_lst.Add(timestamp);
@@ -294,7 +294,7 @@ namespace Apache.IoTDB.Samples
 
             Task.WaitAll(tasks.ToArray());
             res = await session_pool.ExecuteQueryStatementAsync(
-                "select * from " + string.Format("{0}.{1}", test_group_name, test_device));
+                "select * from " + string.Format("{0}.{1}", test_database_name, test_device));
             res.ShowTableNames();
             var res_count = 0;
             while (res.HasNext())
@@ -306,7 +306,7 @@ namespace Apache.IoTDB.Samples
             await res.Close();
             Console.WriteLine(res_count + " " + fetch_size * processed_size);
             System.Diagnostics.Debug.Assert(res_count == fetch_size * processed_size);
-            status = await session_pool.DeleteStorageGroupAsync(test_group_name);
+            status = await session_pool.DeleteDatabaseAsync(test_database_name);
             System.Diagnostics.Debug.Assert(status == 0);
             await session_pool.Close();
             Console.WriteLine("TestInsertAlignedStringRecords Passed!");
@@ -319,9 +319,9 @@ namespace Apache.IoTDB.Samples
 
             System.Diagnostics.Debug.Assert(session_pool.IsOpen());
             var status = 0;
-            await session_pool.DeleteStorageGroupAsync(test_group_name);
+            await session_pool.DeleteDatabaseAsync(test_database_name);
 
-            string prefixPath = string.Format("{0}.{1}", test_group_name, test_device);
+            string prefixPath = string.Format("{0}.{1}", test_database_name, test_device);
             var measurement_lst = new List<string>()
             {
                 test_measurements[1],
@@ -351,7 +351,7 @@ namespace Apache.IoTDB.Samples
                 compressor_lst);
             System.Diagnostics.Debug.Assert(status == 0);
 
-            var device_id = string.Format("{0}.{1}", test_group_name, test_device);
+            var device_id = string.Format("{0}.{1}", test_database_name, test_device);
             var measurements_lst = new List<List<string>>() { };
             measurements_lst.Add(new List<string>() { test_measurements[1], test_measurements[2] });
             measurements_lst.Add(new List<string>()
@@ -385,7 +385,7 @@ namespace Apache.IoTDB.Samples
             status = await session_pool.InsertAlignedRecordsOfOneDeviceAsync(device_id, rowRecords);
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
-                "select * from " + string.Format("{0}.{1}", test_group_name, test_device) + " where time<10");
+                "select * from " + string.Format("{0}.{1}", test_database_name, test_device) + " where time<10");
             res.ShowTableNames();
             while (res.HasNext()) Console.WriteLine(res.Next());
 
@@ -405,7 +405,7 @@ namespace Apache.IoTDB.Samples
 
             Task.WaitAll(tasks.ToArray());
             res = await session_pool.ExecuteQueryStatementAsync(
-                "select * from " + string.Format("{0}.{1}", test_group_name, test_device));
+                "select * from " + string.Format("{0}.{1}", test_database_name, test_device));
             var res_count = 0;
             while (res.HasNext())
             {
@@ -416,7 +416,7 @@ namespace Apache.IoTDB.Samples
             await res.Close();
             Console.WriteLine(res_count + " " + fetch_size * processed_size);
             System.Diagnostics.Debug.Assert(res_count == fetch_size * processed_size);
-            status = await session_pool.DeleteStorageGroupAsync(test_group_name);
+            status = await session_pool.DeleteDatabaseAsync(test_database_name);
             System.Diagnostics.Debug.Assert(status == 0);
             await session_pool.Close();
             Console.WriteLine("TestInsertAlignedRecordsOfOneDevice Passed!");
@@ -429,8 +429,8 @@ namespace Apache.IoTDB.Samples
 
             System.Diagnostics.Debug.Assert(session_pool.IsOpen());
             var status = 0;
-            await session_pool.DeleteStorageGroupAsync(test_group_name);
-            var device_id = string.Format("{0}.{1}", test_group_name, test_device);
+            await session_pool.DeleteDatabaseAsync(test_database_name);
+            var device_id = string.Format("{0}.{1}", test_database_name, test_device);
             var measurements = new List<string>() { test_measurements[0], test_measurements[1], test_measurements[2] };
             var data_type_lst = new List<TSDataType>() { TSDataType.TEXT, TSDataType.TEXT, TSDataType.TEXT };
             var encoding_lst = new List<TSEncoding>() { TSEncoding.PLAIN, TSEncoding.PLAIN, TSEncoding.PLAIN };
@@ -453,7 +453,7 @@ namespace Apache.IoTDB.Samples
             status = await session_pool.InsertAlignedStringRecordsOfOneDeviceAsync(device_id, timestamp_lst, measurements_lst, values_lst);
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
-                "select * from " + string.Format("{0}.{1}", test_group_name, test_device) + " where time<10");
+                "select * from " + string.Format("{0}.{1}", test_database_name, test_device) + " where time<10");
             res.ShowTableNames();
             while (res.HasNext()) Console.WriteLine(res.Next());
 
@@ -479,7 +479,7 @@ namespace Apache.IoTDB.Samples
 
             Task.WaitAll(tasks.ToArray());
             res = await session_pool.ExecuteQueryStatementAsync(
-                "select * from " + string.Format("{0}.{1}", test_group_name, test_device));
+                "select * from " + string.Format("{0}.{1}", test_database_name, test_device));
             var res_count = 0;
             while (res.HasNext())
             {
@@ -490,7 +490,7 @@ namespace Apache.IoTDB.Samples
             await res.Close();
             Console.WriteLine(res_count + " " + fetch_size * processed_size);
             System.Diagnostics.Debug.Assert(res_count == fetch_size * processed_size);
-            status = await session_pool.DeleteStorageGroupAsync(test_group_name);
+            status = await session_pool.DeleteDatabaseAsync(test_database_name);
             System.Diagnostics.Debug.Assert(status == 0);
             await session_pool.Close();
             Console.WriteLine("TestInsertAlignedStringRecordsOfOneDevice Passed!");

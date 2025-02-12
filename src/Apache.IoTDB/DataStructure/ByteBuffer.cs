@@ -133,6 +133,14 @@ namespace Apache.IoTDB.DataStructure
             return strValue;
         }
 
+        public byte[] GetBinary()
+        {
+          var length = GetInt();
+          var buff = _buffer[_readPos..(_readPos + length)];
+          _readPos += length;
+          return buff;
+        }
+
         public byte[] GetBuffer()
         {
             return _buffer[.._writePos];
@@ -215,6 +223,15 @@ namespace Apache.IoTDB.DataStructure
             ExtendBuffer(strBuf.Length);
             strBuf.CopyTo(_buffer, _writePos);
             _writePos += strBuf.Length;
+        }
+
+         public void AddBinary(byte[] value)
+        {
+            AddInt(value.Length);
+
+            ExtendBuffer(value.Length);
+            value.CopyTo(_buffer, _writePos);
+            _writePos += value.Length;
         }
 
         public void AddChar(char value)

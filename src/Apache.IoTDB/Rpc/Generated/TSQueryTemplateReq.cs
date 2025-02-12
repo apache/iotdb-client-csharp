@@ -70,6 +70,23 @@ public partial class TSQueryTemplateReq : TBase
     this.QueryType = queryType;
   }
 
+  public TSQueryTemplateReq DeepCopy()
+  {
+    var tmp427 = new TSQueryTemplateReq();
+    tmp427.SessionId = this.SessionId;
+    if((Name != null))
+    {
+      tmp427.Name = this.Name;
+    }
+    tmp427.QueryType = this.QueryType;
+    if((Measurement != null) && __isset.measurement)
+    {
+      tmp427.Measurement = this.Measurement;
+    }
+    tmp427.__isset.measurement = this.__isset.measurement;
+    return tmp427;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

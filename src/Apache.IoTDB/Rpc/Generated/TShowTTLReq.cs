@@ -43,6 +43,16 @@ public partial class TShowTTLReq : TBase
     this.PathPattern = pathPattern;
   }
 
+  public TShowTTLReq DeepCopy()
+  {
+    var tmp59 = new TShowTTLReq();
+    if((PathPattern != null))
+    {
+      tmp59.PathPattern = this.PathPattern.DeepCopy();
+    }
+    return tmp59;
+  }
+
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -65,13 +75,13 @@ public partial class TShowTTLReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list40 = await iprot.ReadListBeginAsync(cancellationToken);
-                PathPattern = new List<string>(_list40.Count);
-                for(int _i41 = 0; _i41 < _list40.Count; ++_i41)
+                TList _list60 = await iprot.ReadListBeginAsync(cancellationToken);
+                PathPattern = new List<string>(_list60.Count);
+                for(int _i61 = 0; _i61 < _list60.Count; ++_i61)
                 {
-                  string _elem42;
-                  _elem42 = await iprot.ReadStringAsync(cancellationToken);
-                  PathPattern.Add(_elem42);
+                  string _elem62;
+                  _elem62 = await iprot.ReadStringAsync(cancellationToken);
+                  PathPattern.Add(_elem62);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -118,9 +128,9 @@ public partial class TShowTTLReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, PathPattern.Count), cancellationToken);
-          foreach (string _iter43 in PathPattern)
+          foreach (string _iter63 in PathPattern)
           {
-            await oprot.WriteStringAsync(_iter43, cancellationToken);
+            await oprot.WriteStringAsync(_iter63, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
