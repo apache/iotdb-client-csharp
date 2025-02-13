@@ -32,9 +32,19 @@ namespace Apache.IoTDB.Samples
             utilsTest.TestParseEndPoint();
             var sessionPoolTest = new SessionPoolTest("iotdb");
             await sessionPoolTest.Test();
+            var tableSessionPoolTest = new TableSessionPoolTest(sessionPoolTest);
+            await tableSessionPoolTest.Test();
         }
 
         public static void OpenDebugMode(this SessionPool session)
+        {
+            session.OpenDebugMode(builder =>
+            {
+                builder.AddConsole();
+                builder.AddNLog();
+            });
+        }
+        public static void OpenDebugMode(this TableSessionPool session)
         {
             session.OpenDebugMode(builder =>
             {

@@ -47,9 +47,10 @@ namespace Apache.IoTDB.DataStructure
         private readonly List<long> _timestamps;
         private readonly List<List<object>> _values;
 
-        public string DeviceId { get; }
+        public string InsertTargetName { get; }
         public List<string> Measurements { get; }
         public List<TSDataType> DataTypes { get; }
+        public List<ColumnCategory> ColumnCategories { get; }
         public BitMap[] BitMaps;
         public int RowNumber { get; }
         public int ColNumber { get; }
@@ -92,7 +93,7 @@ namespace Apache.IoTDB.DataStructure
                 _timestamps = timestamps;
             }
 
-            DeviceId = deviceId;
+            InsertTargetName = deviceId;
             Measurements = measurements;
             DataTypes = dataTypes;
             RowNumber = timestamps.Count;
@@ -110,6 +111,71 @@ namespace Apache.IoTDB.DataStructure
                 }
             }
         }
+
+        public Tablet(
+            string tableName,
+            List<string> columnNames,
+            List<ColumnCategory> columnCategories,
+            List<TSDataType> dataTypes,
+            List<List<object>> values,
+            List<long> timestamps)
+        {
+            if (timestamps.Count != values.Count)
+            {
+                throw new Exception(
+                    $"Input error. Timestamps.Count({timestamps.Count}) does not equal to Values.Count({values.Count}).",
+                    null);
+            }
+
+            if (columnNames.Count != dataTypes.Count)
+            {
+                throw new Exception(
+                    $"Input error. ColumnNames.Count({columnNames.Count}) does not equal to DataTypes.Count({dataTypes.Count}).",
+                    null);
+            }
+            if (columnNames.Count != columnCategories.Count)
+            {
+                throw new Exception(
+                    $"Input error. ColumnNames.Count({columnNames.Count}) does not equal to ColumnCategories.Count({columnCategories.Count}).",
+                    null);
+            }
+
+            if (!_utilFunctions.IsSorted(timestamps))
+            {
+                var sorted = timestamps
+                    .Select((x, index) => (timestamp: x, values: values[index]))
+                    .OrderBy(x => x.timestamp).ToList();
+
+                _timestamps = sorted.Select(x => x.timestamp).ToList();
+                _values = sorted.Select(x => x.values).ToList();
+            }
+            else
+            {
+                _values = values;
+                _timestamps = timestamps;
+            }
+
+            InsertTargetName = tableName;
+            Measurements = columnNames;
+            ColumnCategories = columnCategories;
+            DataTypes = dataTypes;
+            RowNumber = timestamps.Count;
+            ColNumber = columnNames.Count;
+
+            // reset bitmap
+            if (BitMaps != null)
+            {
+                foreach (var bitmap in BitMaps)
+                {
+                    if (bitmap != null)
+                    {
+                        bitmap.reset();
+                    }
+                }
+            }
+        }
+
+        [Obsolete("Deprecated, use the constructor with List<TSDataType> instead")]
         public Tablet(
             string deviceId,
             List<string> measurements,
@@ -137,7 +203,7 @@ namespace Apache.IoTDB.DataStructure
                 _timestamps = timestamps;
             }
 
-            DeviceId = deviceId;
+            InsertTargetName = deviceId;
             Measurements = measurements;
             RowNumber = timestamps.Count;
             ColNumber = measurements.Count;
@@ -220,6 +286,13 @@ namespace Apache.IoTDB.DataStructure
             var dataTypeValues = DataTypes.ConvertAll(x => (int)x);
 
             return dataTypeValues;
+        }
+
+        public List<sbyte> GetColumnColumnCategories()
+        {
+            var columnCategories = ColumnCategories.ConvertAll(x => (sbyte)x);
+
+            return columnCategories;
         }
 
         private int EstimateBufferSize()
