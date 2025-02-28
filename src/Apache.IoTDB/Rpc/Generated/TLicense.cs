@@ -64,20 +64,6 @@ public partial class TLicense : TBase
     this.MlNodeNumLimit = mlNodeNumLimit;
   }
 
-  public TLicense DeepCopy()
-  {
-    var tmp92 = new TLicense();
-    tmp92.LicenseIssueTimestamp = this.LicenseIssueTimestamp;
-    tmp92.ExpireTimestamp = this.ExpireTimestamp;
-    tmp92.DataNodeNumLimit = this.DataNodeNumLimit;
-    tmp92.CpuCoreNumLimit = this.CpuCoreNumLimit;
-    tmp92.DeviceNumLimit = this.DeviceNumLimit;
-    tmp92.SensorNumLimit = this.SensorNumLimit;
-    tmp92.DisconnectionFromActiveNodeTimeLimit = this.DisconnectionFromActiveNodeTimeLimit;
-    tmp92.MlNodeNumLimit = this.MlNodeNumLimit;
-    return tmp92;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

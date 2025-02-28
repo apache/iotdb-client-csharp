@@ -46,17 +46,6 @@ public partial class TAINodeLocation : TBase
     this.InternalEndPoint = internalEndPoint;
   }
 
-  public TAINodeLocation DeepCopy()
-  {
-    var tmp26 = new TAINodeLocation();
-    tmp26.AiNodeId = this.AiNodeId;
-    if((InternalEndPoint != null))
-    {
-      tmp26.InternalEndPoint = (TEndPoint)this.InternalEndPoint.DeepCopy();
-    }
-    return tmp26;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

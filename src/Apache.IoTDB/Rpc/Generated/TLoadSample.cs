@@ -52,16 +52,6 @@ public partial class TLoadSample : TBase
     this.FreeDiskSpace = freeDiskSpace;
   }
 
-  public TLoadSample DeepCopy()
-  {
-    var tmp94 = new TLoadSample();
-    tmp94.CpuUsageRate = this.CpuUsageRate;
-    tmp94.MemoryUsageRate = this.MemoryUsageRate;
-    tmp94.DiskUsageRate = this.DiskUsageRate;
-    tmp94.FreeDiskSpace = this.FreeDiskSpace;
-    return tmp94;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

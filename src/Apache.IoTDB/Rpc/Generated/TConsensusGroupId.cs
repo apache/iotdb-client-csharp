@@ -50,14 +50,6 @@ public partial class TConsensusGroupId : TBase
     this.Id = id;
   }
 
-  public TConsensusGroupId DeepCopy()
-  {
-    var tmp8 = new TConsensusGroupId();
-    tmp8.Type = this.Type;
-    tmp8.Id = this.Id;
-    return tmp8;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

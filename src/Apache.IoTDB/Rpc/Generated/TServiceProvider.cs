@@ -50,17 +50,6 @@ public partial class TServiceProvider : TBase
     this.ServiceType = serviceType;
   }
 
-  public TServiceProvider DeepCopy()
-  {
-    var tmp96 = new TServiceProvider();
-    if((EndPoint != null))
-    {
-      tmp96.EndPoint = (TEndPoint)this.EndPoint.DeepCopy();
-    }
-    tmp96.ServiceType = this.ServiceType;
-    return tmp96;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

@@ -43,16 +43,6 @@ public partial class TSConnectionInfoResp : TBase
     this.ConnectionInfoList = connectionInfoList;
   }
 
-  public TSConnectionInfoResp DeepCopy()
-  {
-    var tmp465 = new TSConnectionInfoResp();
-    if((ConnectionInfoList != null))
-    {
-      tmp465.ConnectionInfoList = this.ConnectionInfoList.DeepCopy();
-    }
-    return tmp465;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -75,14 +65,14 @@ public partial class TSConnectionInfoResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list466 = await iprot.ReadListBeginAsync(cancellationToken);
-                ConnectionInfoList = new List<TSConnectionInfo>(_list466.Count);
-                for(int _i467 = 0; _i467 < _list466.Count; ++_i467)
+                TList _list424 = await iprot.ReadListBeginAsync(cancellationToken);
+                ConnectionInfoList = new List<TSConnectionInfo>(_list424.Count);
+                for(int _i425 = 0; _i425 < _list424.Count; ++_i425)
                 {
-                  TSConnectionInfo _elem468;
-                  _elem468 = new TSConnectionInfo();
-                  await _elem468.ReadAsync(iprot, cancellationToken);
-                  ConnectionInfoList.Add(_elem468);
+                  TSConnectionInfo _elem426;
+                  _elem426 = new TSConnectionInfo();
+                  await _elem426.ReadAsync(iprot, cancellationToken);
+                  ConnectionInfoList.Add(_elem426);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -129,9 +119,9 @@ public partial class TSConnectionInfoResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Struct, ConnectionInfoList.Count), cancellationToken);
-          foreach (TSConnectionInfo _iter469 in ConnectionInfoList)
+          foreach (TSConnectionInfo _iter427 in ConnectionInfoList)
           {
-            await _iter469.WriteAsync(oprot, cancellationToken);
+            await _iter427.WriteAsync(oprot, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

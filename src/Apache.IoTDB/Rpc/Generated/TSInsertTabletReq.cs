@@ -32,6 +32,8 @@ using Thrift.Processor;
 public partial class TSInsertTabletReq : TBase
 {
   private bool _isAligned;
+  private bool _writeToTable;
+  private List<sbyte> _columnCategories;
 
   public long SessionId { get; set; }
 
@@ -60,11 +62,39 @@ public partial class TSInsertTabletReq : TBase
     }
   }
 
+  public bool WriteToTable
+  {
+    get
+    {
+      return _writeToTable;
+    }
+    set
+    {
+      __isset.writeToTable = true;
+      this._writeToTable = value;
+    }
+  }
+
+  public List<sbyte> ColumnCategories
+  {
+    get
+    {
+      return _columnCategories;
+    }
+    set
+    {
+      __isset.columnCategories = true;
+      this._columnCategories = value;
+    }
+  }
+
 
   public Isset __isset;
   public struct Isset
   {
     public bool isAligned;
+    public bool writeToTable;
+    public bool columnCategories;
   }
 
   public TSInsertTabletReq()
@@ -80,39 +110,6 @@ public partial class TSInsertTabletReq : TBase
     this.Timestamps = timestamps;
     this.Types = types;
     this.Size = size;
-  }
-
-  public TSInsertTabletReq DeepCopy()
-  {
-    var tmp123 = new TSInsertTabletReq();
-    tmp123.SessionId = this.SessionId;
-    if((PrefixPath != null))
-    {
-      tmp123.PrefixPath = this.PrefixPath;
-    }
-    if((Measurements != null))
-    {
-      tmp123.Measurements = this.Measurements.DeepCopy();
-    }
-    if((Values != null))
-    {
-      tmp123.Values = this.Values.ToArray();
-    }
-    if((Timestamps != null))
-    {
-      tmp123.Timestamps = this.Timestamps.ToArray();
-    }
-    if((Types != null))
-    {
-      tmp123.Types = this.Types.DeepCopy();
-    }
-    tmp123.Size = this.Size;
-    if(__isset.isAligned)
-    {
-      tmp123.IsAligned = this.IsAligned;
-    }
-    tmp123.__isset.isAligned = this.__isset.isAligned;
-    return tmp123;
   }
 
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -165,13 +162,13 @@ public partial class TSInsertTabletReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list124 = await iprot.ReadListBeginAsync(cancellationToken);
-                Measurements = new List<string>(_list124.Count);
-                for(int _i125 = 0; _i125 < _list124.Count; ++_i125)
+                TList _list111 = await iprot.ReadListBeginAsync(cancellationToken);
+                Measurements = new List<string>(_list111.Count);
+                for(int _i112 = 0; _i112 < _list111.Count; ++_i112)
                 {
-                  string _elem126;
-                  _elem126 = await iprot.ReadStringAsync(cancellationToken);
-                  Measurements.Add(_elem126);
+                  string _elem113;
+                  _elem113 = await iprot.ReadStringAsync(cancellationToken);
+                  Measurements.Add(_elem113);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -208,13 +205,13 @@ public partial class TSInsertTabletReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list127 = await iprot.ReadListBeginAsync(cancellationToken);
-                Types = new List<int>(_list127.Count);
-                for(int _i128 = 0; _i128 < _list127.Count; ++_i128)
+                TList _list114 = await iprot.ReadListBeginAsync(cancellationToken);
+                Types = new List<int>(_list114.Count);
+                for(int _i115 = 0; _i115 < _list114.Count; ++_i115)
                 {
-                  int _elem129;
-                  _elem129 = await iprot.ReadI32Async(cancellationToken);
-                  Types.Add(_elem129);
+                  int _elem116;
+                  _elem116 = await iprot.ReadI32Async(cancellationToken);
+                  Types.Add(_elem116);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -240,6 +237,36 @@ public partial class TSInsertTabletReq : TBase
             if (field.Type == TType.Bool)
             {
               IsAligned = await iprot.ReadBoolAsync(cancellationToken);
+            }
+            else
+            {
+              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
+            }
+            break;
+          case 9:
+            if (field.Type == TType.Bool)
+            {
+              WriteToTable = await iprot.ReadBoolAsync(cancellationToken);
+            }
+            else
+            {
+              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
+            }
+            break;
+          case 10:
+            if (field.Type == TType.List)
+            {
+              {
+                TList _list117 = await iprot.ReadListBeginAsync(cancellationToken);
+                ColumnCategories = new List<sbyte>(_list117.Count);
+                for(int _i118 = 0; _i118 < _list117.Count; ++_i118)
+                {
+                  sbyte _elem119;
+                  _elem119 = await iprot.ReadByteAsync(cancellationToken);
+                  ColumnCategories.Add(_elem119);
+                }
+                await iprot.ReadListEndAsync(cancellationToken);
+              }
             }
             else
             {
@@ -321,9 +348,9 @@ public partial class TSInsertTabletReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Measurements.Count), cancellationToken);
-          foreach (string _iter130 in Measurements)
+          foreach (string _iter120 in Measurements)
           {
-            await oprot.WriteStringAsync(_iter130, cancellationToken);
+            await oprot.WriteStringAsync(_iter120, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -355,9 +382,9 @@ public partial class TSInsertTabletReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I32, Types.Count), cancellationToken);
-          foreach (int _iter131 in Types)
+          foreach (int _iter121 in Types)
           {
-            await oprot.WriteI32Async(_iter131, cancellationToken);
+            await oprot.WriteI32Async(_iter121, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -376,6 +403,31 @@ public partial class TSInsertTabletReq : TBase
         field.ID = 8;
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         await oprot.WriteBoolAsync(IsAligned, cancellationToken);
+        await oprot.WriteFieldEndAsync(cancellationToken);
+      }
+      if(__isset.writeToTable)
+      {
+        field.Name = "writeToTable";
+        field.Type = TType.Bool;
+        field.ID = 9;
+        await oprot.WriteFieldBeginAsync(field, cancellationToken);
+        await oprot.WriteBoolAsync(WriteToTable, cancellationToken);
+        await oprot.WriteFieldEndAsync(cancellationToken);
+      }
+      if((ColumnCategories != null) && __isset.columnCategories)
+      {
+        field.Name = "columnCategories";
+        field.Type = TType.List;
+        field.ID = 10;
+        await oprot.WriteFieldBeginAsync(field, cancellationToken);
+        {
+          await oprot.WriteListBeginAsync(new TList(TType.Byte, ColumnCategories.Count), cancellationToken);
+          foreach (sbyte _iter122 in ColumnCategories)
+          {
+            await oprot.WriteByteAsync(_iter122, cancellationToken);
+          }
+          await oprot.WriteListEndAsync(cancellationToken);
+        }
         await oprot.WriteFieldEndAsync(cancellationToken);
       }
       await oprot.WriteFieldStopAsync(cancellationToken);
@@ -398,7 +450,9 @@ public partial class TSInsertTabletReq : TBase
       && TCollections.Equals(Timestamps, other.Timestamps)
       && TCollections.Equals(Types, other.Types)
       && System.Object.Equals(Size, other.Size)
-      && ((__isset.isAligned == other.__isset.isAligned) && ((!__isset.isAligned) || (System.Object.Equals(IsAligned, other.IsAligned))));
+      && ((__isset.isAligned == other.__isset.isAligned) && ((!__isset.isAligned) || (System.Object.Equals(IsAligned, other.IsAligned))))
+      && ((__isset.writeToTable == other.__isset.writeToTable) && ((!__isset.writeToTable) || (System.Object.Equals(WriteToTable, other.WriteToTable))))
+      && ((__isset.columnCategories == other.__isset.columnCategories) && ((!__isset.columnCategories) || (TCollections.Equals(ColumnCategories, other.ColumnCategories))));
   }
 
   public override int GetHashCode() {
@@ -429,6 +483,14 @@ public partial class TSInsertTabletReq : TBase
       if(__isset.isAligned)
       {
         hashcode = (hashcode * 397) + IsAligned.GetHashCode();
+      }
+      if(__isset.writeToTable)
+      {
+        hashcode = (hashcode * 397) + WriteToTable.GetHashCode();
+      }
+      if((ColumnCategories != null) && __isset.columnCategories)
+      {
+        hashcode = (hashcode * 397) + TCollections.GetHashCode(ColumnCategories);
       }
     }
     return hashcode;
@@ -470,6 +532,16 @@ public partial class TSInsertTabletReq : TBase
     {
       sb.Append(", IsAligned: ");
       IsAligned.ToString(sb);
+    }
+    if(__isset.writeToTable)
+    {
+      sb.Append(", WriteToTable: ");
+      WriteToTable.ToString(sb);
+    }
+    if((ColumnCategories != null) && __isset.columnCategories)
+    {
+      sb.Append(", ColumnCategories: ");
+      ColumnCategories.ToString(sb);
     }
     sb.Append(')');
     return sb.ToString();

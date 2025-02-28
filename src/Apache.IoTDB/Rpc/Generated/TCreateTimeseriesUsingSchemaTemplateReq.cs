@@ -46,17 +46,6 @@ public partial class TCreateTimeseriesUsingSchemaTemplateReq : TBase
     this.DevicePathList = devicePathList;
   }
 
-  public TCreateTimeseriesUsingSchemaTemplateReq DeepCopy()
-  {
-    var tmp439 = new TCreateTimeseriesUsingSchemaTemplateReq();
-    tmp439.SessionId = this.SessionId;
-    if((DevicePathList != null))
-    {
-      tmp439.DevicePathList = this.DevicePathList.DeepCopy();
-    }
-    return tmp439;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -91,13 +80,13 @@ public partial class TCreateTimeseriesUsingSchemaTemplateReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list440 = await iprot.ReadListBeginAsync(cancellationToken);
-                DevicePathList = new List<string>(_list440.Count);
-                for(int _i441 = 0; _i441 < _list440.Count; ++_i441)
+                TList _list407 = await iprot.ReadListBeginAsync(cancellationToken);
+                DevicePathList = new List<string>(_list407.Count);
+                for(int _i408 = 0; _i408 < _list407.Count; ++_i408)
                 {
-                  string _elem442;
-                  _elem442 = await iprot.ReadStringAsync(cancellationToken);
-                  DevicePathList.Add(_elem442);
+                  string _elem409;
+                  _elem409 = await iprot.ReadStringAsync(cancellationToken);
+                  DevicePathList.Add(_elem409);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -154,9 +143,9 @@ public partial class TCreateTimeseriesUsingSchemaTemplateReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, DevicePathList.Count), cancellationToken);
-          foreach (string _iter443 in DevicePathList)
+          foreach (string _iter410 in DevicePathList)
           {
-            await oprot.WriteStringAsync(_iter443, cancellationToken);
+            await oprot.WriteStringAsync(_iter410, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

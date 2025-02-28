@@ -46,17 +46,6 @@ public partial class TEndPoint : TBase
     this.Port = port;
   }
 
-  public TEndPoint DeepCopy()
-  {
-    var tmp0 = new TEndPoint();
-    if((Ip != null))
-    {
-      tmp0.Ip = this.Ip;
-    }
-    tmp0.Port = this.Port;
-    return tmp0;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

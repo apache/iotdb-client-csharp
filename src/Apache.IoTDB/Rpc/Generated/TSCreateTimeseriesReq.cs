@@ -121,40 +121,6 @@ public partial class TSCreateTimeseriesReq : TBase
     this.Compressor = compressor;
   }
 
-  public TSCreateTimeseriesReq DeepCopy()
-  {
-    var tmp261 = new TSCreateTimeseriesReq();
-    tmp261.SessionId = this.SessionId;
-    if((Path != null))
-    {
-      tmp261.Path = this.Path;
-    }
-    tmp261.DataType = this.DataType;
-    tmp261.Encoding = this.Encoding;
-    tmp261.Compressor = this.Compressor;
-    if((Props != null) && __isset.props)
-    {
-      tmp261.Props = this.Props.DeepCopy();
-    }
-    tmp261.__isset.props = this.__isset.props;
-    if((Tags != null) && __isset.tags)
-    {
-      tmp261.Tags = this.Tags.DeepCopy();
-    }
-    tmp261.__isset.tags = this.__isset.tags;
-    if((Attributes != null) && __isset.attributes)
-    {
-      tmp261.Attributes = this.Attributes.DeepCopy();
-    }
-    tmp261.__isset.attributes = this.__isset.attributes;
-    if((MeasurementAlias != null) && __isset.measurementAlias)
-    {
-      tmp261.MeasurementAlias = this.MeasurementAlias;
-    }
-    tmp261.__isset.measurementAlias = this.__isset.measurementAlias;
-    return tmp261;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -236,15 +202,15 @@ public partial class TSCreateTimeseriesReq : TBase
             if (field.Type == TType.Map)
             {
               {
-                TMap _map262 = await iprot.ReadMapBeginAsync(cancellationToken);
-                Props = new Dictionary<string, string>(_map262.Count);
-                for(int _i263 = 0; _i263 < _map262.Count; ++_i263)
+                TMap _map246 = await iprot.ReadMapBeginAsync(cancellationToken);
+                Props = new Dictionary<string, string>(_map246.Count);
+                for(int _i247 = 0; _i247 < _map246.Count; ++_i247)
                 {
-                  string _key264;
-                  string _val265;
-                  _key264 = await iprot.ReadStringAsync(cancellationToken);
-                  _val265 = await iprot.ReadStringAsync(cancellationToken);
-                  Props[_key264] = _val265;
+                  string _key248;
+                  string _val249;
+                  _key248 = await iprot.ReadStringAsync(cancellationToken);
+                  _val249 = await iprot.ReadStringAsync(cancellationToken);
+                  Props[_key248] = _val249;
                 }
                 await iprot.ReadMapEndAsync(cancellationToken);
               }
@@ -258,15 +224,15 @@ public partial class TSCreateTimeseriesReq : TBase
             if (field.Type == TType.Map)
             {
               {
-                TMap _map266 = await iprot.ReadMapBeginAsync(cancellationToken);
-                Tags = new Dictionary<string, string>(_map266.Count);
-                for(int _i267 = 0; _i267 < _map266.Count; ++_i267)
+                TMap _map250 = await iprot.ReadMapBeginAsync(cancellationToken);
+                Tags = new Dictionary<string, string>(_map250.Count);
+                for(int _i251 = 0; _i251 < _map250.Count; ++_i251)
                 {
-                  string _key268;
-                  string _val269;
-                  _key268 = await iprot.ReadStringAsync(cancellationToken);
-                  _val269 = await iprot.ReadStringAsync(cancellationToken);
-                  Tags[_key268] = _val269;
+                  string _key252;
+                  string _val253;
+                  _key252 = await iprot.ReadStringAsync(cancellationToken);
+                  _val253 = await iprot.ReadStringAsync(cancellationToken);
+                  Tags[_key252] = _val253;
                 }
                 await iprot.ReadMapEndAsync(cancellationToken);
               }
@@ -280,15 +246,15 @@ public partial class TSCreateTimeseriesReq : TBase
             if (field.Type == TType.Map)
             {
               {
-                TMap _map270 = await iprot.ReadMapBeginAsync(cancellationToken);
-                Attributes = new Dictionary<string, string>(_map270.Count);
-                for(int _i271 = 0; _i271 < _map270.Count; ++_i271)
+                TMap _map254 = await iprot.ReadMapBeginAsync(cancellationToken);
+                Attributes = new Dictionary<string, string>(_map254.Count);
+                for(int _i255 = 0; _i255 < _map254.Count; ++_i255)
                 {
-                  string _key272;
-                  string _val273;
-                  _key272 = await iprot.ReadStringAsync(cancellationToken);
-                  _val273 = await iprot.ReadStringAsync(cancellationToken);
-                  Attributes[_key272] = _val273;
+                  string _key256;
+                  string _val257;
+                  _key256 = await iprot.ReadStringAsync(cancellationToken);
+                  _val257 = await iprot.ReadStringAsync(cancellationToken);
+                  Attributes[_key256] = _val257;
                 }
                 await iprot.ReadMapEndAsync(cancellationToken);
               }
@@ -393,10 +359,10 @@ public partial class TSCreateTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, Props.Count), cancellationToken);
-          foreach (string _iter274 in Props.Keys)
+          foreach (string _iter258 in Props.Keys)
           {
-            await oprot.WriteStringAsync(_iter274, cancellationToken);
-            await oprot.WriteStringAsync(Props[_iter274], cancellationToken);
+            await oprot.WriteStringAsync(_iter258, cancellationToken);
+            await oprot.WriteStringAsync(Props[_iter258], cancellationToken);
           }
           await oprot.WriteMapEndAsync(cancellationToken);
         }
@@ -410,10 +376,10 @@ public partial class TSCreateTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, Tags.Count), cancellationToken);
-          foreach (string _iter275 in Tags.Keys)
+          foreach (string _iter259 in Tags.Keys)
           {
-            await oprot.WriteStringAsync(_iter275, cancellationToken);
-            await oprot.WriteStringAsync(Tags[_iter275], cancellationToken);
+            await oprot.WriteStringAsync(_iter259, cancellationToken);
+            await oprot.WriteStringAsync(Tags[_iter259], cancellationToken);
           }
           await oprot.WriteMapEndAsync(cancellationToken);
         }
@@ -427,10 +393,10 @@ public partial class TSCreateTimeseriesReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, Attributes.Count), cancellationToken);
-          foreach (string _iter276 in Attributes.Keys)
+          foreach (string _iter260 in Attributes.Keys)
           {
-            await oprot.WriteStringAsync(_iter276, cancellationToken);
-            await oprot.WriteStringAsync(Attributes[_iter276], cancellationToken);
+            await oprot.WriteStringAsync(_iter260, cancellationToken);
+            await oprot.WriteStringAsync(Attributes[_iter260], cancellationToken);
           }
           await oprot.WriteMapEndAsync(cancellationToken);
         }

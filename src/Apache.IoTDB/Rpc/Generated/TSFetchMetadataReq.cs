@@ -67,22 +67,6 @@ public partial class TSFetchMetadataReq : TBase
     this.Type = type;
   }
 
-  public TSFetchMetadataReq DeepCopy()
-  {
-    var tmp101 = new TSFetchMetadataReq();
-    tmp101.SessionId = this.SessionId;
-    if((Type != null))
-    {
-      tmp101.Type = this.Type;
-    }
-    if((ColumnPath != null) && __isset.columnPath)
-    {
-      tmp101.ColumnPath = this.ColumnPath;
-    }
-    tmp101.__isset.columnPath = this.__isset.columnPath;
-    return tmp101;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFrameworks>net5.0;net6.0;netstandard2.1;netstandard2.0;net461</TargetFrameworks>
         <LangVersion>latest</LangVersion>
-        <Authors>eedalong, lausannel, MysticBoy, Aiemu, HTHou</Authors>
+        <Authors>eedalong, lausannel, MysticBoy, Aiemu, HTHou, CritasWang</Authors>
         <PackageProjectUrl>https://github.com/apache/iotdb-client-csharp</PackageProjectUrl>
         <RepositoryUrl>https://github.com/apache/iotdb-client-csharp</RepositoryUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>

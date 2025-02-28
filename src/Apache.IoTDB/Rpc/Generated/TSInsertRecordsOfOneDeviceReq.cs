@@ -76,34 +76,6 @@ public partial class TSInsertRecordsOfOneDeviceReq : TBase
     this.Timestamps = timestamps;
   }
 
-  public TSInsertRecordsOfOneDeviceReq DeepCopy()
-  {
-    var tmp189 = new TSInsertRecordsOfOneDeviceReq();
-    tmp189.SessionId = this.SessionId;
-    if((PrefixPath != null))
-    {
-      tmp189.PrefixPath = this.PrefixPath;
-    }
-    if((MeasurementsList != null))
-    {
-      tmp189.MeasurementsList = this.MeasurementsList.DeepCopy();
-    }
-    if((ValuesList != null))
-    {
-      tmp189.ValuesList = this.ValuesList.DeepCopy();
-    }
-    if((Timestamps != null))
-    {
-      tmp189.Timestamps = this.Timestamps.DeepCopy();
-    }
-    if(__isset.isAligned)
-    {
-      tmp189.IsAligned = this.IsAligned;
-    }
-    tmp189.__isset.isAligned = this.__isset.isAligned;
-    return tmp189;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -152,23 +124,23 @@ public partial class TSInsertRecordsOfOneDeviceReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list190 = await iprot.ReadListBeginAsync(cancellationToken);
-                MeasurementsList = new List<List<string>>(_list190.Count);
-                for(int _i191 = 0; _i191 < _list190.Count; ++_i191)
+                TList _list178 = await iprot.ReadListBeginAsync(cancellationToken);
+                MeasurementsList = new List<List<string>>(_list178.Count);
+                for(int _i179 = 0; _i179 < _list178.Count; ++_i179)
                 {
-                  List<string> _elem192;
+                  List<string> _elem180;
                   {
-                    TList _list193 = await iprot.ReadListBeginAsync(cancellationToken);
-                    _elem192 = new List<string>(_list193.Count);
-                    for(int _i194 = 0; _i194 < _list193.Count; ++_i194)
+                    TList _list181 = await iprot.ReadListBeginAsync(cancellationToken);
+                    _elem180 = new List<string>(_list181.Count);
+                    for(int _i182 = 0; _i182 < _list181.Count; ++_i182)
                     {
-                      string _elem195;
-                      _elem195 = await iprot.ReadStringAsync(cancellationToken);
-                      _elem192.Add(_elem195);
+                      string _elem183;
+                      _elem183 = await iprot.ReadStringAsync(cancellationToken);
+                      _elem180.Add(_elem183);
                     }
                     await iprot.ReadListEndAsync(cancellationToken);
                   }
-                  MeasurementsList.Add(_elem192);
+                  MeasurementsList.Add(_elem180);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -183,13 +155,13 @@ public partial class TSInsertRecordsOfOneDeviceReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list196 = await iprot.ReadListBeginAsync(cancellationToken);
-                ValuesList = new List<byte[]>(_list196.Count);
-                for(int _i197 = 0; _i197 < _list196.Count; ++_i197)
+                TList _list184 = await iprot.ReadListBeginAsync(cancellationToken);
+                ValuesList = new List<byte[]>(_list184.Count);
+                for(int _i185 = 0; _i185 < _list184.Count; ++_i185)
                 {
-                  byte[] _elem198;
-                  _elem198 = await iprot.ReadBinaryAsync(cancellationToken);
-                  ValuesList.Add(_elem198);
+                  byte[] _elem186;
+                  _elem186 = await iprot.ReadBinaryAsync(cancellationToken);
+                  ValuesList.Add(_elem186);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -204,13 +176,13 @@ public partial class TSInsertRecordsOfOneDeviceReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list199 = await iprot.ReadListBeginAsync(cancellationToken);
-                Timestamps = new List<long>(_list199.Count);
-                for(int _i200 = 0; _i200 < _list199.Count; ++_i200)
+                TList _list187 = await iprot.ReadListBeginAsync(cancellationToken);
+                Timestamps = new List<long>(_list187.Count);
+                for(int _i188 = 0; _i188 < _list187.Count; ++_i188)
                 {
-                  long _elem201;
-                  _elem201 = await iprot.ReadI64Async(cancellationToken);
-                  Timestamps.Add(_elem201);
+                  long _elem189;
+                  _elem189 = await iprot.ReadI64Async(cancellationToken);
+                  Timestamps.Add(_elem189);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -298,13 +270,13 @@ public partial class TSInsertRecordsOfOneDeviceReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.List, MeasurementsList.Count), cancellationToken);
-          foreach (List<string> _iter202 in MeasurementsList)
+          foreach (List<string> _iter190 in MeasurementsList)
           {
             {
-              await oprot.WriteListBeginAsync(new TList(TType.String, _iter202.Count), cancellationToken);
-              foreach (string _iter203 in _iter202)
+              await oprot.WriteListBeginAsync(new TList(TType.String, _iter190.Count), cancellationToken);
+              foreach (string _iter191 in _iter190)
               {
-                await oprot.WriteStringAsync(_iter203, cancellationToken);
+                await oprot.WriteStringAsync(_iter191, cancellationToken);
               }
               await oprot.WriteListEndAsync(cancellationToken);
             }
@@ -321,9 +293,9 @@ public partial class TSInsertRecordsOfOneDeviceReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, ValuesList.Count), cancellationToken);
-          foreach (byte[] _iter204 in ValuesList)
+          foreach (byte[] _iter192 in ValuesList)
           {
-            await oprot.WriteBinaryAsync(_iter204, cancellationToken);
+            await oprot.WriteBinaryAsync(_iter192, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -337,9 +309,9 @@ public partial class TSInsertRecordsOfOneDeviceReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I64, Timestamps.Count), cancellationToken);
-          foreach (long _iter205 in Timestamps)
+          foreach (long _iter193 in Timestamps)
           {
-            await oprot.WriteI64Async(_iter205, cancellationToken);
+            await oprot.WriteI64Async(_iter193, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

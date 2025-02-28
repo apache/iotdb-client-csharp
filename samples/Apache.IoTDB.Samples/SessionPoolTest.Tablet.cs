@@ -29,19 +29,19 @@ namespace Apache.IoTDB.Samples
     {
         public async Task TestInsertTablet()
         {
-            var session_pool = new SessionPool(host, port, pool_size);
+            var session_pool = new SessionPool(host, port, poolSize);
             var status = 0;
             await session_pool.Open(false);
             if (debug) session_pool.OpenDebugMode();
 
             System.Diagnostics.Debug.Assert(session_pool.IsOpen());
-            await session_pool.DeleteDatabaseAsync(test_database_name);
-            var device_id = string.Format("{0}.{1}", test_database_name, test_device);
+            await session_pool.DeleteDatabaseAsync(testDatabaseName);
+            var device_id = string.Format("{0}.{1}", testDatabaseName, testDevice);
             var measurement_lst = new List<string>
             {
-                    test_measurements[1],
-                    test_measurements[2],
-                    test_measurements[3]
+                    testMeasurements[1],
+                    testMeasurements[2],
+                    testMeasurements[3]
             };
             var value_lst = new List<List<object>>
             {
@@ -54,7 +54,7 @@ namespace Apache.IoTDB.Samples
             status = await session_pool.InsertTabletAsync(tablet);
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
-                 "select * from " + string.Format("{0}.{1}", test_database_name, test_device) + " where time<15");
+                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<15");
             res.ShowTableNames();
             while (res.HasNext()) Console.WriteLine(res.Next());
 
@@ -64,11 +64,11 @@ namespace Apache.IoTDB.Samples
             timestamp_lst = new List<long>() { };
             var tasks = new List<Task<int>>();
             var start_ms = DateTime.Now.Ticks / 10000;
-            for (var timestamp = 4; timestamp <= fetch_size * processed_size; timestamp++)
+            for (var timestamp = 4; timestamp <= fetchSize * processedSize; timestamp++)
             {
                 timestamp_lst.Add(timestamp);
                 value_lst.Add(new List<object>() { "iotdb", true, (int)timestamp });
-                if (timestamp % fetch_size == 0)
+                if (timestamp % fetchSize == 0)
                 {
                     tablet = new Tablet(device_id, measurement_lst, datatype_lst, value_lst, timestamp_lst);
                     tasks.Add(session_pool.InsertTabletAsync(tablet));
@@ -81,7 +81,7 @@ namespace Apache.IoTDB.Samples
             var end_ms = DateTime.Now.Ticks / 10000;
             Console.WriteLine(string.Format("total tablet insert time is {0}", end_ms - start_ms));
             res = await session_pool.ExecuteQueryStatementAsync(
-                "select * from " + string.Format("{0}.{1}", test_database_name, test_device));
+                "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             res.ShowTableNames();
             var res_count = 0;
             while (res.HasNext())
@@ -91,9 +91,9 @@ namespace Apache.IoTDB.Samples
             }
 
             await res.Close();
-            Console.WriteLine(res_count + " " + fetch_size * processed_size);
-            System.Diagnostics.Debug.Assert(res_count == fetch_size * processed_size);
-            status = await session_pool.DeleteDatabaseAsync(test_database_name);
+            Console.WriteLine(res_count + " " + fetchSize * processedSize);
+            System.Diagnostics.Debug.Assert(res_count == fetchSize * processedSize);
+            status = await session_pool.DeleteDatabaseAsync(testDatabaseName);
             System.Diagnostics.Debug.Assert(status == 0);
             await session_pool.Close();
             Console.WriteLine("TestInsertTablet Passed!");
@@ -101,22 +101,22 @@ namespace Apache.IoTDB.Samples
 
         public async Task TestInsertTablets()
         {
-            var session_pool = new SessionPool(host, port, pool_size);
+            var session_pool = new SessionPool(host, port, poolSize);
             var status = 0;
             await session_pool.Open(false);
             if (debug) session_pool.OpenDebugMode();
 
             System.Diagnostics.Debug.Assert(session_pool.IsOpen());
-            await session_pool.DeleteDatabaseAsync(test_database_name);
+            await session_pool.DeleteDatabaseAsync(testDatabaseName);
             var device_id = new List<string>()
             {
-                string.Format("{0}.{1}", test_database_name, test_devices[1]),
-                string.Format("{0}.{1}", test_database_name, test_devices[2])
+                string.Format("{0}.{1}", testDatabaseName, testDevices[1]),
+                string.Format("{0}.{1}", testDatabaseName, testDevices[2])
             };
             var measurements_lst = new List<List<string>>()
             {
-                new() {test_measurements[1], test_measurements[2], test_measurements[3]},
-                new() {test_measurements[1], test_measurements[2], test_measurements[3]}
+                new() {testMeasurements[1], testMeasurements[2], testMeasurements[3]},
+                new() {testMeasurements[1], testMeasurements[2], testMeasurements[3]}
             };
             var values_lst = new List<List<List<object>>>()
             {
@@ -148,7 +148,7 @@ namespace Apache.IoTDB.Samples
             status = await session_pool.InsertTabletsAsync(tablets);
             // System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
-                "select * from " + string.Format("{0}.{1}", test_database_name, test_devices[1]) + " where time<15");
+                "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevices[1]) + " where time<15");
             res.ShowTableNames();
             while (res.HasNext()) Console.WriteLine(res.Next());
 
@@ -156,17 +156,17 @@ namespace Apache.IoTDB.Samples
 
             var tasks = new List<Task<int>>();
             // tablets = new List<Tablet>();
-            for (var timestamp = 4; timestamp <= processed_size * fetch_size; timestamp++)
+            for (var timestamp = 4; timestamp <= processedSize * fetchSize; timestamp++)
             {
-                var local_device_id = string.Format("{0}.{1}", test_database_name, test_devices[1]);
+                var local_device_id = string.Format("{0}.{1}", testDatabaseName, testDevices[1]);
                 var local_measurements = new List<string>()
-                    {test_measurements[1], test_measurements[2], test_measurements[3]};
+                    {testMeasurements[1], testMeasurements[2], testMeasurements[3]};
                 var local_value = new List<List<object>>() { new() { "iotdb", true, (int)timestamp } };
                 var local_timestamp = new List<long> { timestamp };
                 var local_data_type = new List<TSDataType> { TSDataType.TEXT, TSDataType.BOOLEAN, TSDataType.INT32 };
                 var tablet = new Tablet(local_device_id, local_measurements, local_data_type, local_value, local_timestamp);
                 tablets.Add(tablet);
-                if (timestamp % fetch_size == 0)
+                if (timestamp % fetchSize == 0)
                 {
                     tasks.Add(session_pool.InsertTabletsAsync(tablets));
                     tablets = new List<Tablet>() { };
@@ -175,7 +175,7 @@ namespace Apache.IoTDB.Samples
 
             Task.WaitAll(tasks.ToArray());
             res = await session_pool.ExecuteQueryStatementAsync(
-                "select * from " + string.Format("{0}.{1}", test_database_name, test_devices[1]));
+                "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevices[1]));
             res.ShowTableNames();
             var res_count = 0;
             while (res.HasNext())
@@ -185,24 +185,24 @@ namespace Apache.IoTDB.Samples
             }
 
             await res.Close();
-            Console.WriteLine(res_count + " " + fetch_size * processed_size);
-            System.Diagnostics.Debug.Assert(res_count == fetch_size * processed_size);
-            status = await session_pool.DeleteDatabaseAsync(test_database_name);
+            Console.WriteLine(res_count + " " + fetchSize * processedSize);
+            System.Diagnostics.Debug.Assert(res_count == fetchSize * processedSize);
+            status = await session_pool.DeleteDatabaseAsync(testDatabaseName);
             System.Diagnostics.Debug.Assert(status == 0);
             await session_pool.Close();
             Console.WriteLine("TestInsertTablets Passed!");
         }
         public async Task TestInsertTabletWithNullValue()
         {
-            var session_pool = new SessionPool(host, port, pool_size);
+            var session_pool = new SessionPool(host, port, poolSize);
             var status = 0;
             await session_pool.Open(false);
             if (debug) session_pool.OpenDebugMode();
 
             System.Diagnostics.Debug.Assert(session_pool.IsOpen());
-            await session_pool.DeleteDatabaseAsync(test_database_name);
-            var device_id = string.Format("{0}.{1}", test_database_name, test_device);
-            var measurements = new List<string>() { test_measurements[1], test_measurements[2], test_measurements[3] };
+            await session_pool.DeleteDatabaseAsync(testDatabaseName);
+            var device_id = string.Format("{0}.{1}", testDatabaseName, testDevice);
+            var measurements = new List<string>() { testMeasurements[1], testMeasurements[2], testMeasurements[3] };
             var values = new List<List<object>>()
             {
                 new List<object>() {null, true, (int) 12}, new List<object>() {"c#", null, (int) 13},
@@ -214,7 +214,7 @@ namespace Apache.IoTDB.Samples
             status = await session_pool.InsertTabletAsync(tablet);
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
-                "select * from " + string.Format("{0}.{1}", test_database_name, test_device));
+                "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             res.ShowTableNames();
             var res_count = 0;
             while (res.HasNext())
@@ -224,7 +224,7 @@ namespace Apache.IoTDB.Samples
             }
 
             await res.Close();
-            status = await session_pool.DeleteDatabaseAsync(test_database_name);
+            status = await session_pool.DeleteDatabaseAsync(testDatabaseName);
             System.Diagnostics.Debug.Assert(status == 0);
             await session_pool.Close();
             Console.WriteLine("TestInsertTabletsWithNullValue Passed!");
@@ -232,14 +232,14 @@ namespace Apache.IoTDB.Samples
 
         public async Task TestInsertTabletWithAllType()
         {
-            var session_pool = new SessionPool(host, port, pool_size);
+            var session_pool = new SessionPool(host, port, poolSize);
             var status = 0;
             await session_pool.Open(false);
             if (debug) session_pool.OpenDebugMode();
 
             System.Diagnostics.Debug.Assert(session_pool.IsOpen());
-            await session_pool.DeleteDatabaseAsync(test_database_name);
-            var device_id = string.Format("{0}.{1}", test_database_name, test_device);
+            await session_pool.DeleteDatabaseAsync(testDatabaseName);
+            var device_id = string.Format("{0}.{1}", testDatabaseName, testDevice);
             var measurements = new List<string>
             {
                 "boolean_measurement",
@@ -277,7 +277,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
 
             var res = await session_pool.ExecuteQueryStatementAsync(
-                "select * from " + string.Format("{0}.{1}", test_database_name, test_device));
+                "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             res.ShowTableNames();
             var res_count = 0;
             while (res.HasNext())
@@ -287,7 +287,7 @@ namespace Apache.IoTDB.Samples
             }
 
             await res.Close();
-            status = await session_pool.DeleteDatabaseAsync(test_database_name);
+            status = await session_pool.DeleteDatabaseAsync(testDatabaseName);
             System.Diagnostics.Debug.Assert(status == 0);
             await session_pool.Close();
             Console.WriteLine("TestInsertTabletWithAllType Passed!");

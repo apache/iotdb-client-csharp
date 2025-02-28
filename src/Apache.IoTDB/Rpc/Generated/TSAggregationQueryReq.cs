@@ -163,57 +163,6 @@ public partial class TSAggregationQueryReq : TBase
     this.Aggregations = aggregations;
   }
 
-  public TSAggregationQueryReq DeepCopy()
-  {
-    var tmp336 = new TSAggregationQueryReq();
-    tmp336.SessionId = this.SessionId;
-    tmp336.StatementId = this.StatementId;
-    if((Paths != null))
-    {
-      tmp336.Paths = this.Paths.DeepCopy();
-    }
-    if((Aggregations != null))
-    {
-      tmp336.Aggregations = this.Aggregations.DeepCopy();
-    }
-    if(__isset.startTime)
-    {
-      tmp336.StartTime = this.StartTime;
-    }
-    tmp336.__isset.startTime = this.__isset.startTime;
-    if(__isset.endTime)
-    {
-      tmp336.EndTime = this.EndTime;
-    }
-    tmp336.__isset.endTime = this.__isset.endTime;
-    if(__isset.interval)
-    {
-      tmp336.Interval = this.Interval;
-    }
-    tmp336.__isset.interval = this.__isset.interval;
-    if(__isset.slidingStep)
-    {
-      tmp336.SlidingStep = this.SlidingStep;
-    }
-    tmp336.__isset.slidingStep = this.__isset.slidingStep;
-    if(__isset.fetchSize)
-    {
-      tmp336.FetchSize = this.FetchSize;
-    }
-    tmp336.__isset.fetchSize = this.__isset.fetchSize;
-    if(__isset.timeout)
-    {
-      tmp336.Timeout = this.Timeout;
-    }
-    tmp336.__isset.timeout = this.__isset.timeout;
-    if(__isset.legalPathNodes)
-    {
-      tmp336.LegalPathNodes = this.LegalPathNodes;
-    }
-    tmp336.__isset.legalPathNodes = this.__isset.legalPathNodes;
-    return tmp336;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -261,13 +210,13 @@ public partial class TSAggregationQueryReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list337 = await iprot.ReadListBeginAsync(cancellationToken);
-                Paths = new List<string>(_list337.Count);
-                for(int _i338 = 0; _i338 < _list337.Count; ++_i338)
+                TList _list316 = await iprot.ReadListBeginAsync(cancellationToken);
+                Paths = new List<string>(_list316.Count);
+                for(int _i317 = 0; _i317 < _list316.Count; ++_i317)
                 {
-                  string _elem339;
-                  _elem339 = await iprot.ReadStringAsync(cancellationToken);
-                  Paths.Add(_elem339);
+                  string _elem318;
+                  _elem318 = await iprot.ReadStringAsync(cancellationToken);
+                  Paths.Add(_elem318);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -282,13 +231,13 @@ public partial class TSAggregationQueryReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list340 = await iprot.ReadListBeginAsync(cancellationToken);
-                Aggregations = new List<TAggregationType>(_list340.Count);
-                for(int _i341 = 0; _i341 < _list340.Count; ++_i341)
+                TList _list319 = await iprot.ReadListBeginAsync(cancellationToken);
+                Aggregations = new List<TAggregationType>(_list319.Count);
+                for(int _i320 = 0; _i320 < _list319.Count; ++_i320)
                 {
-                  TAggregationType _elem342;
-                  _elem342 = (TAggregationType)await iprot.ReadI32Async(cancellationToken);
-                  Aggregations.Add(_elem342);
+                  TAggregationType _elem321;
+                  _elem321 = (TAggregationType)await iprot.ReadI32Async(cancellationToken);
+                  Aggregations.Add(_elem321);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -429,9 +378,9 @@ public partial class TSAggregationQueryReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Paths.Count), cancellationToken);
-          foreach (string _iter343 in Paths)
+          foreach (string _iter322 in Paths)
           {
-            await oprot.WriteStringAsync(_iter343, cancellationToken);
+            await oprot.WriteStringAsync(_iter322, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -445,9 +394,9 @@ public partial class TSAggregationQueryReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I32, Aggregations.Count), cancellationToken);
-          foreach (TAggregationType _iter344 in Aggregations)
+          foreach (TAggregationType _iter323 in Aggregations)
           {
-            await oprot.WriteI32Async((int)_iter344, cancellationToken);
+            await oprot.WriteI32Async((int)_iter323, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

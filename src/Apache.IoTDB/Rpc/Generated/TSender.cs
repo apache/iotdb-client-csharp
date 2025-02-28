@@ -72,22 +72,6 @@ public partial class TSender : TBase
   {
   }
 
-  public TSender DeepCopy()
-  {
-    var tmp98 = new TSender();
-    if((DataNodeLocation != null) && __isset.dataNodeLocation)
-    {
-      tmp98.DataNodeLocation = (TDataNodeLocation)this.DataNodeLocation.DeepCopy();
-    }
-    tmp98.__isset.dataNodeLocation = this.__isset.dataNodeLocation;
-    if((ConfigNodeLocation != null) && __isset.configNodeLocation)
-    {
-      tmp98.ConfigNodeLocation = (TConfigNodeLocation)this.ConfigNodeLocation.DeepCopy();
-    }
-    tmp98.__isset.configNodeLocation = this.__isset.configNodeLocation;
-    return tmp98;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
@@ -204,16 +188,16 @@ public partial class TSender : TBase
   public override string ToString()
   {
     var sb = new StringBuilder("TSender(");
-    int tmp99 = 0;
+    int tmp70 = 0;
     if((DataNodeLocation != null) && __isset.dataNodeLocation)
     {
-      if(0 < tmp99++) { sb.Append(", "); }
+      if(0 < tmp70++) { sb.Append(", "); }
       sb.Append("DataNodeLocation: ");
       DataNodeLocation.ToString(sb);
     }
     if((ConfigNodeLocation != null) && __isset.configNodeLocation)
     {
-      if(0 < tmp99++) { sb.Append(", "); }
+      if(0 < tmp70++) { sb.Append(", "); }
       sb.Append("ConfigNodeLocation: ");
       ConfigNodeLocation.ToString(sb);
     }

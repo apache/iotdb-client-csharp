@@ -72,6 +72,12 @@ namespace Apache.IoTDB
         SHOW_SET_TEMPLATES,
         SHOW_USING_TEMPLATES
     }
+    public enum ColumnCategory
+    {
+        TAG,
+        FIELD,
+        ATTRIBUTE
+    }
     public class TsFileConstant
     {
 
@@ -89,5 +95,9 @@ namespace Apache.IoTDB
         public static byte VALUE_COLUMN_MASK = (byte)0x40;
 
         private TsFileConstant() { }
+    }
+    public class IoTDBConstant {
+        public static string TREE_SQL_DIALECT = "tree";
+        public static string TABLE_SQL_DIALECT = "table";
     }
 }

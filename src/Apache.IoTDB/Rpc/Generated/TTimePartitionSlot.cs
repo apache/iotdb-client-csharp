@@ -43,13 +43,6 @@ public partial class TTimePartitionSlot : TBase
     this.StartTime = startTime;
   }
 
-  public TTimePartitionSlot DeepCopy()
-  {
-    var tmp12 = new TTimePartitionSlot();
-    tmp12.StartTime = this.StartTime;
-    return tmp12;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

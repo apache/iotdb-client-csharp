@@ -56,22 +56,6 @@ public partial class TSConnectionInfo : TBase
     this.Type = type;
   }
 
-  public TSConnectionInfo DeepCopy()
-  {
-    var tmp463 = new TSConnectionInfo();
-    if((UserName != null))
-    {
-      tmp463.UserName = this.UserName;
-    }
-    tmp463.LogInTime = this.LogInTime;
-    if((ConnectionId != null))
-    {
-      tmp463.ConnectionId = this.ConnectionId;
-    }
-    tmp463.Type = this.Type;
-    return tmp463;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();

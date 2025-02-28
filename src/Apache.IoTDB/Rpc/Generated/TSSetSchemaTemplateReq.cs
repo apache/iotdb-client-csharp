@@ -49,21 +49,6 @@ public partial class TSSetSchemaTemplateReq : TBase
     this.PrefixPath = prefixPath;
   }
 
-  public TSSetSchemaTemplateReq DeepCopy()
-  {
-    var tmp403 = new TSSetSchemaTemplateReq();
-    tmp403.SessionId = this.SessionId;
-    if((TemplateName != null))
-    {
-      tmp403.TemplateName = this.TemplateName;
-    }
-    if((PrefixPath != null))
-    {
-      tmp403.PrefixPath = this.PrefixPath;
-    }
-    return tmp403;
-  }
-
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
   {
     iprot.IncrementRecursionDepth();
