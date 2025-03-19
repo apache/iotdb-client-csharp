@@ -64,11 +64,13 @@ namespace Apache.IoTDB
     public delegate Task<TResult> AsyncOperation<TResult>(Client client);
 
 
+    [Obsolete("This method is deprecated, please use new SessionPool.Builder().")]
     public SessionPool(string host, int port, int poolSize)
                     : this(host, port, "root", "root", 1024, "UTC+08:00", poolSize, true, 60)
     {
     }
 
+    [Obsolete(" This method is deprecated, please use new SessionPool.Builder().")]
     public SessionPool(string host, int port, string username, string password)
                     : this(host, port, username, password, 1024, "UTC+08:00", 8, true, 60)
     {
@@ -1388,12 +1390,13 @@ namespace Apache.IoTDB
               // all client should switch to the same database
               foreach (var c in _clients.ClientQueue)
               {
-                try{
-                if (c != client)
+                try
                 {
-                  var switchReq = new TSExecuteStatementReq(c.SessionId, sql, c.StatementId);
-                  await c.ServiceClient.executeUpdateStatementAsync(switchReq);
-                }
+                  if (c != client)
+                  {
+                    var switchReq = new TSExecuteStatementReq(c.SessionId, sql, c.StatementId);
+                    await c.ServiceClient.executeUpdateStatementAsync(switchReq);
+                  }
                 }
                 catch (Exception e)
                 {
