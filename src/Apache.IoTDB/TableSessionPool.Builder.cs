@@ -89,7 +89,7 @@ public partial class TableSessionPool
       return this;
     }
 
-    public Builder SetSetConnectionTimeoutInMs(int timeout)
+    public Builder SetConnectionTimeoutInMs(int timeout)
     {
       _connectionTimeoutInMs = timeout;
       return this;
