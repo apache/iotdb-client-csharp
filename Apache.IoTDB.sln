@@ -26,8 +26,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{DEAC57D3-4
 		docs\time_profile_zh.pdf = docs\time_profile_zh.pdf
 	EndProjectSection
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{4D457769-80CB-401F-9155-C3125C04FACD}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apache.IoTDB.Data", "src\Apache.IoTDB.Data\Apache.IoTDB.Data.csproj", "{4308656F-D174-49A6-ACE4-15894B017D55}"
 EndProject
 Global

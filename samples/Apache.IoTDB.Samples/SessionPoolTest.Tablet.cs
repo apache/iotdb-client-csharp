@@ -271,7 +271,7 @@ namespace Apache.IoTDB.Samples
                 TSDataType.BLOB,
                 TSDataType.STRING
             };
-            var timestamps = new List<long> {1, 2};
+            var timestamps = new List<long> { 1, 2 };
             var tablet = new Tablet(device_id, measurements, datatypes, values, timestamps);
             status = await session_pool.InsertTabletAsync(tablet);
             System.Diagnostics.Debug.Assert(status == 0);

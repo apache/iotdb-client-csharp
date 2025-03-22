@@ -96,7 +96,8 @@ namespace Apache.IoTDB
 
         private TsFileConstant() { }
     }
-    public class IoTDBConstant {
+    public class IoTDBConstant
+    {
         public static string TREE_SQL_DIALECT = "tree";
         public static string TABLE_SQL_DIALECT = "table";
     }

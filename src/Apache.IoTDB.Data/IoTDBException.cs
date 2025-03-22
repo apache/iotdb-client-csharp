@@ -47,7 +47,7 @@ namespace Apache.IoTDB.Data
 
 
         public override string Message => _IoTDBError?.Error;
-        public override int ErrorCode =>   (int) _IoTDBError?.Code;
+        public override int ErrorCode => (int)_IoTDBError?.Code;
         /// <summary>
         ///     Throws an exception with a specific IoTDB error code value.
         /// </summary>
@@ -58,29 +58,29 @@ namespace Apache.IoTDB.Data
         /// </remarks>
         public static void ThrowExceptionForRC(string _commandText, IoTDBErrorResult IoTDBError)
         {
-            var te = new IoTDBException(IoTDBError);
-            te.Data.Add("commandText", _commandText);
-            throw te;
+            var tmp_exception = new IoTDBException(IoTDBError);
+            tmp_exception.Data.Add("commandText", _commandText);
+            throw tmp_exception;
         }
-        public static void ThrowExceptionForRC( IoTDBErrorResult IoTDBError)
+        public static void ThrowExceptionForRC(IoTDBErrorResult IoTDBError)
         {
-            var te = new IoTDBException(IoTDBError);
-            throw te;
+            var tmp_exception = new IoTDBException(IoTDBError);
+            throw tmp_exception;
         }
         public static void ThrowExceptionForRC(IntPtr _IoTDB)
         {
-            var te = new IoTDBException(new IoTDBErrorResult() {   });
-            throw te;
+            var tmp_exception = new IoTDBException(new IoTDBErrorResult() { });
+            throw tmp_exception;
         }
         public static void ThrowExceptionForRC(int code, string message, Exception ex)
         {
-            var te = new IoTDBException(new IoTDBErrorResult() { Code = code, Error = message }, ex);
-            throw te;
+            var tmp_exception = new IoTDBException(new IoTDBErrorResult() { Code = code, Error = message }, ex);
+            throw tmp_exception;
         }
         public static void ThrowExceptionForRC(int code, string message)
         {
-            var te = new IoTDBException(new IoTDBErrorResult() { Code = code, Error = message });
-            throw te;
+            var tmp_exception = new IoTDBException(new IoTDBErrorResult() { Code = code, Error = message });
+            throw tmp_exception;
         }
     }
 }

@@ -1,0 +1,31 @@
+repos:
+  - repo: local
+    hooks:
+      - id: dotnet-format
+        name: dotnet format
+        entry: dotnet format --include
+        language: system
+        pass_filenames: true
+        files: '\.(cs|vb|fs|sln|csproj|fsproj)$'
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+      - id: check-yaml
+      - id: check-json
+      - id: check-xml
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.6
+    hooks:
+      - id: codespell
+        args: ["--ignore-words-list=fo,teh,ba"]
+
+exclude: |
+  (?x)^(
+      src/Apache\.IoTDB/Rpc/|
+      .*\.md$
+  )

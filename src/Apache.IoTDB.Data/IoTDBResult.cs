@@ -26,10 +26,10 @@ namespace Apache.IoTDB.Data
     public class IoTDBErrorResult
     {
 
-        public int Code  { get; set; }
+        public int Code { get; set; }
         /// <summary>
         ///
         /// </summary>
-        public string Error  { get; set; }
+        public string Error { get; set; }
     }
 }

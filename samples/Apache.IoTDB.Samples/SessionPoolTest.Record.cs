@@ -305,12 +305,12 @@ namespace Apache.IoTDB.Samples
                 row = res.Next();
                 break;
             }
-            
+
             Console.WriteLine($"{testDatabaseName}.{testDevice}.{row.Measurements[0]}  {testMeasurements[3]}");
             System.Diagnostics.Debug.Assert($"{testDatabaseName}.{testDevice}.{testMeasurements[3]}" == row.Measurements[0]);
             System.Diagnostics.Debug.Assert($"{testDatabaseName}.{testDevice}.{testMeasurements[1]}" == row.Measurements[1]);
             System.Diagnostics.Debug.Assert($"{testDatabaseName}.{testDevice}.{testMeasurements[2]}" == row.Measurements[2]);
-            
+
             status = await session_pool.DeleteDatabaseAsync(testDatabaseName);
             System.Diagnostics.Debug.Assert(status == 0);
             await session_pool.Close();
@@ -641,7 +641,7 @@ namespace Apache.IoTDB.Samples
             var rowRecord2 = new RowRecord(2, values2, measurements, dataTypes);
             var rowRecord3 = new RowRecord(3, values3, measurements, dataTypes);
 
-            var device_id = new List<string> { string.Format("{0}.{1}", testDatabaseName, testDevice),string.Format("{0}.{1}", testDatabaseName, testDevice),string.Format("{0}.{1}", testDatabaseName, testDevice) };
+            var device_id = new List<string> { string.Format("{0}.{1}", testDatabaseName, testDevice), string.Format("{0}.{1}", testDatabaseName, testDevice), string.Format("{0}.{1}", testDatabaseName, testDevice) };
             var rowRecords = new List<RowRecord> { rowRecord1, rowRecord2, rowRecord3 };
 
             status = await session_pool.InsertRecordsAsync(device_id, rowRecords);

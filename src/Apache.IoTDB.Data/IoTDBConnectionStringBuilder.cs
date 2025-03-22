@@ -65,24 +65,24 @@ namespace Apache.IoTDB.Data
         private string _userName = "root";
         private string _password = "root";
         private bool _enableRpcCompression = false;
-        private int  _fetchSize = 1800;
+        private int _fetchSize = 1800;
         private string _zoneId = "UTC+08:00";
-        private int  _port = 6667;
-      private   int  _poolSize =8;
-        private int _timeOut=10000;
+        private int _port = 6667;
+        private int _poolSize = 8;
+        private int _timeOut = 10000;
 
         static IoTDBConnectionStringBuilder()
         {
             var validKeywords = new string[9];
             validKeywords[(int)Keywords.DataSource] = DataSourceKeyword;
-             validKeywords[(int)Keywords.Username] = UserNameKeyword;
+            validKeywords[(int)Keywords.Username] = UserNameKeyword;
             validKeywords[(int)Keywords.Password] = PasswordKeyword;
             validKeywords[(int)Keywords.Port] = PortKeyword;
             validKeywords[(int)Keywords.FetchSize] = FetchSizeKeyword;
             validKeywords[(int)Keywords.Compression] = CompressionKeyword;
             validKeywords[(int)Keywords.PoolSize] = PoolSizeKeyword;
             validKeywords[(int)Keywords.ZoneId] = ZoneIdKeyword;
-            validKeywords[(int)Keywords.TimeOut] =TimeOutKeyword;
+            validKeywords[(int)Keywords.TimeOut] = TimeOutKeyword;
             _validKeywords = validKeywords;
 
             _keywords = new Dictionary<string, Keywords>(9, StringComparer.OrdinalIgnoreCase)
@@ -129,13 +129,13 @@ namespace Apache.IoTDB.Data
             get => _userName;
             set => base[UserNameKeyword] = _userName = value;
         }
-  
+
         public virtual string Password
         {
             get => _password;
             set => base[PasswordKeyword] = _password = value;
         }
-        public virtual int  Port
+        public virtual int Port
         {
             get => _port;
             set => base[PortKeyword] = _port = value;
@@ -163,7 +163,7 @@ namespace Apache.IoTDB.Data
         }
 
         public virtual int TimeOut
-    {
+        {
             get => _timeOut;
             set => base[PoolSizeKeyword] = _timeOut = value;
         }
@@ -215,19 +215,19 @@ namespace Apache.IoTDB.Data
 
                     return;
                 }
-           
+
                 switch (GetIndex(keyword))
                 {
                     case Keywords.DataSource:
                         DataSource = Convert.ToString(value, CultureInfo.InvariantCulture);
                         return;
                     case Keywords.Username:
-                        Username= Convert.ToString(value, CultureInfo.InvariantCulture);
+                        Username = Convert.ToString(value, CultureInfo.InvariantCulture);
                         return;
                     case Keywords.Password:
                         Password = Convert.ToString(value, CultureInfo.InvariantCulture);
                         return;
-      
+
                     case Keywords.Port:
                         Port = Convert.ToInt32(value, CultureInfo.InvariantCulture);
                         return;
@@ -354,7 +354,7 @@ namespace Apache.IoTDB.Data
 
         private object GetAt(Keywords index)
         {
-  
+
             switch (index)
             {
                 case Keywords.DataSource:
@@ -363,7 +363,7 @@ namespace Apache.IoTDB.Data
                     return Password;
                 case Keywords.Username:
                     return Username;
-    
+
                 case Keywords.Port:
                     return Port;
                 case Keywords.FetchSize:
@@ -401,7 +401,7 @@ namespace Apache.IoTDB.Data
                     _userName = "root";
                     return;
                 case Keywords.Port:
-                    _port=6667;
+                    _port = 6667;
                     return;
                 case Keywords.FetchSize:
                     _fetchSize = 1800;
