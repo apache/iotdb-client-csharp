@@ -22,4 +22,4 @@ jobs:
 
     - name: Clean IoTDB & Shut Down Docker
       run: |
-        docker compose -f docker-compose-2c-2d.yml down
+        docker compose -f docker-compose-2c2d.yml down
