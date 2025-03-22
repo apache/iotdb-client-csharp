@@ -52,97 +52,104 @@ namespace Apache.IoTDB.Samples
         public List<string> testMeasurements = new List<string>(
             measurementCount.ConvertAll(x => testMeasurement + x.ToString()).ToArray()
         );
-
-
         public SessionPoolTest(string _host = "localhost")
         {
             host = _host;
             nodeUrls.Add(host + ":" + port);
         }
 
+        public SessionPoolTest(List<string> _nodeUrls)
+        {
+            nodeUrls = _nodeUrls;
+        }
         public async Task Test()
         {
-            await TestOpenWithNodeUrls();
+            if(nodeUrls.Count == 1){
+                await TestOpenWithNodeUrls();
 
-            await TestOpenWith2NodeUrls();
+                await TestOpenWith2NodeUrls();
 
-            await TestOpenWithNodeUrlsAndInsertOneRecord();
+                await TestOpenWithNodeUrlsAndInsertOneRecord();
 
-            await TestInsertOneRecord();
+                await TestInsertOneRecord();
 
-            await TestInsertAlignedRecord();
+                await TestInsertAlignedRecord();
 
-            await TestInsertAlignedRecords();
+                await TestInsertAlignedRecords();
 
-            await TestInsertAlignedStringRecords();
+                await TestInsertAlignedStringRecords();
 
-            await TestInsertAlignedStringRecordsOfOneDevice();
+                await TestInsertAlignedStringRecordsOfOneDevice();
 
-            await TestInsertStringRecord();
+                await TestInsertStringRecord();
 
-            await TestInsertAlignedStringRecord();
+                await TestInsertAlignedStringRecord();
 
-            await TestInsertStringRecords();
+                await TestInsertStringRecords();
 
-            await TestInsertStringRecordsOfOneDevice();
+                await TestInsertStringRecordsOfOneDevice();
 
-            await TestInsertAlignedRecordsOfOneDevice();
+                await TestInsertAlignedRecordsOfOneDevice();
 
-            await TestInsertAlignedTablet();
+                await TestInsertAlignedTablet();
 
-            await TestInsertAlignedTablets();
+                await TestInsertAlignedTablets();
 
-            await TestInsertRecord();
+                await TestInsertRecord();
 
-            await TestCreateMultiTimeSeries();
+                await TestCreateMultiTimeSeries();
 
-            await TestInsertStrRecord();
+                await TestInsertStrRecord();
 
-            await TestInsertRecords();
+                await TestInsertRecords();
 
-            await TestInsertRecordsWithAllType();
+                await TestInsertRecordsWithAllType();
 
-            await TestInsertRecordsOfOneDevice();
+                await TestInsertRecordsOfOneDevice();
 
-            await TestInsertTablet();
+                await TestInsertTablet();
 
-            await TestInsertTabletWithAllType();
+                await TestInsertTabletWithAllType();
 
-            await TestInsertTabletWithNullValue();
+                await TestInsertTabletWithNullValue();
 
-            await TestInsertTablets();
+                await TestInsertTablets();
 
-            await TestSetAndUnsetSchemaTemplate();
+                await TestSetAndUnsetSchemaTemplate();
 
-            await TestCreateAlignedTimeseries();
+                await TestCreateAlignedTimeseries();
 
-            await TestCreateAndDropSchemaTemplate();
+                await TestCreateAndDropSchemaTemplate();
 
-            await TestGetTimeZone();
+                await TestGetTimeZone();
 
-            await TestCreateAndDeleteDatabase();
+                await TestCreateAndDeleteDatabase();
 
-            await TestCreateTimeSeries();
+                await TestCreateTimeSeries();
 
-            await TestDeleteTimeSeries();
+                await TestDeleteTimeSeries();
 
-            await TestDeleteDatabase();
+                await TestDeleteDatabase();
 
-            await TestCheckTimeSeriesExists();
+                await TestCheckTimeSeriesExists();
 
-            await TestSetTimeZone();
+                await TestSetTimeZone();
 
-            await TestDeleteData();
+                await TestDeleteData();
 
-            await TestNonSql();
+                await TestNonSql();
 
-            await TestRawDataQuery();
+                await TestRawDataQuery();
 
-            await TestLastDataQuery();
+                await TestLastDataQuery();
 
-            await TestSqlQuery();
+                await TestSqlQuery();
 
-            await TestNonSqlBy_ADO();
+                await TestNonSqlBy_ADO();
+            }
+            else {            
+                await TestMultiNodeDataFetch();
+            }
         }
         public async Task TestOpenWithNodeUrls()
         {
@@ -454,7 +461,7 @@ namespace Apache.IoTDB.Samples
 
             await res.Close();
             Console.WriteLine("SHOW DEVICES sql passed!");
-            res = await session_pool.ExecuteQueryStatementAsync("COUNT TIMESERIES root");
+            res = await session_pool.ExecuteQueryStatementAsync($"COUNT TIMESERIES {testDatabaseName}");
             res.ShowTableNames();
             while (res.HasNext()) Console.WriteLine(res.Next());
 
@@ -571,6 +578,57 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             await session_pool.Close();
             Console.WriteLine("LastDataQuery Passed");
+        }
+
+        public async Task TestMultiNodeDataFetch(){
+            System.Diagnostics.Debug.Assert(nodeUrls.Count > 1, "nodeUrls.Count should be greater than 1 in MultiNode Test");
+            var session_pool = new SessionPool.Builder()
+                .SetUsername(username)
+                .SetPassword(password)
+                .SetNodeUrl(nodeUrls)
+                .SetPoolSize(4)
+                .Build();
+            await session_pool.Open(false);
+            if (debug) session_pool.OpenDebugMode();
+            var status = await session_pool.DeleteDatabaseAsync(testDatabaseName);
+            var device_id = string.Format("{0}.{1}", testDatabaseName, testDevice);
+            var measurements = new List<string> { testMeasurements[0], testMeasurements[1] };
+            var data_type_lst = new List<TSDataType> { TSDataType.BOOLEAN, TSDataType.FLOAT };
+            var encoding_lst = new List<TSEncoding> { TSEncoding.PLAIN, TSEncoding.PLAIN };
+            var compressor_lst = new List<Compressor> { Compressor.SNAPPY, Compressor.SNAPPY };
+            var ts_path_lst = new List<string>() { 
+                string.Format("{0}.{1}.{2}", testDatabaseName, testDevice, testMeasurements[0]),
+                string.Format("{0}.{1}.{2}", testDatabaseName, testDevice, testMeasurements[1])
+            };
+            status = await session_pool.CreateMultiTimeSeriesAsync(ts_path_lst, data_type_lst, encoding_lst, compressor_lst);
+
+            var records = new List<RowRecord>();
+            var values = new List<object>() { true, 20.0f };
+            var device_id_lst = new List<string>() { };
+            for (int i = 1; i <= fetchSize * processedSize * 4 + 783; i++)
+            {
+                var record = new RowRecord(i, values, measurements);
+                records.Add(record);
+                device_id_lst.Add(device_id);
+            }
+
+            // insert data
+            status = await session_pool.InsertRecordsAsync(device_id_lst, records);
+            System.Diagnostics.Debug.Assert(status == 0);
+            // fetch data
+            var paths = new List<string>() { string.Format("{0}.{1}", device_id, testMeasurements[0]), string.Format("{0}.{1}", device_id, testMeasurements[1]) };
+            var res = await session_pool.ExecuteQueryStatementAsync("select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
+            res.ShowTableNames();
+            var count = 0;
+            while (res.HasNext())
+            {
+                var record = res.Next();
+                count++;
+            }
+            Console.WriteLine(count + " " + (fetchSize * processedSize * 4 + 783));
+            System.Diagnostics.Debug.Assert(count == fetchSize * processedSize * 4 + 783);
+            await res.Close();
+            Console.WriteLine("MultiNodeDataFetch Passed");
         }
     }
 }

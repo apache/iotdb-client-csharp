@@ -1,0 +1,133 @@
+version: "3"
+services:
+
+  # ConfigNode 1
+  confignode-1:
+    image: apache/iotdb:2.0.1-beta-standalone
+    command: ["bash", "-c", "entrypoint.sh confignode"]
+    restart: always
+    healthcheck:
+      test: ["CMD", "ls", "/iotdb/data"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    environment:
+      - cn_internal_address=127.0.0.1
+      - cn_internal_port=10710
+      - cn_consensus_port=10720
+      - cn_seed_config_node=127.0.0.1:10710
+      - schema_replication_factor=2
+      - data_replication_factor=2
+    privileged: true
+    volumes:
+      - ./iotdb/confignode-1/data:/iotdb/data
+      - ./iotdb/confignode-1/logs:/iotdb/logs
+    network_mode: host
+
+  # ConfigNode 2
+  confignode-2:
+    image: apache/iotdb:2.0.1-beta-standalone
+    command: ["bash", "-c", "entrypoint.sh confignode"]
+    restart: always
+    healthcheck:
+      test: ["CMD", "ls", "/iotdb/data"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    environment:
+      - cn_internal_address=127.0.0.1
+      - cn_internal_port=10711        # 端口不同于confignode-1
+      - cn_consensus_port=10721       # 共识端口不同于confignode-1
+      - cn_seed_config_node=127.0.0.1:10710
+      - schema_replication_factor=2
+      - data_replication_factor=2
+    privileged: true
+    volumes:
+      - ./iotdb/confignode-2/data:/iotdb/data
+      - ./iotdb/confignode-2/logs:/iotdb/logs
+    network_mode: host
+
+  # DataNode 1
+  datanode-1:
+    image: apache/iotdb:2.0.1-beta-standalone
+    command: ["bash", "-c", "entrypoint.sh datanode"]
+    restart: always
+    healthcheck:
+      test: ["CMD", "ls", "/iotdb/data/datanode/system"]
+      interval: 10s
+      timeout: 60s
+      retries: 30
+      start_period: 30s
+    depends_on:
+      confignode-1:
+        condition: service_healthy
+    environment:
+      - dn_rpc_address=127.0.0.1
+      - dn_internal_address=127.0.0.1
+      - dn_seed_config_node=127.0.0.1:10710
+      - dn_rpc_port=6667
+      - dn_internal_port=10730
+      - dn_mpp_data_exchange_port=10740
+      - dn_schema_region_consensus_port=10750
+      - dn_data_region_consensus_port=10760
+      - schema_replication_factor=2
+      - data_replication_factor=2
+    privileged: true
+    volumes:
+      - ./iotdb/datanode-1/data:/iotdb/data
+      - ./iotdb/datanode-1/logs:/iotdb/logs
+    network_mode: host
+
+  # DataNode 2
+  datanode-2:
+    image: apache/iotdb:2.0.1-beta-standalone
+    command: ["bash", "-c", "entrypoint.sh datanode"]
+    restart: always
+    healthcheck:
+      test: ["CMD", "ls", "/iotdb/data/datanode/system"]
+      interval: 10s
+      timeout: 60s
+      retries: 30
+      start_period: 30s
+    depends_on:
+      confignode-1:
+        condition: service_healthy
+      confignode-2:
+        condition: service_healthy
+    environment:
+      - dn_rpc_address=127.0.0.1
+      - dn_internal_address=127.0.0.1
+      - dn_seed_config_node=127.0.0.1:10710
+      - dn_rpc_port=6668              # 端口不同于datanode-1
+      - dn_internal_port=10731        # 内部端口不同于datanode-1
+      - dn_mpp_data_exchange_port=10741
+      - dn_schema_region_consensus_port=10751
+      - dn_data_region_consensus_port=10761
+      - schema_replication_factor=2
+      - data_replication_factor=2
+    privileged: true
+    volumes:
+      - ./iotdb/datanode-2/data:/iotdb/data
+      - ./iotdb/datanode-2/logs:/iotdb/logs
+    network_mode: host
+
+  # C# Client
+  apache.iotdb.samples:
+    image: ${DOCKER_REGISTRY-}apacheiotdbsamples
+    depends_on:
+       confignode-1:
+         condition: service_healthy
+       confignode-2:
+         condition: service_healthy
+       datanode-1:
+          condition: service_healthy
+       datanode-2:
+          condition: service_healthy
+    build:
+      context: .
+      dockerfile: samples/Apache.IoTDB.Samples/Dockerfile
+    command: ["--multi", "localhost:6667", "localhost:6668"]
+    # command: ["sleep", "infinity"]
+    network_mode: host
