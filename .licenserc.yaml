@@ -32,5 +32,6 @@ header:
     - 'Apache.IoTDB.sln'
     - '.gitignore'
     - '.dockerignore'
+    - '.pre-commit-config.yaml'
 
   comment: on-failure

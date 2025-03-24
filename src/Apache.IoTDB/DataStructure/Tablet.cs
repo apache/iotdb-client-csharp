@@ -38,7 +38,7 @@ namespace Apache.IoTDB.DataStructure
     *
     * @deprecated
     * Notice: The tablet should not have empty cell
-    * 
+    *
     * From 0.13 IoTDB Server, tablet could have empty cell
     *
     */

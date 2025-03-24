@@ -118,4 +118,3 @@ namespace Apache.IoTDB.UserCase
     }
 
 }
-

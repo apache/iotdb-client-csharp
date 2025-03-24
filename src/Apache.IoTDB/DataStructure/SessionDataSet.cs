@@ -81,18 +81,25 @@ namespace Apache.IoTDB.DataStructure
 
             int deduplicateIdx = 0;
             Dictionary<string, int> columnToFirstIndexMap = new Dictionary<string, int>();
-            for(var i = 0; i < _columnSize; i++){
+            for (var i = 0; i < _columnSize; i++)
+            {
                 var columnName = _columnNames[i];
-                if(_columnNameIndexMap.ContainsKey(columnName)){
+                if (_columnNameIndexMap.ContainsKey(columnName))
+                {
                     _duplicateLocation[i] = columnToFirstIndexMap[columnName];
-                } else {
+                }
+                else
+                {
                     columnToFirstIndexMap[columnName] = i;
-                    if(resp.ColumnNameIndexMap != null) {
+                    if (resp.ColumnNameIndexMap != null)
+                    {
                         int valueIndex = resp.ColumnNameIndexMap[columnName];
                         _columnNameIndexMap[columnName] = valueIndex;
                         _valueBufferLst.Add(new ByteBuffer(_queryDataset.ValueList[valueIndex]));
                         _bitmapBufferLst.Add(new ByteBuffer(_queryDataset.BitmapList[valueIndex]));
-                    } else {
+                    }
+                    else
+                    {
                         _columnNameIndexMap[columnName] = deduplicateIdx;
                         _valueBufferLst.Add(new ByteBuffer(_queryDataset.ValueList[deduplicateIdx]));
                         _bitmapBufferLst.Add(new ByteBuffer(_queryDataset.BitmapList[deduplicateIdx]));
@@ -182,14 +189,14 @@ namespace Apache.IoTDB.DataStructure
 
         private void ConstructOneRow()
         {
-            List<object> fieldLst = new List<Object>();
+            List<object> fieldList = new List<Object>();
 
             for (int i = 0; i < _columnSize; i++)
             {
                 if (_duplicateLocation.ContainsKey(i))
                 {
-                    var field = fieldLst[_duplicateLocation[i]];
-                    fieldLst.Add(field);
+                    var field = fieldList[_duplicateLocation[i]];
+                    fieldList.Add(field);
                 }
                 else
                 {
@@ -213,7 +220,7 @@ namespace Apache.IoTDB.DataStructure
                                 localField = columnValueBuffer.GetBool();
                                 break;
                             case TSDataType.INT32:
-                            // case TSDataType.DATE:
+                                // case TSDataType.DATE:
                                 localField = columnValueBuffer.GetInt();
                                 break;
                             case TSDataType.DATE:
@@ -231,7 +238,7 @@ namespace Apache.IoTDB.DataStructure
                                 break;
                             case TSDataType.TEXT:
                             case TSDataType.STRING:
-                            // case TSDataType.BLOB:
+                                // case TSDataType.BLOB:
                                 localField = columnValueBuffer.GetStr();
                                 break;
                             case TSDataType.BLOB:
@@ -243,19 +250,19 @@ namespace Apache.IoTDB.DataStructure
                                 throw new TException(err_msg, null);
                         }
 
-                        fieldLst.Add(localField);
+                        fieldList.Add(localField);
                     }
                     else
                     {
                         localField = null;
-                        fieldLst.Add(DBNull.Value);
+                        fieldList.Add(DBNull.Value);
                     }
                 }
             }
 
             long timestamp = _timeBuffer.GetLong();
             _rowIndex += 1;
-            _cachedRowRecord = new RowRecord(timestamp, fieldLst, _columnNames);
+            _cachedRowRecord = new RowRecord(timestamp, fieldList, _columnNames);
         }
 
         private bool IsNull(int loc, int row_index)

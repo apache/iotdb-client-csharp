@@ -183,7 +183,7 @@ namespace Apache.IoTDB.Data
         /// <param name="parameterName">The name of the parameter.</param>
         /// <param name="value">The value of the parameter. Can be null.</param>
         /// <returns>The parameter that was added.</returns>
-        public virtual IoTDBParameter AddWithValue( object value)
+        public virtual IoTDBParameter AddWithValue(object value)
         {
             var parameter = new IoTDBParameter(Guid.NewGuid().ToString(), value);
             Add(parameter);
@@ -354,7 +354,7 @@ namespace Apache.IoTDB.Data
         protected override void SetParameter(string parameterName, DbParameter value)
             => SetParameter(IndexOfChecked(parameterName), value);
 
-      
+
 
         private int IndexOfChecked(string parameterName)
         {

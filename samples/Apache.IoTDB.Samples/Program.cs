@@ -35,48 +35,48 @@ namespace Apache.IoTDB.Samples
             () => "localhost",
             description: "Use single endpoint (e.g. --single localhost)");
 
-        var multiOption = new Option<List<string>>(
-            "--multi",
-            description: "Use multiple endpoints (e.g. --multi localhost:6667 localhost:6668)")
-        {
-            AllowMultipleArgumentsPerToken = true
-        };
+            var multiOption = new Option<List<string>>(
+                "--multi",
+                description: "Use multiple endpoints (e.g. --multi localhost:6667 localhost:6668)")
+            {
+                AllowMultipleArgumentsPerToken = true
+            };
 
-        var rootCommand = new RootCommand
+            var rootCommand = new RootCommand
         {
             singleOption,
             multiOption
         };
 
-        rootCommand.SetHandler(async (string single, List<string> multi) =>
-        {
-            var utilsTest = new UtilsTest();
-            utilsTest.TestParseEndPoint();
-
-            SessionPoolTest sessionPoolTest;
-
-            if (!string.IsNullOrEmpty(single) && (multi == null || multi.Count == 0))
+            rootCommand.SetHandler(async (string single, List<string> multi) =>
             {
-                sessionPoolTest = new SessionPoolTest(single);
-            }
-            else if (multi != null && multi.Count != 0)
-            {
-                sessionPoolTest = new SessionPoolTest(multi);
-            }
-            else
-            {
-                Console.WriteLine("Please specify either --single or --multi endpoints.");
-                return;
-            }
+                var utilsTest = new UtilsTest();
+                utilsTest.TestParseEndPoint();
 
-            await sessionPoolTest.Test();
+                SessionPoolTest sessionPoolTest;
 
-            var tableSessionPoolTest = new TableSessionPoolTest(sessionPoolTest);
-            await tableSessionPoolTest.Test();
+                if (!string.IsNullOrEmpty(single) && (multi == null || multi.Count == 0))
+                {
+                    sessionPoolTest = new SessionPoolTest(single);
+                }
+                else if (multi != null && multi.Count != 0)
+                {
+                    sessionPoolTest = new SessionPoolTest(multi);
+                }
+                else
+                {
+                    Console.WriteLine("Please specify either --single or --multi endpoints.");
+                    return;
+                }
 
-        }, singleOption, multiOption);
+                await sessionPoolTest.Test();
 
-        await rootCommand.InvokeAsync(args);
+                var tableSessionPoolTest = new TableSessionPoolTest(sessionPoolTest);
+                await tableSessionPoolTest.Test();
+
+            }, singleOption, multiOption);
+
+            await rootCommand.InvokeAsync(args);
         }
 
         public static void OpenDebugMode(this SessionPool session)

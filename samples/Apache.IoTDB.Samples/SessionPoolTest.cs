@@ -64,7 +64,8 @@ namespace Apache.IoTDB.Samples
         }
         public async Task Test()
         {
-            if(nodeUrls.Count == 1){
+            if (nodeUrls.Count == 1)
+            {
                 await TestOpenWithNodeUrls();
 
                 await TestOpenWith2NodeUrls();
@@ -147,7 +148,8 @@ namespace Apache.IoTDB.Samples
 
                 await TestNonSqlBy_ADO();
             }
-            else {            
+            else
+            {
                 await TestMultiNodeDataFetch();
             }
         }
@@ -580,7 +582,8 @@ namespace Apache.IoTDB.Samples
             Console.WriteLine("LastDataQuery Passed");
         }
 
-        public async Task TestMultiNodeDataFetch(){
+        public async Task TestMultiNodeDataFetch()
+        {
             System.Diagnostics.Debug.Assert(nodeUrls.Count > 1, "nodeUrls.Count should be greater than 1 in MultiNode Test");
             var session_pool = new SessionPool.Builder()
                 .SetUsername(username)
@@ -596,7 +599,7 @@ namespace Apache.IoTDB.Samples
             var data_type_lst = new List<TSDataType> { TSDataType.BOOLEAN, TSDataType.FLOAT };
             var encoding_lst = new List<TSEncoding> { TSEncoding.PLAIN, TSEncoding.PLAIN };
             var compressor_lst = new List<Compressor> { Compressor.SNAPPY, Compressor.SNAPPY };
-            var ts_path_lst = new List<string>() { 
+            var ts_path_lst = new List<string>() {
                 string.Format("{0}.{1}.{2}", testDatabaseName, testDevice, testMeasurements[0]),
                 string.Format("{0}.{1}.{2}", testDatabaseName, testDevice, testMeasurements[1])
             };

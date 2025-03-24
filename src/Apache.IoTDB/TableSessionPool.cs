@@ -28,50 +28,50 @@ namespace Apache.IoTDB;
 
 public partial class TableSessionPool
 {
-  private SessionPool sessionPool;
+    private SessionPool sessionPool;
 
-  TableSessionPool(SessionPool sessionPool)
-  {
-    this.sessionPool = sessionPool;
-  }
+    TableSessionPool(SessionPool sessionPool)
+    {
+        this.sessionPool = sessionPool;
+    }
 
-  public async Task Open(bool enableRpcCompression, CancellationToken cancellationToken = default)
-  {
-    await sessionPool.Open(enableRpcCompression, cancellationToken);
-  }
+    public async Task Open(bool enableRpcCompression, CancellationToken cancellationToken = default)
+    {
+        await sessionPool.Open(enableRpcCompression, cancellationToken);
+    }
 
-  public async Task Open(CancellationToken cancellationToken = default)
-  {
-    await sessionPool.Open(cancellationToken);
-  }
+    public async Task Open(CancellationToken cancellationToken = default)
+    {
+        await sessionPool.Open(cancellationToken);
+    }
 
-  public async Task<int> InsertAsync(Tablet tablet)
-  {
-    return await sessionPool.InsertRelationalTabletAsync(tablet);
-  }
+    public async Task<int> InsertAsync(Tablet tablet)
+    {
+        return await sessionPool.InsertRelationalTabletAsync(tablet);
+    }
 
-  public async Task<int> ExecuteNonQueryStatementAsync(string sql)
-  {
-    return await sessionPool.ExecuteNonQueryStatementAsync(sql);
-  }
+    public async Task<int> ExecuteNonQueryStatementAsync(string sql)
+    {
+        return await sessionPool.ExecuteNonQueryStatementAsync(sql);
+    }
 
-  public async Task<SessionDataSet> ExecuteQueryStatementAsync(string sql)
-  {
-    return await sessionPool.ExecuteQueryStatementAsync(sql);
-  }
+    public async Task<SessionDataSet> ExecuteQueryStatementAsync(string sql)
+    {
+        return await sessionPool.ExecuteQueryStatementAsync(sql);
+    }
 
-  public async Task<SessionDataSet> ExecuteQueryStatementAsync(string sql, long timeoutInMs)
-  {
-    return await sessionPool.ExecuteQueryStatementAsync(sql, timeoutInMs);
-  }
+    public async Task<SessionDataSet> ExecuteQueryStatementAsync(string sql, long timeoutInMs)
+    {
+        return await sessionPool.ExecuteQueryStatementAsync(sql, timeoutInMs);
+    }
 
-  public void OpenDebugMode(Action<ILoggingBuilder> configure)
-  {
-    sessionPool.OpenDebugMode(configure);
-  }
+    public void OpenDebugMode(Action<ILoggingBuilder> configure)
+    {
+        sessionPool.OpenDebugMode(configure);
+    }
 
-  public async Task Close()
-  {
-    await sessionPool.Close();
-  }
+    public async Task Close()
+    {
+        await sessionPool.Close();
+    }
 }

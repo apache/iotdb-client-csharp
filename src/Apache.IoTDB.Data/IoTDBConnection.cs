@@ -45,7 +45,7 @@ namespace Apache.IoTDB.Data
 
         private string _connectionString;
         private ConnectionState _state;
-        internal SessionPool  _IoTDB;
+        internal SessionPool _IoTDB;
 
 
 
@@ -125,7 +125,7 @@ namespace Apache.IoTDB.Data
                 throw new NotImplementedException();
             }
         }
-        public   string ClientVersion
+        public string ClientVersion
         {
             get
             {
@@ -177,7 +177,7 @@ namespace Apache.IoTDB.Data
         {
             OpenAsync().GetAwaiter().GetResult();
         }
-        public   override   async Task OpenAsync(CancellationToken cancellationToken=default)
+        public override async Task OpenAsync(CancellationToken cancellationToken = default)
         {
 
             if (State == ConnectionState.Open)
@@ -190,7 +190,7 @@ namespace Apache.IoTDB.Data
             }
 
             await _IoTDB.Open(ConnectionStringBuilder.Compression, cancellationToken);
-           if (!_IoTDB.IsOpen())
+            if (!_IoTDB.IsOpen())
             {
                 IoTDBException.ThrowExceptionForRC(-1, "Can't open IoTDB server.");
             }
@@ -214,7 +214,7 @@ namespace Apache.IoTDB.Data
 #endif
         {
             if (State != ConnectionState.Closed)
-                await  _IoTDB.Close();
+                await _IoTDB.Close();
             Transaction?.Dispose();
             _nowdatabase = string.Empty;
             foreach (var reference in _commands)
@@ -343,9 +343,9 @@ namespace Apache.IoTDB.Data
         }
         internal string _nowdatabase = string.Empty;
 
-        internal bool SelectedDataBase => _nowdatabase != string.Empty ;
+        internal bool SelectedDataBase => _nowdatabase != string.Empty;
 
-        public override string Database => throw new  NotSupportedException();
+        public override string Database => throw new NotSupportedException();
 
         /// <summary>
         ///     Changes the current database.

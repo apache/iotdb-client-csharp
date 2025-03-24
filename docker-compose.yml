@@ -15,7 +15,7 @@ services:
     networks:
         iotdb-network:
           ipv4_address: 172.18.0.2
-      
+
   iotdb:
    image: apache/iotdb:2.0.1-beta-datanode
    restart: always
@@ -38,7 +38,7 @@ services:
          - dn_rpc_address=iotdb
          - dn_internal_address=iotdb
          - dn_seed_config_node=iotdb-confignode-1:22277
-  
+
   iotdb-confignode-1:
    image: apache/iotdb:2.0.1-beta-confignode
    restart: always
@@ -58,6 +58,6 @@ services:
          - cn_seed_config_node=iotdb-confignode-1:22277
 
 
-networks: 
+networks:
     iotdb-network:
         external: true

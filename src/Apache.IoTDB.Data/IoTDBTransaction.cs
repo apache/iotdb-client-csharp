@@ -62,7 +62,7 @@ namespace Apache.IoTDB.Data
         /// </summary>
         /// <value>The isolation level for the transaction.</value>
         public override IsolationLevel IsolationLevel => IsolationLevel.Unspecified;
-         
+
 
         /// <summary>
         ///     Applies the changes made in the transaction.
@@ -73,7 +73,7 @@ namespace Apache.IoTDB.Data
             //{
             //    throw new InvalidOperationException(Resources.TransactionCompleted);
             //}
- 
+
             //_connection.ExecuteNonQuery("COMMIT;");
             Complete();
         }
@@ -109,7 +109,7 @@ namespace Apache.IoTDB.Data
 
         private void Complete()
         {
-            if (_connection!=null)_connection.Transaction = null;
+            if (_connection != null) _connection.Transaction = null;
             _connection = null;
             _completed = true;
         }

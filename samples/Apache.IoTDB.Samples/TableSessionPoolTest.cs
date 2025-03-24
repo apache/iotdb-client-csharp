@@ -26,157 +26,157 @@ namespace Apache.IoTDB.Samples;
 
 public class TableSessionPoolTest
 {
-  private readonly SessionPoolTest sessionPoolTest;
+    private readonly SessionPoolTest sessionPoolTest;
 
-  public TableSessionPoolTest(SessionPoolTest sessionPoolTest)
-  {
-    this.sessionPoolTest = sessionPoolTest;
-  }
+    public TableSessionPoolTest(SessionPoolTest sessionPoolTest)
+    {
+        this.sessionPoolTest = sessionPoolTest;
+    }
 
-  public async Task Test()
-  {
-    await TestCleanup();
+    public async Task Test()
+    {
+        await TestCleanup();
 
-    await TestSelectAndInsert();
-    await TestUseDatabase();
-    // await TestCleanup();
-  }
-
-
-  public async Task TestSelectAndInsert()
-  {
-    var tableSessionPool = new TableSessionPool.Builder()
-            .SetNodeUrls(sessionPoolTest.nodeUrls)
-            .SetUsername(sessionPoolTest.username)
-            .SetPassword(sessionPoolTest.password)
-            .SetFetchSize(1024)
-            .Build();
-
-    await tableSessionPool.Open(false);
-
-    if (sessionPoolTest.debug) tableSessionPool.OpenDebugMode();
+        await TestSelectAndInsert();
+        await TestUseDatabase();
+        // await TestCleanup();
+    }
 
 
-    await tableSessionPool.ExecuteNonQueryStatementAsync("CREATE DATABASE test1");
-    await tableSessionPool.ExecuteNonQueryStatementAsync("CREATE DATABASE test2");
+    public async Task TestSelectAndInsert()
+    {
+        var tableSessionPool = new TableSessionPool.Builder()
+                .SetNodeUrls(sessionPoolTest.nodeUrls)
+                .SetUsername(sessionPoolTest.username)
+                .SetPassword(sessionPoolTest.password)
+                .SetFetchSize(1024)
+                .Build();
 
-    await tableSessionPool.ExecuteNonQueryStatementAsync("use test2");
+        await tableSessionPool.Open(false);
 
-    // or use full qualified table name
-    await tableSessionPool.ExecuteNonQueryStatementAsync(
-        "create table test1.table1(region_id STRING TAG, plant_id STRING TAG, device_id STRING TAG, model STRING ATTRIBUTE, temperature FLOAT FIELD, humidity DOUBLE FIELD) with (TTL=3600000)");
+        if (sessionPoolTest.debug) tableSessionPool.OpenDebugMode();
 
-    await tableSessionPool.ExecuteNonQueryStatementAsync(
-        "create table table2(region_id STRING TAG, plant_id STRING TAG, color STRING ATTRIBUTE, temperature FLOAT FIELD, speed DOUBLE FIELD) with (TTL=6600000)");
 
-    // show tables from current database
-    var res = await tableSessionPool.ExecuteQueryStatementAsync("SHOW TABLES");
-    res.ShowTableNames();
-    while (res.HasNext()) Console.WriteLine(res.Next());
-    await res.Close();
+        await tableSessionPool.ExecuteNonQueryStatementAsync("CREATE DATABASE test1");
+        await tableSessionPool.ExecuteNonQueryStatementAsync("CREATE DATABASE test2");
 
-    // show tables by specifying another database
-    // using SHOW tables FROM
-    res = await tableSessionPool.ExecuteQueryStatementAsync("SHOW TABLES FROM test1");
-    res.ShowTableNames();
-    while (res.HasNext()) Console.WriteLine(res.Next());
-    await res.Close();
+        await tableSessionPool.ExecuteNonQueryStatementAsync("use test2");
 
-    var tableName = "testTable1";
-    List<string> columnNames =
-        new List<string> {
+        // or use full qualified table name
+        await tableSessionPool.ExecuteNonQueryStatementAsync(
+            "create table test1.table1(region_id STRING TAG, plant_id STRING TAG, device_id STRING TAG, model STRING ATTRIBUTE, temperature FLOAT FIELD, humidity DOUBLE FIELD) with (TTL=3600000)");
+
+        await tableSessionPool.ExecuteNonQueryStatementAsync(
+            "create table table2(region_id STRING TAG, plant_id STRING TAG, color STRING ATTRIBUTE, temperature FLOAT FIELD, speed DOUBLE FIELD) with (TTL=6600000)");
+
+        // show tables from current database
+        var res = await tableSessionPool.ExecuteQueryStatementAsync("SHOW TABLES");
+        res.ShowTableNames();
+        while (res.HasNext()) Console.WriteLine(res.Next());
+        await res.Close();
+
+        // show tables by specifying another database
+        // using SHOW tables FROM
+        res = await tableSessionPool.ExecuteQueryStatementAsync("SHOW TABLES FROM test1");
+        res.ShowTableNames();
+        while (res.HasNext()) Console.WriteLine(res.Next());
+        await res.Close();
+
+        var tableName = "testTable1";
+        List<string> columnNames =
+            new List<string> {
             "region_id",
             "plant_id",
             "device_id",
             "model",
             "temperature",
             "humidity" };
-    List<TSDataType> dataTypes =
-        new List<TSDataType>{
+        List<TSDataType> dataTypes =
+            new List<TSDataType>{
             TSDataType.STRING,
             TSDataType.STRING,
             TSDataType.STRING,
             TSDataType.STRING,
             TSDataType.FLOAT,
             TSDataType.DOUBLE};
-    List<ColumnCategory> columnCategories =
-        new List<ColumnCategory>{
+        List<ColumnCategory> columnCategories =
+            new List<ColumnCategory>{
             ColumnCategory.TAG,
             ColumnCategory.TAG,
             ColumnCategory.TAG,
             ColumnCategory.ATTRIBUTE,
             ColumnCategory.FIELD,
             ColumnCategory.FIELD};
-    var values = new List<List<object>> { };
-    var timestamps = new List<long> { };
-    for (long timestamp = 0; timestamp < 100; timestamp++)
-    {
-      timestamps.Add(timestamp);
-      values.Add(new List<object> { "1", "5", "3", "A", 1.23F + timestamp, 111.1 + timestamp });
+        var values = new List<List<object>> { };
+        var timestamps = new List<long> { };
+        for (long timestamp = 0; timestamp < 100; timestamp++)
+        {
+            timestamps.Add(timestamp);
+            values.Add(new List<object> { "1", "5", "3", "A", 1.23F + timestamp, 111.1 + timestamp });
+        }
+        var tablet = new Tablet(tableName, columnNames, columnCategories, dataTypes, values, timestamps);
+
+        await tableSessionPool.InsertAsync(tablet);
+
+
+        res = await tableSessionPool.ExecuteQueryStatementAsync("select * from testTable1 "
+              + "where region_id = '1' and plant_id in ('3', '5') and device_id = '3'");
+        res.ShowTableNames();
+        while (res.HasNext()) Console.WriteLine(res.Next());
+        await res.Close();
+
+        await tableSessionPool.Close();
     }
-    var tablet = new Tablet(tableName, columnNames, columnCategories, dataTypes, values, timestamps);
-
-    await tableSessionPool.InsertAsync(tablet);
 
 
-    res = await tableSessionPool.ExecuteQueryStatementAsync("select * from testTable1 "
-          + "where region_id = '1' and plant_id in ('3', '5') and device_id = '3'");
-    res.ShowTableNames();
-    while (res.HasNext()) Console.WriteLine(res.Next());
-    await res.Close();
+    public async Task TestUseDatabase()
+    {
+        var tableSessionPool = new TableSessionPool.Builder()
+                .SetNodeUrls(sessionPoolTest.nodeUrls)
+                .SetUsername(sessionPoolTest.username)
+                .SetPassword(sessionPoolTest.password)
+                .SetDatabase("test1")
+                .SetFetchSize(1024)
+                .Build();
 
-    await tableSessionPool.Close();
-  }
+        await tableSessionPool.Open(false);
 
-
-  public async Task TestUseDatabase()
-  {
-    var tableSessionPool = new TableSessionPool.Builder()
-            .SetNodeUrls(sessionPoolTest.nodeUrls)
-            .SetUsername(sessionPoolTest.username)
-            .SetPassword(sessionPoolTest.password)
-            .SetDatabase("test1")
-            .SetFetchSize(1024)
-            .Build();
-
-    await tableSessionPool.Open(false);
-
-    if (sessionPoolTest.debug) tableSessionPool.OpenDebugMode();
+        if (sessionPoolTest.debug) tableSessionPool.OpenDebugMode();
 
 
-    // show tables from current database
-    var res = await tableSessionPool.ExecuteQueryStatementAsync("SHOW TABLES");
-    res.ShowTableNames();
-    while (res.HasNext()) Console.WriteLine(res.Next());
-    await res.Close();
+        // show tables from current database
+        var res = await tableSessionPool.ExecuteQueryStatementAsync("SHOW TABLES");
+        res.ShowTableNames();
+        while (res.HasNext()) Console.WriteLine(res.Next());
+        await res.Close();
 
-    await tableSessionPool.ExecuteNonQueryStatementAsync("use test2");
+        await tableSessionPool.ExecuteNonQueryStatementAsync("use test2");
 
-    // show tables from current database
-    res = await tableSessionPool.ExecuteQueryStatementAsync("SHOW TABLES");
-    res.ShowTableNames();
-    while (res.HasNext()) Console.WriteLine(res.Next());
-    await res.Close();
+        // show tables from current database
+        res = await tableSessionPool.ExecuteQueryStatementAsync("SHOW TABLES");
+        res.ShowTableNames();
+        while (res.HasNext()) Console.WriteLine(res.Next());
+        await res.Close();
 
-    await tableSessionPool.Close();
-  }
+        await tableSessionPool.Close();
+    }
 
-  public async Task TestCleanup()
-  {
-    var tableSessionPool = new TableSessionPool.Builder()
-            .SetNodeUrls(sessionPoolTest.nodeUrls)
-            .SetUsername(sessionPoolTest.username)
-            .SetPassword(sessionPoolTest.password)
-            .SetFetchSize(1024)
-            .Build();
+    public async Task TestCleanup()
+    {
+        var tableSessionPool = new TableSessionPool.Builder()
+                .SetNodeUrls(sessionPoolTest.nodeUrls)
+                .SetUsername(sessionPoolTest.username)
+                .SetPassword(sessionPoolTest.password)
+                .SetFetchSize(1024)
+                .Build();
 
-    await tableSessionPool.Open(false);
+        await tableSessionPool.Open(false);
 
-    if (sessionPoolTest.debug) tableSessionPool.OpenDebugMode();
+        if (sessionPoolTest.debug) tableSessionPool.OpenDebugMode();
 
-    await tableSessionPool.ExecuteNonQueryStatementAsync("drop database test1");
-    await tableSessionPool.ExecuteNonQueryStatementAsync("drop database test2");
+        await tableSessionPool.ExecuteNonQueryStatementAsync("drop database test1");
+        await tableSessionPool.ExecuteNonQueryStatementAsync("drop database test2");
 
-    await tableSessionPool.Close();
-  }
+        await tableSessionPool.Close();
+    }
 }

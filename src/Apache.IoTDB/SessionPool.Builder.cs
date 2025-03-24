@@ -24,116 +24,116 @@ namespace Apache.IoTDB;
 
 public partial class SessionPool
 {
-  public class Builder
-  {
-    private string _host = "localhost";
-    private int _port = 6667;
-    private string _username = "root";
-    private string _password = "root";
-    private int _fetchSize = 1024;
-    private string _zoneId = "UTC+08:00";
-    private int _poolSize = 8;
-    private bool _enableRpcCompression = false;
-    private int _connectionTimeoutInMs = 500;
-    private string _sqlDialect = IoTDBConstant.TREE_SQL_DIALECT;
-    private string _database = "";
-    private List<string> _nodeUrls = new List<string>();
-
-    public Builder SetHost(string host)
+    public class Builder
     {
-      _host = host;
-      return this;
-    }
+        private string _host = "localhost";
+        private int _port = 6667;
+        private string _username = "root";
+        private string _password = "root";
+        private int _fetchSize = 1024;
+        private string _zoneId = "UTC+08:00";
+        private int _poolSize = 8;
+        private bool _enableRpcCompression = false;
+        private int _connectionTimeoutInMs = 500;
+        private string _sqlDialect = IoTDBConstant.TREE_SQL_DIALECT;
+        private string _database = "";
+        private List<string> _nodeUrls = new List<string>();
 
-    public Builder SetPort(int port)
-    {
-      _port = port;
-      return this;
-    }
+        public Builder SetHost(string host)
+        {
+            _host = host;
+            return this;
+        }
 
-    public Builder SetUsername(string username)
-    {
-      _username = username;
-      return this;
-    }
+        public Builder SetPort(int port)
+        {
+            _port = port;
+            return this;
+        }
 
-    public Builder SetPassword(string password)
-    {
-      _password = password;
-      return this;
-    }
+        public Builder SetUsername(string username)
+        {
+            _username = username;
+            return this;
+        }
 
-    public Builder SetFetchSize(int fetchSize)
-    {
-      _fetchSize = fetchSize;
-      return this;
-    }
+        public Builder SetPassword(string password)
+        {
+            _password = password;
+            return this;
+        }
 
-    public Builder SetZoneId(string zoneId)
-    {
-      _zoneId = zoneId;
-      return this;
-    }
+        public Builder SetFetchSize(int fetchSize)
+        {
+            _fetchSize = fetchSize;
+            return this;
+        }
 
-    public Builder SetPoolSize(int poolSize)
-    {
-      _poolSize = poolSize;
-      return this;
-    }
+        public Builder SetZoneId(string zoneId)
+        {
+            _zoneId = zoneId;
+            return this;
+        }
 
-    public Builder SetEnableRpcCompression(bool enableRpcCompression)
-    {
-      _enableRpcCompression = enableRpcCompression;
-      return this;
-    }
+        public Builder SetPoolSize(int poolSize)
+        {
+            _poolSize = poolSize;
+            return this;
+        }
 
-    public Builder SetConnectionTimeoutInMs(int timeout)
-    {
-      _connectionTimeoutInMs = timeout;
-      return this;
-    }
+        public Builder SetEnableRpcCompression(bool enableRpcCompression)
+        {
+            _enableRpcCompression = enableRpcCompression;
+            return this;
+        }
 
-    public Builder SetNodeUrl(List<string> nodeUrls)
-    {
-      _nodeUrls = nodeUrls;
-      return this;
-    }
+        public Builder SetConnectionTimeoutInMs(int timeout)
+        {
+            _connectionTimeoutInMs = timeout;
+            return this;
+        }
 
-    protected internal Builder SetSqlDialect(string sqlDialect)
-    {
-      _sqlDialect = sqlDialect;
-      return this;
-    }
+        public Builder SetNodeUrl(List<string> nodeUrls)
+        {
+            _nodeUrls = nodeUrls;
+            return this;
+        }
 
-    protected internal Builder SetDatabase(string database)
-    {
-      _database = database;
-      return this;
-    }
+        protected internal Builder SetSqlDialect(string sqlDialect)
+        {
+            _sqlDialect = sqlDialect;
+            return this;
+        }
 
-    public Builder()
-    {
-      _host = "localhost";
-      _port = 6667;
-      _username = "root";
-      _password = "root";
-      _fetchSize = 1024;
-      _zoneId = "UTC+08:00";
-      _poolSize = 8;
-      _enableRpcCompression = false;
-      _connectionTimeoutInMs = 500;
-      _sqlDialect = IoTDBConstant.TREE_SQL_DIALECT;
-      _database = "";
-    }
+        protected internal Builder SetDatabase(string database)
+        {
+            _database = database;
+            return this;
+        }
 
-    public SessionPool Build()
-    {
-      // if nodeUrls is not empty, use nodeUrls to create session pool
-      if (_nodeUrls.Count > 0)
-      {
-        return new SessionPool(_nodeUrls, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _sqlDialect, _database);
-      }
-      return new SessionPool(_host, _port, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _sqlDialect, _database);
+        public Builder()
+        {
+            _host = "localhost";
+            _port = 6667;
+            _username = "root";
+            _password = "root";
+            _fetchSize = 1024;
+            _zoneId = "UTC+08:00";
+            _poolSize = 8;
+            _enableRpcCompression = false;
+            _connectionTimeoutInMs = 500;
+            _sqlDialect = IoTDBConstant.TREE_SQL_DIALECT;
+            _database = "";
+        }
+
+        public SessionPool Build()
+        {
+            // if nodeUrls is not empty, use nodeUrls to create session pool
+            if (_nodeUrls.Count > 0)
+            {
+                return new SessionPool(_nodeUrls, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _sqlDialect, _database);
+            }
+            return new SessionPool(_host, _port, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _sqlDialect, _database);
+        }
     }
-  }
 }
