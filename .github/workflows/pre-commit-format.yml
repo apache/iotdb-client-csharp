@@ -37,5 +37,8 @@ jobs:
           pre-commit install-hooks
 
       - name: Run pre-commit checks
+        env:
+          TMPDIR: ${{ runner.temp }}
+          DOTNET_CLI_HOME: ${{ runner.temp }}
         run: |
           pre-commit run --all-files
