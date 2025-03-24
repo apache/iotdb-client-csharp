@@ -11,6 +11,7 @@ services:
     build:
       context: .
       dockerfile: samples/Apache.IoTDB.Samples/Dockerfile
+    command: ["--single", "iotdb"]
     networks:
         iotdb-network:
           ipv4_address: 172.18.0.2
