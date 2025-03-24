@@ -38,8 +38,8 @@ services:
       start_period: 30s
     environment:
       - cn_internal_address=127.0.0.1
-      - cn_internal_port=10711        # 端口不同于confignode-1
-      - cn_consensus_port=10721       # 共识端口不同于confignode-1
+      - cn_internal_port=10711
+      - cn_consensus_port=10721
       - cn_seed_config_node=127.0.0.1:10710
       - schema_replication_factor=2
       - data_replication_factor=2
@@ -100,8 +100,8 @@ services:
       - dn_rpc_address=127.0.0.1
       - dn_internal_address=127.0.0.1
       - dn_seed_config_node=127.0.0.1:10710
-      - dn_rpc_port=6668              # 端口不同于datanode-1
-      - dn_internal_port=10731        # 内部端口不同于datanode-1
+      - dn_rpc_port=6668
+      - dn_internal_port=10731
       - dn_mpp_data_exchange_port=10741
       - dn_schema_region_consensus_port=10751
       - dn_data_region_consensus_port=10761

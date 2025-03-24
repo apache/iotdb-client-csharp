@@ -347,7 +347,6 @@ namespace Apache.IoTDB
             throw new TException("Error occurs when reconnecting session pool. Could not connect to any server", null);
         }
 
-
         public bool IsOpen() => !_isClose;
 
         public async Task Close()
