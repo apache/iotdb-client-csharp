@@ -93,7 +93,7 @@ public partial class SessionPool
       return this;
     }
 
-    public Builder setNodeUrl(List<string> nodeUrls)
+    public Builder SetNodeUrl(List<string> nodeUrls)
     {
       _nodeUrls = nodeUrls;
       return this;

@@ -149,7 +149,7 @@ namespace Apache.IoTDB
       _sqlDialect = sqlDialect;
       _database = database;
     }
-    public async Task<TResult> ExecuteClientOperationAsync<TResult>(AsyncOperation<TResult> operation, string errMsg, bool retryOnFailure = true)
+    public async Task<TResult> ExecuteClientOperationAsync<TResult>(AsyncOperation<TResult> operation, string errMsg, bool retryOnFailure = true, bool putClientBack=true)
     {
       Client client = _clients.Take();
       try
@@ -197,7 +197,10 @@ namespace Apache.IoTDB
       }
       finally
       {
-        _clients.Add(client);
+        if(putClientBack)
+        {
+          _clients.Add(client);
+        }
       }
     }
     /// <summary>
@@ -705,12 +708,13 @@ namespace Apache.IoTDB
 
     public async Task<bool> CheckTimeSeriesExistsAsync(string tsPath)
     {
-      // TBD by dalong
       try
       {
         var sql = "SHOW TIMESERIES " + tsPath;
         var sessionDataset = await ExecuteQueryStatementAsync(sql);
-        return sessionDataset.HasNext();
+        bool timeSeriesExists = sessionDataset.HasNext();
+        await sessionDataset.Close(); // be sure to close the sessionDataset to put the client back to the pool
+        return timeSeriesExists;
       }
       catch (TException e)
       {
@@ -1332,12 +1336,13 @@ namespace Apache.IoTDB
               throw new Exception(string.Format("execute query failed, sql: {0}, message: {1}", sql, status.Message));
             }
 
-            return new SessionDataSet(sql, resp, _clients, client.StatementId)
+            return new SessionDataSet(sql, resp, client, _clients, client.StatementId)
             {
               FetchSize = _fetchSize,
             };
           },
-          errMsg: "Error occurs when executing query statement"
+          errMsg: "Error occurs when executing query statement",
+          putClientBack: false
       );
     }
 
@@ -1360,12 +1365,13 @@ namespace Apache.IoTDB
               throw new Exception(string.Format("execute query failed, sql: {0}, message: {1}", sql, status.Message));
             }
 
-            return new SessionDataSet(sql, resp, _clients, client.StatementId)
+            return new SessionDataSet(sql, resp, client, _clients, client.StatementId)
             {
               FetchSize = _fetchSize,
             };
           },
-          errMsg: "Error occurs when executing query statement"
+          errMsg: "Error occurs when executing query statement",
+          putClientBack: false
       );
     }
 
@@ -1435,12 +1441,13 @@ namespace Apache.IoTDB
               throw new Exception(string.Format("execute raw data query failed, message: {0}", status.Message));
             }
 
-            return new SessionDataSet("", resp, _clients, client.StatementId)
+            return new SessionDataSet("", resp, client, _clients, client.StatementId)
             {
               FetchSize = _fetchSize,
             };
           },
-          errMsg: "Error occurs when executing raw data query"
+          errMsg: "Error occurs when executing raw data query",
+          putClientBack: false
       );
     }
     public async Task<SessionDataSet> ExecuteLastDataQueryAsync(List<string> paths, long lastTime)
@@ -1462,12 +1469,13 @@ namespace Apache.IoTDB
               throw new Exception(string.Format("execute last data query failed, message: {0}", status.Message));
             }
 
-            return new SessionDataSet("", resp, _clients, client.StatementId)
+            return new SessionDataSet("", resp, client, _clients, client.StatementId)
             {
               FetchSize = _fetchSize,
             };
           },
-          errMsg: "Error occurs when executing last data query"
+          errMsg: "Error occurs when executing last data query",
+          putClientBack: false
       );
     }
     [Obsolete("This method is obsolete. Use SQL instead.", false)]

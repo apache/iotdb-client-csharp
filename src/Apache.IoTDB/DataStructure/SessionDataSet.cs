@@ -40,6 +40,7 @@ namespace Apache.IoTDB.DataStructure
         private List<ByteBuffer> _valueBufferLst, _bitmapBufferLst;
         private ByteBuffer _timeBuffer;
         private readonly ConcurrentClientQueue _clientQueue;
+        private Client _client;
         private int _rowIndex;
         private bool _hasCatchedResult;
         private RowRecord _cachedRowRecord;
@@ -52,9 +53,10 @@ namespace Apache.IoTDB.DataStructure
         private int DefaultTimeout => 10000;
         public int FetchSize { get; set; }
         public int RowCount { get; set; }
-        public SessionDataSet(string sql, TSExecuteStatementResp resp, ConcurrentClientQueue clientQueue, long statementId)
+        public SessionDataSet(string sql, TSExecuteStatementResp resp, Client client, ConcurrentClientQueue clientQueue, long statementId)
         {
             _clientQueue = clientQueue;
+            _client = client;
             _sql = sql;
             _queryDataset = resp.QueryDataSet;
             _queryId = resp.QueryId;
@@ -266,14 +268,13 @@ namespace Apache.IoTDB.DataStructure
         private bool FetchResults()
         {
             _rowIndex = 0;
-            var myClient = _clientQueue.Take();
-            var req = new TSFetchResultsReq(myClient.SessionId, _sql, FetchSize, _queryId, true)
+            var req = new TSFetchResultsReq(_client.SessionId, _sql, FetchSize, _queryId, true)
             {
                 Timeout = DefaultTimeout
             };
             try
             {
-                var task = myClient.ServiceClient.fetchResultsAsync(req);
+                var task = _client.ServiceClient.fetchResultsAsync(req);
 
                 var resp = task.ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -302,18 +303,13 @@ namespace Apache.IoTDB.DataStructure
             {
                 throw new TException("Cannot fetch result from server, because of network connection", e);
             }
-            finally
-            {
-                _clientQueue.Add(myClient);
-            }
         }
 
         public async Task Close()
         {
             if (!_isClosed)
             {
-                var myClient = _clientQueue.Take();
-                var req = new TSCloseOperationReq(myClient.SessionId)
+                var req = new TSCloseOperationReq(_client.SessionId)
                 {
                     QueryId = _queryId,
                     StatementId = _statementId
@@ -321,7 +317,7 @@ namespace Apache.IoTDB.DataStructure
 
                 try
                 {
-                    var status = await myClient.ServiceClient.closeOperationAsync(req);
+                    var status = await _client.ServiceClient.closeOperationAsync(req);
                 }
                 catch (TException e)
                 {
@@ -329,7 +325,8 @@ namespace Apache.IoTDB.DataStructure
                 }
                 finally
                 {
-                    _clientQueue.Add(myClient);
+                    _clientQueue.Add(_client);
+                    _client = null;
                 }
             }
         }

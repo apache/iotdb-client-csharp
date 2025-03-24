@@ -1,0 +1,25 @@
+name: E2E Tests in MultiNode IoTDB
+
+on:
+  push:
+    branches: [ main, dev/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+    name: e2e test in MultiNode IoTDB
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Check out code into the CSharp module directory
+      uses: actions/checkout@v4
+
+    - name: Set Docker & Run Test
+      run: |
+        docker compose -f docker-compose-2c2d.yml up --build --abort-on-container-exit --remove-orphans
+
+    - name: Clean IoTDB & Shut Down Docker
+      run: |
+        docker compose -f docker-compose-2c2d.yml down

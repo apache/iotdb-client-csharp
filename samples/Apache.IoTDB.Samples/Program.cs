@@ -19,8 +19,10 @@
 
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using System;
 using System.Threading.Tasks;
+using System.CommandLine;
+using System.Collections.Generic;
+using System;
 
 namespace Apache.IoTDB.Samples
 {
@@ -28,12 +30,53 @@ namespace Apache.IoTDB.Samples
     {
         public static async Task Main(string[] args)
         {
+            var singleOption = new Option<string>(
+            "--single",
+            () => "localhost",
+            description: "Use single endpoint (e.g. --single localhost)");
+
+        var multiOption = new Option<List<string>>(
+            "--multi",
+            description: "Use multiple endpoints (e.g. --multi localhost:6667 localhost:6668)")
+        {
+            AllowMultipleArgumentsPerToken = true
+        };
+
+        var rootCommand = new RootCommand
+        {
+            singleOption,
+            multiOption
+        };
+
+        rootCommand.SetHandler(async (string single, List<string> multi) =>
+        {
             var utilsTest = new UtilsTest();
             utilsTest.TestParseEndPoint();
-            var sessionPoolTest = new SessionPoolTest("iotdb");
+
+            SessionPoolTest sessionPoolTest;
+
+            if (!string.IsNullOrEmpty(single) && (multi == null || multi.Count == 0))
+            {
+                sessionPoolTest = new SessionPoolTest(single);
+            }
+            else if (multi != null && multi.Count != 0)
+            {
+                sessionPoolTest = new SessionPoolTest(multi);
+            }
+            else
+            {
+                Console.WriteLine("Please specify either --single or --multi endpoints.");
+                return;
+            }
+
             await sessionPoolTest.Test();
+
             var tableSessionPoolTest = new TableSessionPoolTest(sessionPoolTest);
             await tableSessionPoolTest.Test();
+
+        }, singleOption, multiOption);
+
+        await rootCommand.InvokeAsync(args);
         }
 
         public static void OpenDebugMode(this SessionPool session)
