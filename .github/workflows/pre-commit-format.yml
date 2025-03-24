@@ -31,6 +31,10 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Clean dotnet temporary folder
+        run: |
+          sudo rm -rf /tmp/.dotnet
+
       - name: Install pre-commit and dependencies
         run: |
           pip install pre-commit
