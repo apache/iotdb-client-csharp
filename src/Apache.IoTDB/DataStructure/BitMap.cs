@@ -23,7 +23,7 @@ using Grax32.Extensions;
 #endif
 public class BitMap
 {
-    private static byte[] BIT_UTIL = new byte[] { 1, 2, 4, 8, 16, 32, 64, 255 };
+    private static byte[] BIT_UTIL = new byte[] { 1, 2, 4, 8, 16, 32, 64, unchecked((byte)-128) };
     private static byte[] UNMARK_BIT_UTIL =
       new byte[] {
         (byte) 0XFE, // 11111110
@@ -94,7 +94,7 @@ public class BitMap
     public void reset()
     {
 #if NET461_OR_GREATER || NETSTANDARD2_0
-        bits.Fill((byte)0xFF);
+        bits.Fill((byte)0);
 #else
         Array.Fill(bits, (byte)0);
 #endif
