@@ -19,13 +19,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Apache.IoTDB.Data;
 using Apache.IoTDB.DataStructure;
 using ConsoleTableExt;
-using System.Net.Sockets;
-using System.Diagnostics;
 
 namespace Apache.IoTDB.Samples
 {
