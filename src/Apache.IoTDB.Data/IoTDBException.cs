@@ -47,7 +47,7 @@ namespace Apache.IoTDB.Data
 
 
         public override string Message => _IoTDBError?.Error;
-        public override int ErrorCode =>   (int) _IoTDBError?.Code;
+        public override int ErrorCode => (int)_IoTDBError?.Code;
         /// <summary>
         ///     Throws an exception with a specific IoTDB error code value.
         /// </summary>
@@ -62,14 +62,14 @@ namespace Apache.IoTDB.Data
             te.Data.Add("commandText", _commandText);
             throw te;
         }
-        public static void ThrowExceptionForRC( IoTDBErrorResult IoTDBError)
+        public static void ThrowExceptionForRC(IoTDBErrorResult IoTDBError)
         {
             var te = new IoTDBException(IoTDBError);
             throw te;
         }
         public static void ThrowExceptionForRC(IntPtr _IoTDB)
         {
-            var te = new IoTDBException(new IoTDBErrorResult() {   });
+            var te = new IoTDBException(new IoTDBErrorResult() { });
             throw te;
         }
         public static void ThrowExceptionForRC(int code, string message, Exception ex)

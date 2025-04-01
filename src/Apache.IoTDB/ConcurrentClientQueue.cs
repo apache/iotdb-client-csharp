@@ -71,7 +71,8 @@ namespace Apache.IoTDB
         {
             Client client = null;
             Monitor.Enter(ClientQueue);
-            while(true){
+            while (true)
+            {
                 bool timeout = false;
                 if (ClientQueue.IsEmpty)
                 {
@@ -79,7 +80,8 @@ namespace Apache.IoTDB
                 }
                 ClientQueue.TryDequeue(out client);
 
-                if(client != null || timeout){
+                if (client != null || timeout)
+                {
                     break;
                 }
             }

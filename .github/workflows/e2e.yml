@@ -2,24 +2,22 @@ name: E2E Tests
 
 on:
   push:
-    branches: [ main, dev/* ]
+    branches: [main, dev/*]
   pull_request:
-    branches: [ main ]
+    branches: [main, dev/*]
 
 jobs:
-
   build:
     name: e2e test
     runs-on: ubuntu-latest
     steps:
+      - name: Check out code into the CSharp module directory
+        uses: actions/checkout@v4
 
-    - name: Check out code into the CSharp module directory
-      uses: actions/checkout@v4
+      - name: Set Docker & Run Test
+        run: |
+          docker network create --subnet 172.18.0.0/24 iotdb-network && docker compose -f docker-compose.yml up --build --abort-on-container-exit --remove-orphans
 
-    - name: Set Docker & Run Test
-      run: |
-        docker network create --subnet 172.18.0.0/24 iotdb-network && docker compose -f docker-compose.yml up --build --abort-on-container-exit --remove-orphans
-
-    - name: Clean IoTDB & Shut Down Docker
-      run: |
-        docker compose -f docker-compose.yml down
+      - name: Clean IoTDB & Shut Down Docker
+        run: |
+          docker compose -f docker-compose.yml down

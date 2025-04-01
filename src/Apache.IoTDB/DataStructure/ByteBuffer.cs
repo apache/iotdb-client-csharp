@@ -135,10 +135,10 @@ namespace Apache.IoTDB.DataStructure
 
         public byte[] GetBinary()
         {
-          var length = GetInt();
-          var buff = _buffer[_readPos..(_readPos + length)];
-          _readPos += length;
-          return buff;
+            var length = GetInt();
+            var buff = _buffer[_readPos..(_readPos + length)];
+            _readPos += length;
+            return buff;
         }
 
         public byte[] GetBuffer()
@@ -225,7 +225,7 @@ namespace Apache.IoTDB.DataStructure
             _writePos += strBuf.Length;
         }
 
-         public void AddBinary(byte[] value)
+        public void AddBinary(byte[] value)
         {
             AddInt(value.Length);
 

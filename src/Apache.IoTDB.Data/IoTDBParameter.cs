@@ -17,7 +17,7 @@
  * under the License.
  */
 
- using System;
+using System;
 using System.Data;
 using System.Data.Common;
 
@@ -42,7 +42,7 @@ namespace Apache.IoTDB.Data
         public IoTDBParameter()
         {
         }
-       
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="IoTDBParameter" /> class.
         /// </summary>
@@ -101,7 +101,7 @@ namespace Apache.IoTDB.Data
         /// </summary>
         /// <value>The type of the parameter.</value>
         /// <remarks>Due to IoTDB's dynamic type system, parameter values are not converted.</remarks>
- 
+
         public override DbType DbType { get; set; } = DbType.String;
 
         /// <summary>
@@ -221,6 +221,6 @@ namespace Apache.IoTDB.Data
             IoTDBType = TSDataType.NONE;
         }
 
-        
+
     }
 }
