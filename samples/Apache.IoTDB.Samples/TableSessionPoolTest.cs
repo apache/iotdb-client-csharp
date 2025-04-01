@@ -225,7 +225,6 @@ public class TableSessionPoolTest
 
 
         var res = await tableSessionPool.ExecuteQueryStatementAsync("select count(*) from " + tableName + " where f1 is null");
-        // 断言 value == 5
         while (res.HasNext())
         {
             var row = res.Next();
