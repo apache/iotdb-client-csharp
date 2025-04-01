@@ -44,6 +44,8 @@ namespace Apache.IoTDB.DataStructure
     */
     public class Tablet
     {
+
+        private static int EMPTY_DATE_INT = 10000101;
         private readonly List<long> _timestamps;
         private readonly List<List<object>> _values;
 
@@ -361,7 +363,7 @@ namespace Apache.IoTDB.DataStructure
                             for (int j = 0; j < RowNumber; j++)
                             {
                                 var value = _values[j][i];
-                                buffer.AddInt(value != null ? Utils.ParseDateToInt((DateTime)value) : int.MinValue);
+                                buffer.AddInt(value != null ? Utils.ParseDateToInt((DateTime)value) : EMPTY_DATE_INT);
                             }
                             break;
                         }
