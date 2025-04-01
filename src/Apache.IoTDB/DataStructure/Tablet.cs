@@ -370,85 +370,85 @@ namespace Apache.IoTDB.DataStructure
                 switch (dataType)
                 {
                     case TSDataType.BOOLEAN:
+                    {
+                        for (int j = 0; j < RowNumber; j++)
                         {
-                            for (int j = 0; j < RowNumber; j++)
-                            {
-                                var value = _values[j][i];
-                                buffer.AddBool(value != null ? (bool)value : false);
-                            }
-
-                            break;
+                            var value = _values[j][i];
+                            buffer.AddBool(value != null ? (bool)value : false);
                         }
+
+                        break;
+                    }
                     case TSDataType.INT32:
+                    {
+                        for (int j = 0; j < RowNumber; j++)
                         {
-                            for (int j = 0; j < RowNumber; j++)
-                            {
-                                var value = _values[j][i];
-                                buffer.AddInt(value != null ? (int)value : int.MinValue);
-                            }
-
-                            break;
+                            var value = _values[j][i];
+                            buffer.AddInt(value != null ? (int)value : int.MinValue);
                         }
+
+                        break;
+                    }
                     case TSDataType.INT64:
                     case TSDataType.TIMESTAMP:
+                    {
+                        for (int j = 0; j < RowNumber; j++)
                         {
-                            for (int j = 0; j < RowNumber; j++)
-                            {
-                                var value = _values[j][i];
-                                buffer.AddLong(value != null ? (long)value : long.MinValue);
-                            }
-
-                            break;
+                            var value = _values[j][i];
+                            buffer.AddLong(value != null ? (long)value : long.MinValue);
                         }
+
+                        break;
+                    }
                     case TSDataType.FLOAT:
+                    {
+                        for (int j = 0; j < RowNumber; j++)
                         {
-                            for (int j = 0; j < RowNumber; j++)
-                            {
-                                var value = _values[j][i];
-                                buffer.AddFloat(value != null ? (float)value : float.MinValue);
-                            }
-
-                            break;
+                            var value = _values[j][i];
+                            buffer.AddFloat(value != null ? (float)value : float.MinValue);
                         }
+
+                        break;
+                    }
                     case TSDataType.DOUBLE:
+                    {
+                        for (int j = 0; j < RowNumber; j++)
                         {
-                            for (int j = 0; j < RowNumber; j++)
-                            {
-                                var value = _values[j][i];
-                                buffer.AddDouble(value != null ? (double)value : double.MinValue);
-                            }
-
-                            break;
+                            var value = _values[j][i];
+                            buffer.AddDouble(value != null ? (double)value : double.MinValue);
                         }
+
+                        break;
+                    }
                     case TSDataType.TEXT:
                     case TSDataType.STRING:
+                    {
+                        for (int j = 0; j < RowNumber; j++)
                         {
-                            for (int j = 0; j < RowNumber; j++)
-                            {
-                                var value = _values[j][i];
-                                buffer.AddStr(value != null ? (string)value : string.Empty);
-                            }
+                            var value = _values[j][i];
+                            buffer.AddStr(value != null ? (string)value : string.Empty);
+                        }
 
-                            break;
-                        }
+                        break;
+                    }
                     case TSDataType.DATE:
+                    {
+                        for (int j = 0; j < RowNumber; j++)
                         {
-                            for (int j = 0; j < RowNumber; j++)
-                            {
-                                var value = _values[j][i];
-                                buffer.AddInt(value != null ? Utils.ParseDateToInt((DateTime)value) : EMPTY_DATE_INT);
-                            }
-                            break;
+                            var value = _values[j][i];
+                            buffer.AddInt(value != null ? Utils.ParseDateToInt((DateTime)value) : EMPTY_DATE_INT);
                         }
+                        break;
+                    }
                     case TSDataType.BLOB:
+                    {
+                        for (int j = 0; j < RowNumber; j++)
                         {
-                            for (int j = 0; j < RowNumber; j++)
-                            {
-                                var value = _values[j][i];
-                                buffer.AddBinary(value != null ? (byte[])value : new byte[] { });
-                            }
-                            break;
+                            var value = _values[j][i];
+                            buffer.AddBinary(value != null ? (byte[])value : new byte[] { });
                         }
+                        break;
+                    }
                     default:
                         throw new Exception($"Unsupported data type {dataType}", null);
                 }

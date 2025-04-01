@@ -17,7 +17,6 @@
  * under the License.
  */
 
-using Apache.IoTDB.DataStructure;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,6 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using Apache.IoTDB.DataStructure;
 
 
 namespace Apache.IoTDB.Data
@@ -525,7 +525,7 @@ namespace Apache.IoTDB.Data
                 var tableName1 = string.Empty;
                 schemaRow1[BaseTableName] = tableName1;
                 schemaRow1[DataType] = typeof(DateTime);
-                schemaRow1[DataTypeName] = typeof(DateTime).Name;
+                schemaRow1[DataTypeName] = nameof(DateTime);
                 schemaRow1[IsExpression] = columnName1 == null;
                 schemaRow1[IsLong] = DBNull.Value;
                 schemaRow1[IsKey] = true;
