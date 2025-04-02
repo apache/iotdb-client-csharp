@@ -39,7 +39,8 @@ public class TableSessionPoolTest
 
         await TestSelectAndInsert();
         await TestUseDatabase();
-        // await TestCleanup();
+        await TestInsertWithNull();
+        await TestCleanup();
     }
 
 
@@ -156,6 +157,87 @@ public class TableSessionPoolTest
         res = await tableSessionPool.ExecuteQueryStatementAsync("SHOW TABLES");
         res.ShowTableNames();
         while (res.HasNext()) Console.WriteLine(res.Next());
+        await res.Close();
+
+        await tableSessionPool.Close();
+    }
+
+    public async Task TestInsertWithNull()
+    {
+        var tableName = "t1";
+
+        var tableSessionPool = new TableSessionPool.Builder()
+                .SetNodeUrls(sessionPoolTest.nodeUrls)
+                .SetUsername(sessionPoolTest.username)
+                .SetPassword(sessionPoolTest.password)
+                .SetFetchSize(1024)
+                .SetDatabase("test1")
+                .Build();
+
+        await tableSessionPool.Open(false);
+
+        if (sessionPoolTest.debug) tableSessionPool.OpenDebugMode();
+
+        await tableSessionPool.ExecuteNonQueryStatementAsync(
+                "create table " + tableName + "(" +
+                "t1 STRING TAG," +
+                "f1 DATE FIELD)");
+
+        List<string> columnNames =
+                new List<string> {
+            "t1",
+            "f1" };
+        List<TSDataType> dataTypes =
+            new List<TSDataType>{
+            TSDataType.STRING,
+            TSDataType.DATE};
+        List<ColumnCategory> columnCategories =
+            new List<ColumnCategory>{
+            ColumnCategory.TAG,
+            ColumnCategory.FIELD};
+        var timestamps = new List<long>
+            {
+            0L,
+            1L,
+            2L,
+            3L,
+            4L,
+            5L,
+            6L,
+            7L,
+            8L,
+            9L
+            };
+        var values = new List<List<object>> { };
+        values.Add(new List<object> { "t1", DateTime.Parse("2024-08-15") });
+        values.Add(new List<object> { "t1", DateTime.Parse("2024-08-15") });
+        values.Add(new List<object> { "t1", DateTime.Parse("2024-08-15") });
+        values.Add(new List<object> { "t1", DateTime.Parse("2024-08-15") });
+        values.Add(new List<object> { "t1", DateTime.Parse("2024-08-15") });
+        values.Add(new List<object> { "t1", null });
+        values.Add(new List<object> { "t1", null });
+        values.Add(new List<object> { "t1", null });
+        values.Add(new List<object> { "t1", null });
+        values.Add(new List<object> { "t1", null });
+        var tablet = new Tablet(tableName, columnNames, columnCategories, dataTypes, values, timestamps);
+
+        await tableSessionPool.InsertAsync(tablet);
+
+
+        var res = await tableSessionPool.ExecuteQueryStatementAsync("select count(*) from " + tableName + " where f1 is null");
+        while (res.HasNext())
+        {
+            var row = res.Next();
+            Console.WriteLine(row);
+            var value = row.Values[0];
+            if (value is long longValue)
+            {
+                if (longValue != 5)
+                {
+                    throw new Exception("Expected value is 5, but got " + longValue);
+                }
+            }
+        }
         await res.Close();
 
         await tableSessionPool.Close();

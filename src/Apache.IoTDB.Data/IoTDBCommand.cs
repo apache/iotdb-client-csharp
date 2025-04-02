@@ -17,7 +17,6 @@
  * under the License.
  */
 
-using Apache.IoTDB.DataStructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -30,6 +29,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Apache.IoTDB.DataStructure;
 
 
 namespace Apache.IoTDB.Data
