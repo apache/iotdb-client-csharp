@@ -17,12 +17,12 @@
  * under the License.
  */
 
+using System;
+using System.Collections.Generic;
+using System.CommandLine;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using System.Threading.Tasks;
-using System.CommandLine;
-using System.Collections.Generic;
-using System;
 
 namespace Apache.IoTDB.Samples
 {
@@ -35,46 +35,46 @@ namespace Apache.IoTDB.Samples
             () => "localhost",
             description: "Use single endpoint (e.g. --single localhost)");
 
-        var multiOption = new Option<List<string>>(
-            "--multi",
-            description: "Use multiple endpoints (e.g. --multi localhost:6667 localhost:6668)")
-        {
-            AllowMultipleArgumentsPerToken = true
-        };
+            var multiOption = new Option<List<string>>(
+                "--multi",
+                description: "Use multiple endpoints (e.g. --multi localhost:6667 localhost:6668)")
+            {
+                AllowMultipleArgumentsPerToken = true
+            };
 
-        var rootCommand = new RootCommand
+            var rootCommand = new RootCommand
         {
             singleOption,
             multiOption
         };
 
-        rootCommand.SetHandler(async (string single, List<string> multi) =>
-        {
-            var utilsTest = new UtilsTest();
-            utilsTest.TestParseEndPoint();
-
-            SessionPoolTest sessionPoolTest;
-
-            if (!string.IsNullOrEmpty(single) && (multi == null || multi.Count == 0))
+            rootCommand.SetHandler(async (string single, List<string> multi) =>
             {
-                sessionPoolTest = new SessionPoolTest(single);
-            }
-            else if (multi != null && multi.Count != 0)
-            {
-                sessionPoolTest = new SessionPoolTest(multi);
-            }
-            else
-            {
-                Console.WriteLine("Please specify either --single or --multi endpoints.");
-                return;
-            }
+                var utilsTest = new UtilsTest();
+                utilsTest.TestParseEndPoint();
 
-            await sessionPoolTest.Test();
+                SessionPoolTest sessionPoolTest;
+
+                if (!string.IsNullOrEmpty(single) && (multi == null || multi.Count == 0))
+                {
+                    sessionPoolTest = new SessionPoolTest(single);
+                }
+                else if (multi != null && multi.Count != 0)
+                {
+                    sessionPoolTest = new SessionPoolTest(multi);
+                }
+                else
+                {
+                    Console.WriteLine("Please specify either --single or --multi endpoints.");
+                    return;
+                }
+
+                await sessionPoolTest.Test();
 
 
-        }, singleOption, multiOption);
+            }, singleOption, multiOption);
 
-        await rootCommand.InvokeAsync(args);
+            await rootCommand.InvokeAsync(args);
         }
 
         public static void OpenDebugMode(this SessionPool session)

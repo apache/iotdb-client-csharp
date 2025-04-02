@@ -106,15 +106,15 @@ namespace Apache.IoTDB
 
         public static int ParseDateToInt(DateTime? dateTime)
         {
-          if (dateTime == null)
-          {
-              throw new ArgumentException("Date expression is none or empty.");
-          }
-          if(dateTime.Value.Year<1000)
-          {
-              throw new ArgumentException("Year must be between 1000 and 9999.");
-          }
-          return dateTime.Value.Year * 10000 + dateTime.Value.Month * 100 + dateTime.Value.Day;
+            if (dateTime == null)
+            {
+                throw new ArgumentException("Date expression is none or empty.");
+            }
+            if (dateTime.Value.Year < 1000)
+            {
+                throw new ArgumentException("Year must be between 1000 and 9999.");
+            }
+            return dateTime.Value.Year * 10000 + dateTime.Value.Month * 100 + dateTime.Value.Day;
         }
 
         public static string ByteArrayToHexString(byte[] bytes)

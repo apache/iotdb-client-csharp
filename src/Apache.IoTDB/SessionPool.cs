@@ -35,7 +35,7 @@ using Thrift.Transport.Client;
 namespace Apache.IoTDB
 {
 
-    public class SessionPool : IDisposable
+    public partial class SessionPool : IDisposable
     {
         private static readonly TSProtocolVersion ProtocolVersion = TSProtocolVersion.IOTDB_SERVICE_PROTOCOL_V3;
 
@@ -141,10 +141,12 @@ namespace Apache.IoTDB
             {
                 if (retryOnFailure)
                 {
-                    try{
+                    try
+                    {
                         client = await Reconnect(client);
                         return await operation(client);
-                    } catch (TException retryEx)
+                    }
+                    catch (TException retryEx)
                     {
                         throw new TException(errMsg, retryEx);
                     }
@@ -158,10 +160,12 @@ namespace Apache.IoTDB
             {
                 if (retryOnFailure)
                 {
-                    try{
+                    try
+                    {
                         client = await Reconnect(client);
                         return await operation(client);
-                    } catch (TException retryEx)
+                    }
+                    catch (TException retryEx)
                     {
                         throw new TException(errMsg, retryEx);
                     }
@@ -173,7 +177,7 @@ namespace Apache.IoTDB
             }
             finally
             {
-                if(putClientBack)
+                if (putClientBack)
                 {
                     _clients.Add(client);
                 }
@@ -353,7 +357,8 @@ namespace Apache.IoTDB
             }
         }
 
-        public async Task SetTimeZone(string zoneId){
+        public async Task SetTimeZone(string zoneId)
+        {
             _zoneId = zoneId;
 
             foreach (var client in _clients.ClientQueue.AsEnumerable())

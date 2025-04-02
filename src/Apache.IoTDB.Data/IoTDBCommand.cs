@@ -17,7 +17,6 @@
  * under the License.
  */
 
-using Apache.IoTDB.DataStructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -30,6 +29,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Apache.IoTDB.DataStructure;
 
 
 namespace Apache.IoTDB.Data
@@ -314,7 +314,7 @@ namespace Apache.IoTDB.Data
                 Debug.WriteLine($"_commandText:{_commandText}");
 #endif
                 int _affectRows = 0;
-                SessionDataSet dataSet=null;
+                SessionDataSet dataSet = null;
                 bool isok = false;
                 Task<SessionDataSet> taskDataSet = null;
                 if (_parameters.IsValueCreated)
@@ -336,9 +336,9 @@ namespace Apache.IoTDB.Data
                     }
                 }
 
-                if (isok && dataSet != null  )
+                if (isok && dataSet != null)
                 {
-                    dataReader = new IoTDBDataReader(this, dataSet, closeConnection  );
+                    dataReader = new IoTDBDataReader(this, dataSet, closeConnection);
                 }
                 else if (taskDataSet.Status == TaskStatus.Running || !isok)
                 {
@@ -367,7 +367,7 @@ namespace Apache.IoTDB.Data
         private RowRecord BindParamters(IoTDBParameterCollection pms)
         {
             var measures = new List<string>();
-            var values = new List<object> ();
+            var values = new List<object>();
 
 
             for (int i = 0; i < pms.Count; i++)
@@ -375,11 +375,11 @@ namespace Apache.IoTDB.Data
 
                 var tp = pms[i];
                 measures.Add(tp.ParameterName);
-             //   _commandText = _commandText.Replace(tp.ParameterName, "?");
+                //   _commandText = _commandText.Replace(tp.ParameterName, "?");
                 switch (TypeInfo.GetTypeCode(tp.Value?.GetType()))
                 {
                     case TypeCode.Boolean:
-                       values.Add ((tp.Value as bool?).GetValueOrDefault());
+                        values.Add((tp.Value as bool?).GetValueOrDefault());
                         break;
                     case TypeCode.Char:
                         values.Add(tp.Value as string);
@@ -431,7 +431,7 @@ namespace Apache.IoTDB.Data
                 }
             }
 
-            return   new RowRecord(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),values,measures);
+            return new RowRecord(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), values, measures);
         }
 
         /// <summary>
@@ -523,8 +523,8 @@ namespace Apache.IoTDB.Data
                 throw new InvalidOperationException($"CallRequiresSetCommandText{nameof(ExecuteNonQuery)}");
             }
             var result = Task.Run(() => _IoTDB.ExecuteNonQueryStatementAsync(_commandText));
-             var ok = result.Wait(TimeSpan.FromSeconds(CommandTimeout));
-            if (!ok) throw new  TimeoutException();
+            var ok = result.Wait(TimeSpan.FromSeconds(CommandTimeout));
+            if (!ok) throw new TimeoutException();
             return result.Result;
         }
 

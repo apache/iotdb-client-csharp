@@ -32,18 +32,18 @@ namespace Apache.IoTDB.DataStructure
         public List<TSDataType> DataTypes { get; }
 
         public RowRecord(DateTime timestamp, List<object> values, List<string> measurements, List<string> dataTypes)
-            :this(new DateTimeOffset(timestamp.ToUniversalTime()).ToUnixTimeMilliseconds(), values,measurements, dataTypes)
+            : this(new DateTimeOffset(timestamp.ToUniversalTime()).ToUnixTimeMilliseconds(), values, measurements, dataTypes)
         {
         }
 
         public RowRecord(DateTime timestamp, List<object> values, List<string> measurements, List<TSDataType> dataTypes)
-            :this(new DateTimeOffset(timestamp.ToUniversalTime()).ToUnixTimeMilliseconds(), values,measurements, dataTypes)
+            : this(new DateTimeOffset(timestamp.ToUniversalTime()).ToUnixTimeMilliseconds(), values, measurements, dataTypes)
         {
         }
 
         [Obsolete("Use the constructor with List<TSDataType> instead")]
         public RowRecord(DateTime timestamp, List<object> values, List<string> measurements)
-            :this(new DateTimeOffset(timestamp.ToUniversalTime()).ToUnixTimeMilliseconds(), values,measurements)
+            : this(new DateTimeOffset(timestamp.ToUniversalTime()).ToUnixTimeMilliseconds(), values, measurements)
         {
         }
         [Obsolete("Use the constructor with List<TSDataType> instead")]
@@ -53,7 +53,8 @@ namespace Apache.IoTDB.DataStructure
             Values = values;
             Measurements = measurements;
         }
-        public RowRecord(long timestamps, List<object> values, List<string> measurements, List<string> dataTypes){
+        public RowRecord(long timestamps, List<object> values, List<string> measurements, List<string> dataTypes)
+        {
             Timestamps = timestamps;
             Values = values;
             Measurements = measurements;
@@ -132,27 +133,27 @@ namespace Apache.IoTDB.DataStructure
             foreach (var rowValue in Values)
             {
                 str += "\t\t";
-                if(rowValue is byte[] bytes)
+                if (rowValue is byte[] bytes)
                 {
-                  str += Utils.ByteArrayToHexString(bytes);
+                    str += Utils.ByteArrayToHexString(bytes);
                 }
                 else
                 {
-                  str += rowValue.ToString();
+                    str += rowValue.ToString();
                 }
             }
 
             return str;
         }
-        
+
         public Type GetCrlType(int index)
         {
-            Type tSDataType =  typeof(object);
+            Type tSDataType = typeof(object);
             var valueType = Values[index];
             switch (valueType)
             {
                 case bool _:
-                    tSDataType = typeof( bool);
+                    tSDataType = typeof(bool);
                     break;
                 case int _:
                     tSDataType = typeof(int);
@@ -190,43 +191,43 @@ namespace Apache.IoTDB.DataStructure
                 switch (dataType)
                 {
                     case TSDataType.BOOLEAN:
-                        buffer.AddByte((byte) TSDataType.BOOLEAN);
+                        buffer.AddByte((byte)TSDataType.BOOLEAN);
                         buffer.AddBool((bool)value);
                         break;
                     case TSDataType.INT32:
-                        buffer.AddByte((byte) TSDataType.INT32);
+                        buffer.AddByte((byte)TSDataType.INT32);
                         buffer.AddInt((int)value);
                         break;
                     case TSDataType.INT64:
-                        buffer.AddByte((byte) TSDataType.INT64);
+                        buffer.AddByte((byte)TSDataType.INT64);
                         buffer.AddLong((long)value);
                         break;
                     case TSDataType.FLOAT:
-                        buffer.AddByte((byte) TSDataType.FLOAT);
+                        buffer.AddByte((byte)TSDataType.FLOAT);
                         buffer.AddFloat((float)value);
                         break;
                     case TSDataType.DOUBLE:
-                        buffer.AddByte((byte) TSDataType.DOUBLE);
+                        buffer.AddByte((byte)TSDataType.DOUBLE);
                         buffer.AddDouble((double)value);
                         break;
                     case TSDataType.TEXT:
-                        buffer.AddByte((byte) TSDataType.TEXT);
+                        buffer.AddByte((byte)TSDataType.TEXT);
                         buffer.AddStr((string)value);
                         break;
                     case TSDataType.TIMESTAMP:
-                        buffer.AddByte((byte) TSDataType.TIMESTAMP);
+                        buffer.AddByte((byte)TSDataType.TIMESTAMP);
                         buffer.AddLong((long)value);
                         break;
                     case TSDataType.BLOB:
-                        buffer.AddByte((byte) TSDataType.BLOB);
+                        buffer.AddByte((byte)TSDataType.BLOB);
                         buffer.AddBinary((byte[])value);
                         break;
                     case TSDataType.DATE:
-                        buffer.AddByte((byte) TSDataType.DATE);
+                        buffer.AddByte((byte)TSDataType.DATE);
                         buffer.AddInt(Utils.ParseDateToInt((DateTime)value));
                         break;
                     case TSDataType.STRING:
-                        buffer.AddByte((byte) TSDataType.STRING);
+                        buffer.AddByte((byte)TSDataType.STRING);
                         buffer.AddStr((string)value);
                         break;
                     default:
