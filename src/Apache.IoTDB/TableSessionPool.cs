@@ -55,12 +55,12 @@ public partial class TableSessionPool
         return await sessionPool.ExecuteNonQueryStatementAsync(sql);
     }
 
-    public async Task<SessionDataSet> ExecuteQueryStatementAsync(string sql)
+    public async Task<RpcDataSet> ExecuteQueryStatementAsync(string sql)
     {
         return await sessionPool.ExecuteQueryStatementAsync(sql);
     }
 
-    public async Task<SessionDataSet> ExecuteQueryStatementAsync(string sql, long timeoutInMs)
+    public async Task<RpcDataSet> ExecuteQueryStatementAsync(string sql, long timeoutInMs)
     {
         return await sessionPool.ExecuteQueryStatementAsync(sql, timeoutInMs);
     }

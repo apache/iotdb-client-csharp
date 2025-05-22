@@ -314,9 +314,9 @@ namespace Apache.IoTDB.Data
                 Debug.WriteLine($"_commandText:{_commandText}");
 #endif
                 int _affectRows = 0;
-                SessionDataSet dataSet = null;
+                RpcDataSet dataSet = null;
                 bool isok = false;
-                Task<SessionDataSet> taskDataSet = null;
+                Task<RpcDataSet> taskDataSet = null;
                 if (_parameters.IsValueCreated)
                 {
 
