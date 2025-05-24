@@ -146,6 +146,13 @@ namespace Apache.IoTDB.DataStructure
             return _buffer[.._writePos];
         }
 
+        public byte[] GetBytesbyLength(int length)
+        {
+            var strBuff = _buffer[_readPos..(_readPos + length)];
+            _readPos += length;
+            return strBuff;
+        }
+
         private void ExtendBuffer(int spaceNeed)
         {
             if (_writePos + spaceNeed >= _totalLength)

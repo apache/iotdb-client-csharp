@@ -46,6 +46,7 @@ namespace Apache.IoTDB.DataStructure
         private RowRecord _cachedRowRecord;
         private bool _isClosed = false;
         private bool disposedValue;
+        private RpcDataSet _rpcDataSet;
 
         private string TimestampStr => "Time";
         private int StartIndex => 2;
@@ -128,7 +129,6 @@ namespace Apache.IoTDB.DataStructure
 
             Console.WriteLine(str);
         }
-
         public bool HasNext()
         {
             if (_hasCatchedResult)
@@ -332,6 +332,7 @@ namespace Apache.IoTDB.DataStructure
                 }
                 finally
                 {
+                    // remain current logic
                     _clientQueue.Add(_client);
                     _client = null;
                 }

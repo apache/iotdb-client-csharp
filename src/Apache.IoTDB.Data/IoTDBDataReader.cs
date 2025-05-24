@@ -49,8 +49,8 @@ namespace Apache.IoTDB.Data
         RowRecord rowdata = null;
 
 
-        RpcDataSet _dataSet;
-        internal IoTDBDataReader(IoTDBCommand IoTDBCommand, RpcDataSet dataSet, bool closeConnection)
+        SessionDataSet _dataSet;
+        internal IoTDBDataReader(IoTDBCommand IoTDBCommand, SessionDataSet dataSet, bool closeConnection)
         {
             _IoTDB = IoTDBCommand.Connection._IoTDB;
             _command = IoTDBCommand;

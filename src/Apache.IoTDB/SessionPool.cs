@@ -710,9 +710,9 @@ namespace Apache.IoTDB
             try
             {
                 var sql = "SHOW TIMESERIES " + tsPath;
-                var RpcDataSet = await ExecuteQueryStatementAsync(sql);
-                bool timeSeriesExists = RpcDataSet.HasNext();
-                await RpcDataSet.Close(); // be sure to close the RpcDataSet to put the client back to the pool
+                var SessionDataSet = await ExecuteQueryStatementAsync(sql);
+                bool timeSeriesExists = SessionDataSet.HasNext();
+                await SessionDataSet.Close(); // be sure to close the SessionDataSet to put the client back to the pool
                 return timeSeriesExists;
             }
             catch (TException e)
@@ -1310,15 +1310,15 @@ namespace Apache.IoTDB
             );
         }
 
-        public async Task<RpcDataSet> ExecuteQueryStatementAsync(string sql)
+        public async Task<SessionDataSet> ExecuteQueryStatementAsync(string sql)
         {
             // default timeout is 60s
             return await ExecuteQueryStatementAsync(sql, 60 * 1000);
         }
 
-        public async Task<RpcDataSet> ExecuteQueryStatementAsync(string sql, long timeoutInMs)
+        public async Task<SessionDataSet> ExecuteQueryStatementAsync(string sql, long timeoutInMs)
         {
-            return await ExecuteClientOperationAsync<RpcDataSet>(
+            return await ExecuteClientOperationAsync<SessionDataSet>(
                 async client =>
                 {
                     var req = new TSExecuteStatementReq(client.SessionId, sql, client.StatementId)
@@ -1335,7 +1335,7 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute query failed, sql: {0}, message: {1}", sql, status.Message));
                     }
 
-                    return new RpcDataSet(sql, resp, client, _clients, client.StatementId)
+                    return new SessionDataSet(sql, resp, client, _clients, client.StatementId)
                     {
                         FetchSize = _fetchSize,
                     };
@@ -1345,9 +1345,9 @@ namespace Apache.IoTDB
             );
         }
 
-        public async Task<RpcDataSet> ExecuteStatementAsync(string sql, long timeout)
+        public async Task<SessionDataSet> ExecuteStatementAsync(string sql, long timeout)
         {
-            return await ExecuteClientOperationAsync<RpcDataSet>(
+            return await ExecuteClientOperationAsync<SessionDataSet>(
                 async client =>
                 {
                     var req = new TSExecuteStatementReq(client.SessionId, sql, client.StatementId)
@@ -1364,7 +1364,7 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute query failed, sql: {0}, message: {1}", sql, status.Message));
                     }
 
-                    return new RpcDataSet(sql, resp, client, _clients, client.StatementId)
+                    return new SessionDataSet(sql, resp, client, _clients, client.StatementId)
                     {
                         FetchSize = _fetchSize,
                     };
@@ -1421,9 +1421,9 @@ namespace Apache.IoTDB
                 errMsg: "Error occurs when executing non-query statement"
             );
         }
-        public async Task<RpcDataSet> ExecuteRawDataQuery(List<string> paths, long startTime, long endTime)
+        public async Task<SessionDataSet> ExecuteRawDataQuery(List<string> paths, long startTime, long endTime)
         {
-            return await ExecuteClientOperationAsync<RpcDataSet>(
+            return await ExecuteClientOperationAsync<SessionDataSet>(
                 async client =>
                 {
                     var req = new TSRawDataQueryReq(client.SessionId, paths, startTime, endTime, client.StatementId)
@@ -1440,7 +1440,7 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute raw data query failed, message: {0}", status.Message));
                     }
 
-                    return new RpcDataSet("", resp, client, _clients, client.StatementId)
+                    return new SessionDataSet("", resp, client, _clients, client.StatementId)
                     {
                         FetchSize = _fetchSize,
                     };
@@ -1449,9 +1449,9 @@ namespace Apache.IoTDB
                 putClientBack: false
             );
         }
-        public async Task<RpcDataSet> ExecuteLastDataQueryAsync(List<string> paths, long lastTime)
+        public async Task<SessionDataSet> ExecuteLastDataQueryAsync(List<string> paths, long lastTime)
         {
-            return await ExecuteClientOperationAsync<RpcDataSet>(
+            return await ExecuteClientOperationAsync<SessionDataSet>(
                 async client =>
                 {
                     var req = new TSLastDataQueryReq(client.SessionId, paths, lastTime, client.StatementId)
@@ -1468,7 +1468,7 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute last data query failed, message: {0}", status.Message));
                     }
 
-                    return new RpcDataSet("", resp, client, _clients, client.StatementId)
+                    return new SessionDataSet("", resp, client, _clients, client.StatementId)
                     {
                         FetchSize = _fetchSize,
                     };

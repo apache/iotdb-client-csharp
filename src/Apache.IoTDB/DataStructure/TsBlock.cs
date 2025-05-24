@@ -1,143 +1,93 @@
 using System;
 using System.Collections.Generic;
-using Thrift;
+using System.IO;
+using System.Text;
 
 namespace Apache.IoTDB.DataStructure
 {
-    public class TSBlock
+    public class TsBlock
     {
-        private readonly List<string> _columnNames;
-        private readonly Dictionary<int, int> _duplicateLocation;
-        private readonly List<string> _columnTypeLst;
-        private readonly int _flag = 0x80;
-        
-        private ByteBuffer _timeBuffer;
-        private List<ByteBuffer> _valueBufferLst;
-        private List<ByteBuffer> _bitmapBufferLst;
-        private byte[] _currentBitmap;
-        private int _rowIndex;
-        public int RowCount { get; private set; }
-        public RowRecord _cachedRowRecord;
+        private readonly Column _timeColumn;
+        private readonly List<Column> _valueColumns;
+        private readonly int _positionCount;
 
-        public TSBlock(
-            TSQueryDataSet queryDataSet,
-            List<string> columnNames,
-            List<string> columnTypeLst,
-            Dictionary<int, int> duplicateLocation)
+        public TsBlock(int positionCount, Column timeColumn, params Column[] valueColumns)
         {
-            _columnNames = columnNames;
-            _columnTypeLst = columnTypeLst;
-            _duplicateLocation = duplicateLocation;
+            if (valueColumns == null)
+                throw new ArgumentNullException(nameof(valueColumns));
 
-            InitializeBuffers(queryDataSet);
-            ResetState();
+            _timeColumn = timeColumn;
+            _valueColumns = new List<Column>(valueColumns);
+            _positionCount = positionCount;
         }
 
-        private void InitializeBuffers(TSQueryDataSet queryDataSet)
+        public static TsBlock Deserialize(ByteBuffer reader)
         {
-            _timeBuffer = new ByteBuffer(queryDataSet.Time);
-            _valueBufferLst = new List<ByteBuffer>();
-            _bitmapBufferLst = new List<ByteBuffer>();
-            
-            RowCount = queryDataSet.Time.Length / sizeof(long);
-            
-            foreach (var valueBuffer in queryDataSet.ValueList)
+
+            // Read value column count
+            var valueColumnCount = reader.GetInt();
+
+            // Read value column data types
+            var valueColumnDataTypes = new TSDataType[valueColumnCount];
+            for (int i = 0; i < valueColumnCount; i++)
             {
-                _valueBufferLst.Add(new ByteBuffer(valueBuffer));
-            }
-            foreach (var bitmapBuffer in queryDataSet.BitmapList)
-            {
-                _bitmapBufferLst.Add(new ByteBuffer(bitmapBuffer));
-            }
-            
-            _currentBitmap = new byte[_valueBufferLst.Count];
-        }
-
-        private void ResetState()
-        {
-            _rowIndex = 0;
-            Array.Clear(_currentBitmap, 0, _currentBitmap.Length);
-        }
-
-        public bool HasNext()
-        {
-            return _rowIndex < RowCount;
-        }
-
-        public RowRecord Next()
-        {
-            if (!HasNext()) return null;
-
-            var fieldList = new List<object>();
-            long timestamp = _timeBuffer.GetLong();
-
-            for (int i = 0; i < _valueBufferLst.Count; i++)
-            {
-                if (_duplicateLocation.TryGetValue(i, out int dupIndex))
-                {
-                    fieldList.Add(fieldList[dupIndex]);
-                    continue;
-                }
-
-                if (_rowIndex % 8 == 0)
-                {
-                    _currentBitmap[i] = _bitmapBufferLst[i].GetByte();
-                }
-
-                object value = IsNull(i) ? null : ReadValue(i);
-                fieldList.Add(value);
+                valueColumnDataTypes[i] = DeserializeDataType(reader);
             }
 
-            _rowIndex++;
-            _cachedRowRecord = new RowRecord(timestamp, fieldList, _columnNames);
-            return _cachedRowRecord;
-        }
+            // Read position count
+            var positionCount = ReadBigEndianInt32(reader);
 
-        private bool IsNull(int columnIndex)
-        {
-            byte bitmap = _currentBitmap[columnIndex];
-            int shift = _rowIndex % 8;
-            return ((_flag >> shift) & bitmap) == 0;
-        }
-
-        private object ReadValue(int columnIndex)
-        {
-            var dataType = GetDataTypeFromStr(_columnTypeLst[columnIndex]);
-            var buffer = _valueBufferLst[columnIndex];
-
-            return dataType switch
+            // Read column encodings (valueColumnCount + 1 for time column)
+            var columnEncodings = new ColumnEncoding[valueColumnCount + 1];
+            for (int i = 0; i < valueColumnCount + 1; i++)
             {
-                TSDataType.BOOLEAN => buffer.GetBool(),
-                TSDataType.INT32 => buffer.GetInt(),
-                TSDataType.DATE => Utils.ParseIntToDate(buffer.GetInt()),
-                TSDataType.INT64 => buffer.GetLong(),
-                TSDataType.TIMESTAMP => buffer.GetLong(),
-                TSDataType.FLOAT => buffer.GetFloat(),
-                TSDataType.DOUBLE => buffer.GetDouble(),
-                TSDataType.TEXT => buffer.GetStr(),
-                TSDataType.STRING => buffer.GetStr(),
-                TSDataType.BLOB => buffer.GetBinary(),
-                _ => throw new TException("Unsupported data type", null)
-            };
-        }
-        private TSDataType GetDataTypeFromStr(string str)
-        {
-            return str switch
+                columnEncodings[i] = DeserializeColumnEncoding(reader);
+            }
+
+            // Read time column
+            var timeColumnDecoder = baseColumnDecoder.GetDecoder(columnEncodings[0]);
+            var timeColumn = timeColumnDecoder.ReadColumn(reader, TSDataType.INT64, positionCount);
+
+            // Read value columns
+            var valueColumns = new Column[valueColumnCount];
+            for (int i = 0; i < valueColumnCount; i++)
             {
-                "BOOLEAN" => TSDataType.BOOLEAN,
-                "INT32" => TSDataType.INT32,
-                "INT64" => TSDataType.INT64,
-                "FLOAT" => TSDataType.FLOAT,
-                "DOUBLE" => TSDataType.DOUBLE,
-                "TEXT" => TSDataType.TEXT,
-                "NULLTYPE" => TSDataType.NONE,
-                "TIMESTAMP" => TSDataType.TIMESTAMP,
-                "DATE" => TSDataType.DATE,
-                "BLOB" => TSDataType.BLOB,
-                "STRING" => TSDataType.STRING,
-                _ => TSDataType.STRING
-            };
+                var decoder = baseColumnDecoder.GetDecoder(columnEncodings[i + 1]);
+                valueColumns[i] = decoder.ReadColumn(reader, valueColumnDataTypes[i], positionCount);
+            }
+
+            return new TsBlock(positionCount, timeColumn, valueColumns);
         }
+
+        private static TSDataType DeserializeDataType(ByteBuffer reader)
+        {
+            byte b = reader.GetByte();
+            return (TSDataType)b;
+        }
+
+        private static ColumnEncoding DeserializeColumnEncoding(ByteBuffer reader)
+        {
+            byte b = reader.GetByte();
+            return (ColumnEncoding)b;
+        }
+
+        private static int ReadBigEndianInt32(ByteBuffer reader)
+        {
+            byte[] bytes = reader.GetBinary();
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(bytes);
+            return BitConverter.ToInt32(bytes, 0);
+        }
+
+        public int PositionCount => _positionCount;
+
+        public long GetStartTime() => _timeColumn.GetLong(0);
+        public long GetEndTime() => _timeColumn.GetLong(_positionCount - 1);
+        public bool IsEmpty => _positionCount == 0;
+        public long GetTimeByIndex(int index) => _timeColumn.GetLong(index);
+        public int ValueColumnCount => _valueColumns.Count;
+        public Column TimeColumn => _timeColumn;
+        public IReadOnlyList<Column> ValueColumns => _valueColumns;
+        public Column GetColumn(int columnIndex) => _valueColumns[columnIndex];
     }
-
 }
