@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text;
 using Thrift;
 
 namespace Apache.IoTDB.DataStructure
@@ -39,7 +40,6 @@ namespace Apache.IoTDB.DataStructure
         private int _queryResultIndex;
         private int _tsBlockSize;
         private int _tsBlockIndex;
-
         private TimeZoneInfo _zoneId;
         private string _timeFormat;
         private int _timeFactor;
@@ -66,7 +66,7 @@ namespace Apache.IoTDB.DataStructure
             int resultSetColumnSize = columnNameList.Count;
             int startIndexForColumnIndex2TsBlockColumnIndexList = 0;
 
-            if (!ignoreTimestamp)
+            if (!_ignoreTimestamp)
             {
                 _columnNameList.Add(TimestampColumnName);
                 _columnTypeList.Add("INT64");
@@ -88,7 +88,7 @@ namespace Apache.IoTDB.DataStructure
             if (columnIndex2TsBlockColumnIndexList == null)
             {
                 columnIndex2TsBlockColumnIndexList = new List<int>();
-                if (!ignoreTimestamp)
+                if (!_ignoreTimestamp)
                 {
                     startIndexForColumnIndex2TsBlockColumnIndexList = 1;
                     columnIndex2TsBlockColumnIndexList.Add(-1);
@@ -222,7 +222,7 @@ namespace Apache.IoTDB.DataStructure
                 IsAlign = true,
                 Timeout = _timeout
             };
-            
+
             try
             {
                 var task = _client.ServiceClient.fetchResultsAsync(req);
@@ -275,8 +275,6 @@ namespace Apache.IoTDB.DataStructure
             _tsBlockSize = _curTsBlock.PositionCount;
         }
 
-        // 其他Get方法类似实现，篇幅限制省略部分代码
-
         private TSDataType GetDataTypeByStr(string typeStr)
         {
             return typeStr switch
@@ -294,5 +292,504 @@ namespace Apache.IoTDB.DataStructure
                 _ => TSDataType.NONE
             };
         }
+
+        public bool IsIgnoredTimestamp => _ignoreTimestamp;
+
+        public bool IsNullByIndex(int columnIndex)
+        {
+            int index = GetTsBlockColumnIndexForColumnIndex(columnIndex);
+            return IsNull(index, _tsBlockIndex);
+        }
+
+        public bool IsNullByColumnName(string columnName)
+        {
+            int index = GetTsBlockColumnIndexForColumnName(columnName);
+            return IsNull(index, _tsBlockIndex);
+        }
+
+        private bool IsNull(int index, int rowNum)
+        {
+            return index >= 0 && _curTsBlock.GetColumn(index).IsNull(rowNum);
+        }
+
+        public bool GetBooleanByIndex(int columnIndex)
+        {
+            int index = GetTsBlockColumnIndexForColumnIndex(columnIndex);
+            return GetBooleanByTsBlockColumnIndex(index);
+        }
+
+        public bool GetBoolean(string columnName)
+        {
+            int index = GetTsBlockColumnIndexForColumnName(columnName);
+            return GetBooleanByTsBlockColumnIndex(index);
+        }
+
+        private bool GetBooleanByTsBlockColumnIndex(int tsBlockColumnIndex)
+        {
+            CheckRecord();
+            if (!IsNull(tsBlockColumnIndex, _tsBlockIndex))
+            {
+                _lastReadWasNull = false;
+                return _curTsBlock.GetColumn(tsBlockColumnIndex).GetBoolean(_tsBlockIndex);
+            }
+            else
+            {
+                _lastReadWasNull = true;
+                return false;
+            }
+        }
+
+        public double GetDoubleByIndex(int columnIndex)
+        {
+            int index = GetTsBlockColumnIndexForColumnIndex(columnIndex);
+            return GetDoubleByTsBlockColumnIndex(index);
+        }
+
+        public double GetDouble(string columnName)
+        {
+            int index = GetTsBlockColumnIndexForColumnName(columnName);
+            return GetDoubleByTsBlockColumnIndex(index);
+        }
+
+        private double GetDoubleByTsBlockColumnIndex(int tsBlockColumnIndex)
+        {
+            CheckRecord();
+            if (!IsNull(tsBlockColumnIndex, _tsBlockIndex))
+            {
+                _lastReadWasNull = false;
+                return _curTsBlock.GetColumn(tsBlockColumnIndex).GetDouble(_tsBlockIndex);
+            }
+            else
+            {
+                _lastReadWasNull = true;
+                return 0.0;
+            }
+        }
+
+        public float GetFloatByIndex(int columnIndex)
+        {
+            int index = GetTsBlockColumnIndexForColumnIndex(columnIndex);
+            return GetFloatByTsBlockColumnIndex(index);
+        }
+
+        public float GetFloat(string columnName)
+        {
+            int index = GetTsBlockColumnIndexForColumnName(columnName);
+            return GetFloatByTsBlockColumnIndex(index);
+        }
+
+        private float GetFloatByTsBlockColumnIndex(int tsBlockColumnIndex)
+        {
+            CheckRecord();
+            if (!IsNull(tsBlockColumnIndex, _tsBlockIndex))
+            {
+                _lastReadWasNull = false;
+                return _curTsBlock.GetColumn(tsBlockColumnIndex).GetFloat(_tsBlockIndex);
+            }
+            else
+            {
+                _lastReadWasNull = true;
+                return 0.0f;
+            }
+        }
+
+        public int GetIntByIndex(int columnIndex)
+        {
+            int index = GetTsBlockColumnIndexForColumnIndex(columnIndex);
+            return GetIntByTsBlockColumnIndex(index);
+        }
+
+        public int GetInt(string columnName)
+        {
+            int index = GetTsBlockColumnIndexForColumnName(columnName);
+            return GetIntByTsBlockColumnIndex(index);
+        }
+
+        private int GetIntByTsBlockColumnIndex(int tsBlockColumnIndex)
+        {
+            CheckRecord();
+            if (!IsNull(tsBlockColumnIndex, _tsBlockIndex))
+            {
+                _lastReadWasNull = false;
+                TSDataType dataType = _curTsBlock.GetColumn(tsBlockColumnIndex).GetDataType();
+                if (dataType == TSDataType.INT64)
+                {
+                    long v = _curTsBlock.GetColumn(tsBlockColumnIndex).GetLong(_tsBlockIndex);
+                    return (int)v;
+                }
+                return _curTsBlock.GetColumn(tsBlockColumnIndex).GetInt(_tsBlockIndex);
+            }
+            else
+            {
+                _lastReadWasNull = true;
+                return 0;
+            }
+        }
+
+        public long GetLongByIndex(int columnIndex)
+        {
+            int index = GetTsBlockColumnIndexForColumnIndex(columnIndex);
+            return GetLongByTsBlockColumnIndex(index);
+        }
+
+        public long GetLong(string columnName)
+        {
+            int index = GetTsBlockColumnIndexForColumnName(columnName);
+            return GetLongByTsBlockColumnIndex(index);
+        }
+
+        private long GetLongByTsBlockColumnIndex(int tsBlockColumnIndex)
+        {
+            CheckRecord();
+            if (!IsNull(tsBlockColumnIndex, _tsBlockIndex))
+            {
+                _lastReadWasNull = false;
+                return _curTsBlock.GetColumn(tsBlockColumnIndex).GetLong(_tsBlockIndex);
+            }
+            else
+            {
+                _lastReadWasNull = true;
+                return 0L;
+            }
+        }
+
+        public Binary GetBinaryByIndex(int columnIndex)
+        {
+            int index = GetTsBlockColumnIndexForColumnIndex(columnIndex);
+            return GetBinaryByTsBlockColumnIndex(index);
+        }
+
+        public Binary GetBinary(string columnName)
+        {
+            int index = GetTsBlockColumnIndexForColumnName(columnName);
+            return GetBinaryByTsBlockColumnIndex(index);
+        }
+
+        private Binary GetBinaryByTsBlockColumnIndex(int tsBlockColumnIndex)
+        {
+            CheckRecord();
+            if (!IsNull(tsBlockColumnIndex, _tsBlockIndex))
+            {
+                _lastReadWasNull = false;
+                return _curTsBlock.GetColumn(tsBlockColumnIndex).GetBinary(_tsBlockIndex);
+            }
+            else
+            {
+                _lastReadWasNull = true;
+                return null;
+            }
+        }
+
+        public object GetObjectByIndex(int columnIndex)
+        {
+            int index = GetTsBlockColumnIndexForColumnIndex(columnIndex);
+            return GetObjectByTsBlockIndex(index);
+        }
+
+        public object GetObject(string columnName)
+        {
+            int index = GetTsBlockColumnIndexForColumnName(columnName);
+            return GetObjectByTsBlockIndex(index);
+        }
+
+        private object GetObjectByTsBlockIndex(int tsBlockColumnIndex)
+        {
+            CheckRecord();
+            if (IsNull(tsBlockColumnIndex, _tsBlockIndex))
+            {
+                _lastReadWasNull = true;
+                return null;
+            }
+
+            _lastReadWasNull = false;
+            TSDataType dataType = GetDataTypeByTsBlockColumnIndex(tsBlockColumnIndex);
+
+            switch (dataType)
+            {
+                case TSDataType.BOOLEAN:
+                case TSDataType.INT32:
+                case TSDataType.INT64:
+                case TSDataType.FLOAT:
+                case TSDataType.DOUBLE:
+                    return _curTsBlock.GetColumn(tsBlockColumnIndex).GetObject(_tsBlockIndex);
+
+                case TSDataType.TIMESTAMP:
+                    long timestamp = tsBlockColumnIndex == -1
+                        ? _curTsBlock.GetTimeByIndex(_tsBlockIndex)
+                        : _curTsBlock.GetColumn(tsBlockColumnIndex).GetLong(_tsBlockIndex);
+                    return ConvertToTimestamp(timestamp, _timeFactor);
+
+                case TSDataType.TEXT:
+                case TSDataType.STRING:
+                    Binary binaryStr = _curTsBlock.GetColumn(tsBlockColumnIndex).GetBinary(_tsBlockIndex);
+                    return Encoding.UTF8.GetString(binaryStr.Data);
+
+                case TSDataType.BLOB:
+                    return _curTsBlock.GetColumn(tsBlockColumnIndex).GetBinary(_tsBlockIndex);
+
+                case TSDataType.DATE:
+                    int value = _curTsBlock.GetColumn(tsBlockColumnIndex).GetInt(_tsBlockIndex);
+                    return Int32ToDate(value);
+
+                default:
+                    return null;
+            }
+        }
+
+        public string GetStringByIndex(int columnIndex)
+        {
+            int index = GetTsBlockColumnIndexForColumnIndex(columnIndex);
+            return GetStringByTsBlockColumnIndex(index);
+        }
+
+        public string GetString(string columnName)
+        {
+            int index = GetTsBlockColumnIndexForColumnName(columnName);
+            return GetStringByTsBlockColumnIndex(index);
+        }
+
+        private string GetStringByTsBlockColumnIndex(int tsBlockColumnIndex)
+        {
+            CheckRecord();
+
+            // 处理时间列的特殊情况
+            if (tsBlockColumnIndex == -1)
+            {
+                long timestamp = _curTsBlock.GetTimeByIndex(_tsBlockIndex);
+                return timestamp.ToString();
+            }
+
+            if (IsNull(tsBlockColumnIndex, _tsBlockIndex))
+            {
+                _lastReadWasNull = true;
+                return string.Empty;
+            }
+
+            _lastReadWasNull = false;
+            return GetStringByTsBlockColumnIndexAndDataType(
+                tsBlockColumnIndex,
+                GetDataTypeByTsBlockColumnIndex(tsBlockColumnIndex));
+        }
+
+        private string GetStringByTsBlockColumnIndexAndDataType(int index, TSDataType tsDataType)
+        {
+            switch (tsDataType)
+            {
+                case TSDataType.BOOLEAN:
+                    bool boolVal = _curTsBlock.GetColumn(index).GetBoolean(_tsBlockIndex);
+                    return boolVal.ToString();
+
+                case TSDataType.INT32:
+                    int intVal = _curTsBlock.GetColumn(index).GetInt(_tsBlockIndex);
+                    return intVal.ToString();
+
+                case TSDataType.INT64:
+                    long longVal = _curTsBlock.GetColumn(index).GetLong(_tsBlockIndex);
+                    return longVal.ToString();
+
+                case TSDataType.TIMESTAMP:
+                    long tsValue = _curTsBlock.GetColumn(index).GetLong(_tsBlockIndex);
+                    return FormatDatetime(DefaultTimeFormat, _timePrecision, tsValue, _zoneId);
+
+                case TSDataType.FLOAT:
+                    float floatVal = _curTsBlock.GetColumn(index).GetFloat(_tsBlockIndex);
+                    return floatVal.ToString("G9");
+
+                case TSDataType.DOUBLE:
+                    double doubleVal = _curTsBlock.GetColumn(index).GetDouble(_tsBlockIndex);
+                    return doubleVal.ToString("G17");
+
+                case TSDataType.TEXT:
+                case TSDataType.STRING:
+                    Binary strBytes = _curTsBlock.GetColumn(index).GetBinary(_tsBlockIndex);
+                    return Encoding.UTF8.GetString(strBytes.Data);
+
+                case TSDataType.BLOB:
+                    Binary blobBytes = _curTsBlock.GetColumn(index).GetBinary(_tsBlockIndex);
+                    return blobBytes.ToString().Replace("-", "");
+
+                case TSDataType.DATE:
+                    int dateValue = _curTsBlock.GetColumn(index).GetInt(_tsBlockIndex);
+                    DateTime date = Int32ToDate(dateValue);
+                    return date.ToString("yyyy-MM-dd");
+
+                default:
+                    return string.Empty;
+            }
+        }
+
+        public DateTime GetTimestampByIndex(int columnIndex)
+        {
+            int index = GetTsBlockColumnIndexForColumnIndex(columnIndex);
+            return GetTimestampByTsBlockColumnIndex(index);
+        }
+
+        public DateTime GetTimestamp(string columnName)
+        {
+            int index = GetTsBlockColumnIndexForColumnName(columnName);
+            return GetTimestampByTsBlockColumnIndex(index);
+        }
+
+        private DateTime GetTimestampByTsBlockColumnIndex(int tsBlockColumnIndex)
+        {
+            long value = GetLongByTsBlockColumnIndex(tsBlockColumnIndex);
+            return ConvertToTimestamp(value, _timeFactor);
+        }
+
+        public DateTime GetDateByIndex(int columnIndex)
+        {
+            int index = GetTsBlockColumnIndexForColumnIndex(columnIndex);
+            return GetDateByTsBlockColumnIndex(index);
+        }
+
+        public DateTime GetDate(string columnName)
+        {
+            int index = GetTsBlockColumnIndexForColumnName(columnName);
+            return GetDateByTsBlockColumnIndex(index);
+        }
+
+        private DateTime GetDateByTsBlockColumnIndex(int tsBlockColumnIndex)
+        {
+            int value = GetIntByTsBlockColumnIndex(tsBlockColumnIndex);
+            return Int32ToDate(value);
+        }
+
+        public TSDataType GetDataTypeByIndex(int columnIndex)
+        {
+            int index = GetTsBlockColumnIndexForColumnIndex(columnIndex);
+            return GetDataTypeByTsBlockColumnIndex(index);
+        }
+
+        public TSDataType GetDataType(string columnName)
+        {
+            if (!_columnName2TsBlockColumnIndexMap.TryGetValue(columnName, out int index))
+                throw new ArgumentException($"Column {columnName} not found");
+
+            return GetDataTypeByTsBlockColumnIndex(index);
+        }
+
+        private TSDataType GetDataTypeByTsBlockColumnIndex(int tsBlockColumnIndex)
+        {
+            return tsBlockColumnIndex < 0
+                ? TSDataType.TIMESTAMP
+                : _dataTypeForTsBlockColumn[tsBlockColumnIndex];
+        }
+
+        private DateTime ConvertToTimestamp(long value, double timeFactor)
+        {
+            long timestamp = (long)(value * timeFactor);
+            return DateTimeOffset.FromUnixTimeMilliseconds(timestamp).DateTime;
+        }
+
+        public static DateTime Int32ToDate(int val)
+        {
+            int year = val / 10000;
+            int remaining = val % 10000;
+            int month = remaining / 100;
+            int day = remaining % 100;
+
+            if (year < 1 || year > 9999)
+                throw new ArgumentOutOfRangeException(
+                    paramName: nameof(val),
+                    message: $"Invalid year value: {year}. Year must be between 1-9999"
+                );
+
+            if (month < 1 || month > 12)
+                throw new ArgumentOutOfRangeException(
+                    paramName: nameof(val),
+                    message: $"Invalid month value: {month}. Month must be between 1-12"
+                );
+
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+            if (day < 1 || day > daysInMonth)
+                throw new ArgumentOutOfRangeException(
+                    paramName: nameof(val),
+                    message: $"Invalid day value: {day}. Day must be between 1-{daysInMonth} for {year}-{month}"
+                );
+
+            return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
+        }
+
+        private string FormatDatetime(string format, string precision, long value, TimeZoneInfo zone)
+        {
+            DateTime dt = ConvertToTimestamp(value, 1); // 假设timeFactor=1
+            DateTime convertedTime = TimeZoneInfo.ConvertTime(dt, zone);
+            return convertedTime.ToString(format);
+        }
+
+        private int GetTsBlockColumnIndexForColumnName(string columnName)
+        {
+            if (!_columnName2TsBlockColumnIndexMap.TryGetValue(columnName, out int index))
+                throw new ArgumentException($"Column {columnName} not found");
+            return index;
+        }
+        
+        public int FindColumn(string columnName)
+        {
+            if (!_columnOrdinalMap.TryGetValue(columnName, out int ordinal))
+                throw new ArgumentException($"Column {columnName} not found");
+            return ordinal;
+        }
+
+        public string FindColumnNameByIndex(int columnIndex)
+        {
+            if (columnIndex <= 0)
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "Column index should start from 1");
+            
+            if (columnIndex > _columnNameList.Count)
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), 
+                    $"Column index {columnIndex} out of range {_columnNameList.Count}");
+
+            return _columnNameList[columnIndex - 1];
+        }
+
+        private int GetTsBlockColumnIndexForColumnIndex(int columnIndex)
+        {
+            int adjustedIndex = columnIndex - 1;
+            if (adjustedIndex < 0 || adjustedIndex >= _columnIndex2TsBlockColumnIndexList.Count)
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), 
+                    $"Index {adjustedIndex} out of range {_columnIndex2TsBlockColumnIndexList.Count}");
+            
+            return _columnIndex2TsBlockColumnIndexList[adjustedIndex];
+        }
+
+        private void CheckRecord()
+        {
+            if (_queryResultIndex > _queryResultSize || 
+                _tsBlockIndex >= _tsBlockSize || 
+                _queryResult == null || 
+                _curTsBlock == null)
+            {
+                throw new InvalidOperationException("No record remains");
+            }
+        }
+
+        public int GetValueColumnStartIndex() => _ignoreTimestamp ? 0 : 1;
+
+        public int GetColumnSize() => _columnNameList.Count;
+
+        public List<string> GetColumnTypeList() => new List<string>(_columnTypeList);
+
+        public List<string> GetColumnNameTypeList() => new List<string>(_columnTypeList);
+
+        public bool IsClosed() => _isClosed;
+
+        public int FetchSize
+        {
+            get => _fetchSize;
+            set => _fetchSize = value;
+        }
+
+        public bool HasCachedRecord
+        {
+            get => _hasCachedRecord;
+            set => _hasCachedRecord = value;
+        }
+
+        public bool IsLastReadWasNull() => _lastReadWasNull;
+
+        public long GetCurrentRowTime() => _time;
+
+        public bool IsIgnoreTimestamp() => _ignoreTimestamp;
     }
 }

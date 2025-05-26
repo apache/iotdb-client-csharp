@@ -80,37 +80,13 @@ namespace Apache.IoTDB.DataStructure
             _columnNames = resp.Columns;
             _columnTypeLst = resp.DataTypeList;
 
-            int deduplicateIdx = 0;
-            Dictionary<string, int> columnToFirstIndexMap = new Dictionary<string, int>();
-            for (var i = 0; i < _columnSize; i++)
-            {
-                var columnName = _columnNames[i];
-                if (_columnNameIndexMap.ContainsKey(columnName))
-                {
-                    _duplicateLocation[i] = columnToFirstIndexMap[columnName];
-                }
-                else
-                {
-                    columnToFirstIndexMap[columnName] = i;
-                    if (resp.ColumnNameIndexMap != null)
-                    {
-                        int valueIndex = resp.ColumnNameIndexMap[columnName];
-                        _columnNameIndexMap[columnName] = valueIndex;
-                        _valueBufferLst.Add(new ByteBuffer(_queryDataset.ValueList[valueIndex]));
-                        _bitmapBufferLst.Add(new ByteBuffer(_queryDataset.BitmapList[valueIndex]));
-                    }
-                    else
-                    {
-                        _columnNameIndexMap[columnName] = deduplicateIdx;
-                        _valueBufferLst.Add(new ByteBuffer(_queryDataset.ValueList[deduplicateIdx]));
-                        _bitmapBufferLst.Add(new ByteBuffer(_queryDataset.BitmapList[deduplicateIdx]));
-                    }
-                    deduplicateIdx++;
-                }
-            }
+            _rpcDataSet = new RpcDataSet(
+                _sql, _columnNames, _columnTypeLst, _columnNameIndexMap, resp.IgnoreTimeStamp,
+                resp.MoreData, _queryId, _statementId, _client, resp.QueryResult,
+                DefaultTimeout, resp.ColumnIndex2TsBlockColumnIndexList
+            );
         }
         public List<string> ColumnNames => _columnNames;
-
 
         private List<string> GetColumnNames()
         {
