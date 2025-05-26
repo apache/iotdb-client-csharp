@@ -710,9 +710,9 @@ namespace Apache.IoTDB
             try
             {
                 var sql = "SHOW TIMESERIES " + tsPath;
-                var SessionDataSet = await ExecuteQueryStatementAsync(sql);
-                bool timeSeriesExists = SessionDataSet.HasNext();
-                await SessionDataSet.Close(); // be sure to close the SessionDataSet to put the client back to the pool
+                var sessionDataSet = await ExecuteQueryStatementAsync(sql);
+                bool timeSeriesExists = sessionDataSet.HasNext();
+                await sessionDataSet.Close(); // be sure to close the SessionDataSet to put the client back to the pool
                 return timeSeriesExists;
             }
             catch (TException e)

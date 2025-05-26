@@ -235,6 +235,7 @@ namespace Apache.IoTDB.DataStructure
                     return false;
                 }
 
+                _queryResult = resp.QueryResult;
                 _queryResultIndex = 0;
                 _queryResultSize = _queryResult?.Count ?? 0;
                 _tsBlockSize = 0;

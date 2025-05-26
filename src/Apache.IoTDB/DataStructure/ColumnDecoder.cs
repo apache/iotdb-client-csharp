@@ -10,7 +10,7 @@ namespace Apache.IoTDB.DataStructure
         Column ReadColumn(ByteBuffer reader, TSDataType dataType, int positionCount);
     }
 
-    public class baseColumnDecoder
+    public class BaseColumnDecoder
     {
         
         private static Dictionary<ColumnEncoding, ColumnDecoder> decoders = new Dictionary<ColumnEncoding, ColumnDecoder>
@@ -50,7 +50,10 @@ namespace Apache.IoTDB.DataStructure
         {
             int packedSize = (size + 7) / 8;
             byte[] packedBytes = reader.GetBytesbyLength(packedSize);
-
+            if (packedBytes.Length < packedSize)
+                throw new InvalidDataException(
+                    $"Boolean array decoding failed: expected {packedSize} bytes for {size} bits, but only received {packedBytes.Length} bytes from buffer."
+                );
             bool[] output = new bool[size];
             int currentByte = 0;
             int fullGroups = size & ~0b111;
@@ -189,8 +192,8 @@ namespace Apache.IoTDB.DataStructure
     {
         public Column ReadColumn(ByteBuffer reader, TSDataType dataType, int positionCount)
         {
-            ColumnEncoding encoding = baseColumnDecoder.DeserializeColumnEncoding(reader);
-            ColumnDecoder decoder = baseColumnDecoder.GetDecoder(encoding);
+            ColumnEncoding encoding = BaseColumnDecoder.DeserializeColumnEncoding(reader);
+            ColumnDecoder decoder = BaseColumnDecoder.GetDecoder(encoding);
             Column column = decoder.ReadColumn(reader, dataType, 1);
             return new RunLengthEncodedColumn(column, positionCount);
         }

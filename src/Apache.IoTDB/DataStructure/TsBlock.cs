@@ -15,7 +15,17 @@ namespace Apache.IoTDB.DataStructure
         {
             if (valueColumns == null)
                 throw new ArgumentNullException(nameof(valueColumns));
-
+            if (timeColumn.GetPositionCount() != positionCount)
+                throw new ArgumentException(
+                    $"input positionCount {positionCount} does not match timeColumn.positionCount {timeColumn.GetPositionCount()}"
+                );
+            for (int i = 0; i <= ValueColumnCount; i++)
+            {
+                if (valueColumns[i].GetPositionCount() != positionCount)
+                throw new ArgumentException(
+                    $"input positionCount {positionCount} does not match valueColumn{i}.positionCount {valueColumns[i].GetPositionCount()}"
+                );
+            }
             _timeColumn = timeColumn;
             _valueColumns = new List<Column>(valueColumns);
             _positionCount = positionCount;
@@ -35,24 +45,28 @@ namespace Apache.IoTDB.DataStructure
             }
 
             // Read position count
-            var positionCount = ReadBigEndianInt32(reader);
+            var positionCount = reader.GetInt();
 
-            // Read column encodings (valueColumnCount + 1 for time column)
-            var columnEncodings = new ColumnEncoding[valueColumnCount + 1];
+            // Read column encodings 
+            // Read time column encoding
+            ColumnEncoding timeColumnEncodings = DeserializeColumnEncoding(reader);
+            
+            // Read value column encodings
+            var valuecolumnEncodings = new ColumnEncoding[valueColumnCount];
             for (int i = 0; i < valueColumnCount + 1; i++)
             {
-                columnEncodings[i] = DeserializeColumnEncoding(reader);
+                valuecolumnEncodings[i] = DeserializeColumnEncoding(reader);
             }
 
             // Read time column
-            var timeColumnDecoder = baseColumnDecoder.GetDecoder(columnEncodings[0]);
+            var timeColumnDecoder = BaseColumnDecoder.GetDecoder(timeColumnEncodings);
             var timeColumn = timeColumnDecoder.ReadColumn(reader, TSDataType.INT64, positionCount);
 
             // Read value columns
             var valueColumns = new Column[valueColumnCount];
             for (int i = 0; i < valueColumnCount; i++)
             {
-                var decoder = baseColumnDecoder.GetDecoder(columnEncodings[i + 1]);
+                var decoder = BaseColumnDecoder.GetDecoder(valuecolumnEncodings[i]);
                 valueColumns[i] = decoder.ReadColumn(reader, valueColumnDataTypes[i], positionCount);
             }
 
@@ -69,14 +83,6 @@ namespace Apache.IoTDB.DataStructure
         {
             byte b = reader.GetByte();
             return (ColumnEncoding)b;
-        }
-
-        private static int ReadBigEndianInt32(ByteBuffer reader)
-        {
-            byte[] bytes = reader.GetBinary();
-            if (BitConverter.IsLittleEndian)
-                Array.Reverse(bytes);
-            return BitConverter.ToInt32(bytes, 0);
         }
 
         public int PositionCount => _positionCount;

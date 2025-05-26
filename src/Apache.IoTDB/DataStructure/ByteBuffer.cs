@@ -148,6 +148,9 @@ namespace Apache.IoTDB.DataStructure
 
         public byte[] GetBytesbyLength(int length)
         {
+            if (_readPos + length > _buffer.Length)
+                throw new ArgumentOutOfRangeException(nameof(length),
+                    $"Requested length ({length}) with current read position ({_readPos}) exceeds buffer size ({_buffer.Length}).");
             var strBuff = _buffer[_readPos..(_readPos + length)];
             _readPos += length;
             return strBuff;

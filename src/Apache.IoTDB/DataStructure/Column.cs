@@ -75,28 +75,68 @@ namespace Apache.IoTDB.DataStructure
         public abstract int GetPositionCount();
     }
 
-    public class TimeColumn : BaseColumn
+    public abstract class PrimitiveColumn<T> : BaseColumn
     {
-        private readonly int _arrayOffset;
-        private readonly int _positionCount;
-        private readonly long[] _values;
+        protected readonly T[] _values;
+        protected readonly int _arrayOffset;
+        protected readonly int _positionCount;
+        protected readonly bool[] _valueIsNull;
 
-        public TimeColumn(int arrayOffset, int positionCount, long[] values)
+        private readonly TSDataType _dataType;
+        private readonly ColumnEncoding _encoding;
+
+        protected PrimitiveColumn(
+            TSDataType dataType,
+            ColumnEncoding encoding,
+            int arrayOffset,
+            int positionCount,
+            bool[] valueIsNull,
+            T[] values)
         {
             if (arrayOffset < 0)
                 throw new ArgumentException("arrayOffset is negative");
             if (positionCount < 0)
                 throw new ArgumentException("positionCount is negative");
-            if (values.Length - arrayOffset < positionCount)
-                throw new ArgumentException("values length is less than positionCount");
+            if (values == null || values.Length - arrayOffset < positionCount)
+                throw new ArgumentException("values array is too short");
+            if (valueIsNull != null && valueIsNull.Length - arrayOffset < positionCount)
+                throw new ArgumentException("isNull array is too short");
 
+            _dataType = dataType;
+            _encoding = encoding;
             _arrayOffset = arrayOffset;
             _positionCount = positionCount;
+            _valueIsNull = valueIsNull;
             _values = values;
         }
 
-        public override TSDataType GetDataType() => TSDataType.INT64;
-        public override ColumnEncoding GetEncoding() => ColumnEncoding.Int64Array;
+        public override TSDataType GetDataType() => _dataType;
+        public override ColumnEncoding GetEncoding() => _encoding;
+
+        public override bool MayHaveNull() => _valueIsNull != null;
+        public override bool IsNull(int position) => _valueIsNull?[position + _arrayOffset] ?? false;
+        public override bool[] GetNulls()
+        {
+            if (_valueIsNull == null)
+                return new bool[_positionCount];
+
+            return _valueIsNull.Skip(_arrayOffset).Take(_positionCount).ToArray();
+        }
+
+        public override int GetPositionCount() => _positionCount;
+    }
+
+    public class TimeColumn : PrimitiveColumn<long>
+    {
+        public TimeColumn(int arrayOffset, int positionCount, long[] values)
+        : base(
+            dataType: TSDataType.INT64,
+            encoding: ColumnEncoding.Int64Array,
+            arrayOffset: arrayOffset,
+            positionCount: positionCount,
+            valueIsNull: null,
+            values: values)
+        {}
 
         public override long GetLong(int position) => _values[position + _arrayOffset];
         public override long[] GetLongs() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();
@@ -106,278 +146,114 @@ namespace Apache.IoTDB.DataStructure
         public long GetStartTime() => _values[_arrayOffset];
         public long GetEndTime() => _values[_arrayOffset + _positionCount - 1];
         public long[] GetTimes() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();
-
-        public override int GetPositionCount() => _positionCount;
     }
 
-    public class BinaryColumn : BaseColumn
+    public class BinaryColumn : PrimitiveColumn<Binary>
     {
-        private readonly int _arrayOffset;
-        private readonly int _positionCount;
-        private readonly bool[] _valueIsNull;
-        private readonly Binary[] _values;
-
         public BinaryColumn(int arrayOffset, int positionCount, bool[] valueIsNull, Binary[] values)
-        {
-            if (arrayOffset < 0)
-                throw new ArgumentException("arrayOffset is negative");
-            if (positionCount < 0)
-                throw new ArgumentException("positionCount is negative");
-            if (values.Length - arrayOffset < positionCount)
-                throw new ArgumentException("values length is less than positionCount");
-            if (valueIsNull != null && valueIsNull.Length - arrayOffset < positionCount)
-                throw new ArgumentException("isNull length is less than positionCount");
-
-            _arrayOffset = arrayOffset;
-            _positionCount = positionCount;
-            _valueIsNull = valueIsNull;
-            _values = values;
-        }
-
-        public override TSDataType GetDataType() => TSDataType.TEXT;
-        public override ColumnEncoding GetEncoding() => ColumnEncoding.BinaryArray;
+        : base(
+            TSDataType.TEXT,
+            ColumnEncoding.BinaryArray,
+            arrayOffset: arrayOffset,
+            positionCount: positionCount,
+            valueIsNull: null,
+            values: values)
+        {}
 
         public override Binary GetBinary(int position) => _values[position + _arrayOffset];
         public override Binary[] GetBinaries() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();
         public override object GetObject(int position) => GetBinary(position);
         public override object[] GetObjects() => GetBinaries().Cast<object>().ToArray();
-
-        public override bool MayHaveNull() => _valueIsNull != null;
-        public override bool IsNull(int position) => _valueIsNull?[position + _arrayOffset] ?? false;
-        public override bool[] GetNulls()
-        {
-            if (_valueIsNull == null)
-                return new bool[_positionCount];
-
-            return _valueIsNull.Skip(_arrayOffset).Take(_positionCount).ToArray();
-        }
-
-        public override int GetPositionCount() => _positionCount;
     }
 
-    public class IntColumn : BaseColumn
+    public class IntColumn : PrimitiveColumn<int>
     {
-        private readonly int _arrayOffset;
-        private readonly int _positionCount;
-        private readonly bool[] _valueIsNull;
-        private readonly int[] _values;
-
         public IntColumn(int arrayOffset, int positionCount, bool[] valueIsNull, int[] values)
-        {
-            if (arrayOffset < 0)
-                throw new ArgumentException("arrayOffset is negative");
-            if (positionCount < 0)
-                throw new ArgumentException("positionCount is negative");
-            if (values.Length - arrayOffset < positionCount)
-                throw new ArgumentException("values length is less than positionCount");
-            if (valueIsNull != null && valueIsNull.Length - arrayOffset < positionCount)
-                throw new ArgumentException("isNull length is less than positionCount");
-
-            _arrayOffset = arrayOffset;
-            _positionCount = positionCount;
-            _valueIsNull = valueIsNull;
-            _values = values;
-        }
-
-        public override TSDataType GetDataType() => TSDataType.INT32;
-        public override ColumnEncoding GetEncoding() => ColumnEncoding.Int32Array;
+        : base(
+            TSDataType.INT32,
+            ColumnEncoding.Int32Array,
+            arrayOffset: arrayOffset,
+            positionCount: positionCount,
+            valueIsNull: null,
+            values: values)
+        {}
 
         public override int GetInt(int position) => _values[position + _arrayOffset];
         public override int[] GetInts() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();
         public override object GetObject(int position) => GetInt(position);
         public override object[] GetObjects() => GetInts().Cast<object>().ToArray();
-
-        public override bool MayHaveNull() => _valueIsNull != null;
-        public override bool IsNull(int position) => _valueIsNull?[position + _arrayOffset] ?? false;
-        public override bool[] GetNulls()
-        {
-            if (_valueIsNull == null)
-                return new bool[_positionCount];
-
-            return _valueIsNull.Skip(_arrayOffset).Take(_positionCount).ToArray();
-        }
-
-        public override int GetPositionCount() => _positionCount;
     }
 
-    public class FloatColumn : BaseColumn
+    public class FloatColumn : PrimitiveColumn<float>
     {
-        private readonly int _arrayOffset;
-        private readonly int _positionCount;
-        private readonly bool[] _valueIsNull;
-        private readonly float[] _values;
-
         public FloatColumn(int arrayOffset, int positionCount, bool[] valueIsNull, float[] values)
-        {
-            if (arrayOffset < 0)
-                throw new ArgumentException("arrayOffset is negative");
-            if (positionCount < 0)
-                throw new ArgumentException("positionCount is negative");
-            if (values.Length - arrayOffset < positionCount)
-                throw new ArgumentException("values length is less than positionCount");
-            if (valueIsNull != null && valueIsNull.Length - arrayOffset < positionCount)
-                throw new ArgumentException("isNull length is less than positionCount");
-
-            _arrayOffset = arrayOffset;
-            _positionCount = positionCount;
-            _valueIsNull = valueIsNull;
-            _values = values;
-        }
-
-        public override TSDataType GetDataType() => TSDataType.FLOAT;
-        public override ColumnEncoding GetEncoding() => ColumnEncoding.Int32Array;
+        : base(
+            TSDataType.FLOAT,
+            ColumnEncoding.Int32Array,
+            arrayOffset: arrayOffset,
+            positionCount: positionCount,
+            valueIsNull: null,
+            values: values)
+        {}
 
         public override float GetFloat(int position) => _values[position + _arrayOffset];
         public override float[] GetFloats() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();
         public override object GetObject(int position) => GetFloat(position);
         public override object[] GetObjects() => GetFloats().Cast<object>().ToArray();
-
-        public override bool MayHaveNull() => _valueIsNull != null;
-        public override bool IsNull(int position) => _valueIsNull?[position + _arrayOffset] ?? false;
-        public override bool[] GetNulls()
-        {
-            if (_valueIsNull == null)
-                return new bool[_positionCount];
-
-            return _valueIsNull.Skip(_arrayOffset).Take(_positionCount).ToArray();
-        }
-
-        public override int GetPositionCount() => _positionCount;
     }
 
-    public class LongColumn : BaseColumn
+    public class LongColumn : PrimitiveColumn<long>
     {
-        private readonly int _arrayOffset;
-        private readonly int _positionCount;
-        private readonly bool[] _valueIsNull;
-        private readonly long[] _values;
-
         public LongColumn(int arrayOffset, int positionCount, bool[] valueIsNull, long[] values)
-        {
-            if (arrayOffset < 0)
-                throw new ArgumentException("arrayOffset is negative");
-            if (positionCount < 0)
-                throw new ArgumentException("positionCount is negative");
-            if (values.Length - arrayOffset < positionCount)
-                throw new ArgumentException("values length is less than positionCount");
-            if (valueIsNull != null && valueIsNull.Length - arrayOffset < positionCount)
-                throw new ArgumentException("isNull length is less than positionCount");
-
-            _arrayOffset = arrayOffset;
-            _positionCount = positionCount;
-            _valueIsNull = valueIsNull;
-            _values = values;
-        }
-
-        public override TSDataType GetDataType() => TSDataType.INT64;
-        public override ColumnEncoding GetEncoding() => ColumnEncoding.Int64Array;
+        : base(
+            TSDataType.INT64,
+            ColumnEncoding.Int64Array,
+            arrayOffset: arrayOffset,
+            positionCount: positionCount,
+            valueIsNull: null,
+            values: values)
+        {}
 
         public override long GetLong(int position) => _values[position + _arrayOffset];
         public override long[] GetLongs() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();
         public override object GetObject(int position) => GetLong(position);
         public override object[] GetObjects() => GetLongs().Cast<object>().ToArray();
-
-        public override bool MayHaveNull() => _valueIsNull != null;
-        public override bool IsNull(int position) => _valueIsNull?[position + _arrayOffset] ?? false;
-        public override bool[] GetNulls()
-        {
-            if (_valueIsNull == null)
-                return new bool[_positionCount];
-
-            return _valueIsNull.Skip(_arrayOffset).Take(_positionCount).ToArray();
-        }
-
-        public override int GetPositionCount() => _positionCount;
     }
 
-    public class DoubleColumn : BaseColumn
+    public class DoubleColumn : PrimitiveColumn<double>
     {
-        private readonly int _arrayOffset;
-        private readonly int _positionCount;
-        private readonly bool[] _valueIsNull;
-        private readonly double[] _values;
-
         public DoubleColumn(int arrayOffset, int positionCount, bool[] valueIsNull, double[] values)
-        {
-            if (arrayOffset < 0)
-                throw new ArgumentException("arrayOffset is negative");
-            if (positionCount < 0)
-                throw new ArgumentException("positionCount is negative");
-            if (values.Length - arrayOffset < positionCount)
-                throw new ArgumentException("values length is less than positionCount");
-            if (valueIsNull != null && valueIsNull.Length - arrayOffset < positionCount)
-                throw new ArgumentException("isNull length is less than positionCount");
-
-            _arrayOffset = arrayOffset;
-            _positionCount = positionCount;
-            _valueIsNull = valueIsNull;
-            _values = values;
-        }
-
-        public override TSDataType GetDataType() => TSDataType.DOUBLE;
-        public override ColumnEncoding GetEncoding() => ColumnEncoding.Int64Array;
+        : base(
+            TSDataType.DOUBLE,
+            ColumnEncoding.Int64Array,
+            arrayOffset: arrayOffset,
+            positionCount: positionCount,
+            valueIsNull: null,
+            values: values)
+        {}
 
         public override double GetDouble(int position) => _values[position + _arrayOffset];
         public override double[] GetDoubles() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();
         public override object GetObject(int position) => GetDouble(position);
         public override object[] GetObjects() => GetDoubles().Cast<object>().ToArray();
-
-        public override bool MayHaveNull() => _valueIsNull != null;
-        public override bool IsNull(int position) => _valueIsNull?[position + _arrayOffset] ?? false;
-        public override bool[] GetNulls()
-        {
-            if (_valueIsNull == null)
-                return new bool[_positionCount];
-
-            return _valueIsNull.Skip(_arrayOffset).Take(_positionCount).ToArray();
-        }
-
-        public override int GetPositionCount() => _positionCount;
     }
 
-    public class BooleanColumn : BaseColumn
+    public class BooleanColumn : PrimitiveColumn<bool>
     {
-        private readonly int _arrayOffset;
-        private readonly int _positionCount;
-        private readonly bool[] _valueIsNull;
-        private readonly bool[] _values;
-
         public BooleanColumn(int arrayOffset, int positionCount, bool[] valueIsNull, bool[] values)
-        {
-            if (arrayOffset < 0)
-                throw new ArgumentException("arrayOffset is negative");
-            if (positionCount < 0)
-                throw new ArgumentException("positionCount is negative");
-            if (values.Length - arrayOffset < positionCount)
-                throw new ArgumentException("values length is less than positionCount");
-            if (valueIsNull != null && valueIsNull.Length - arrayOffset < positionCount)
-                throw new ArgumentException("isNull length is less than positionCount");
-
-            _arrayOffset = arrayOffset;
-            _positionCount = positionCount;
-            _valueIsNull = valueIsNull;
-            _values = values;
-        }
-
-        public override TSDataType GetDataType() => TSDataType.BOOLEAN;
-        public override ColumnEncoding GetEncoding() => ColumnEncoding.ByteArray;
+        : base(
+            TSDataType.BOOLEAN,
+            ColumnEncoding.ByteArray,
+            arrayOffset: arrayOffset,
+            positionCount: positionCount,
+            valueIsNull: null,
+            values: values)
+        {}
 
         public override bool GetBoolean(int position) => _values[position + _arrayOffset];
         public override bool[] GetBooleans() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();
         public override object GetObject(int position) => GetBoolean(position);
         public override object[] GetObjects() => GetBooleans().Cast<object>().ToArray();
-
-        public override bool MayHaveNull() => _valueIsNull != null;
-        public override bool IsNull(int position) => _valueIsNull?[position + _arrayOffset] ?? false;
-        public override bool[] GetNulls()
-        {
-            if (_valueIsNull == null)
-                return new bool[_positionCount];
-
-            return _valueIsNull.Skip(_arrayOffset).Take(_positionCount).ToArray();
-        }
-
-        public override int GetPositionCount() => _positionCount;
     }
 
     public class RunLengthEncodedColumn : BaseColumn
