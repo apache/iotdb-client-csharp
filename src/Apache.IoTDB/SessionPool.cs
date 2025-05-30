@@ -1335,7 +1335,7 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute query failed, sql: {0}, message: {1}", sql, status.Message));
                     }
 
-                    return new SessionDataSet(sql, resp, client, _clients, client.StatementId)
+                    return new SessionDataSet(sql, resp, client, _clients, client.StatementId, _zoneId)
                     {
                         FetchSize = _fetchSize,
                     };
@@ -1364,7 +1364,7 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute query failed, sql: {0}, message: {1}", sql, status.Message));
                     }
 
-                    return new SessionDataSet(sql, resp, client, _clients, client.StatementId)
+                    return new SessionDataSet(sql, resp, client, _clients, client.StatementId, _zoneId)
                     {
                         FetchSize = _fetchSize,
                     };
@@ -1440,7 +1440,7 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute raw data query failed, message: {0}", status.Message));
                     }
 
-                    return new SessionDataSet("", resp, client, _clients, client.StatementId)
+                    return new SessionDataSet("", resp, client, _clients, client.StatementId, _zoneId)
                     {
                         FetchSize = _fetchSize,
                     };
@@ -1468,7 +1468,7 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute last data query failed, message: {0}", status.Message));
                     }
 
-                    return new SessionDataSet("", resp, client, _clients, client.StatementId)
+                    return new SessionDataSet("", resp, client, _clients, client.StatementId, _zoneId)
                     {
                         FetchSize = _fetchSize,
                     };

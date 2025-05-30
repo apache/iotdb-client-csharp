@@ -42,11 +42,11 @@ namespace Apache.IoTDB.DataStructure
         private readonly ConcurrentClientQueue _clientQueue;
         private Client _client;
         private int _rowIndex;
-        private bool _hasCatchedResult;
         private RowRecord _cachedRowRecord;
         private bool _isClosed = false;
         private bool disposedValue;
         private RpcDataSet _rpcDataSet;
+        private string _zoneId;
 
         private string TimestampStr => "Time";
         private int StartIndex => 2;
@@ -54,7 +54,7 @@ namespace Apache.IoTDB.DataStructure
         private int DefaultTimeout => 10000;
         public int FetchSize { get; set; }
         public int RowCount { get; set; }
-        public SessionDataSet(string sql, TSExecuteStatementResp resp, Client client, ConcurrentClientQueue clientQueue, long statementId)
+        public SessionDataSet(string sql, TSExecuteStatementResp resp, Client client, ConcurrentClientQueue clientQueue, long statementId, string zoneId)
         {
             _clientQueue = clientQueue;
             _client = client;
@@ -73,220 +73,63 @@ namespace Apache.IoTDB.DataStructure
             _valueBufferLst = new List<ByteBuffer>();
             _bitmapBufferLst = new List<ByteBuffer>();
             // some internal variable
-            _hasCatchedResult = false;
             _rowIndex = 0;
             RowCount = _queryDataset.Time.Length / sizeof(long);
 
             _columnNames = resp.Columns;
             _columnTypeLst = resp.DataTypeList;
+            _zoneId = zoneId;
 
             _rpcDataSet = new RpcDataSet(
                 _sql, _columnNames, _columnTypeLst, _columnNameIndexMap, resp.IgnoreTimeStamp,
-                resp.MoreData, _queryId, _statementId, _client, resp.QueryResult,
-                DefaultTimeout, resp.ColumnIndex2TsBlockColumnIndexList
+                resp.MoreData, _queryId, _statementId, _client, _client.SessionId, resp.QueryResult, FetchSize,
+                DefaultTimeout, _zoneId, resp.ColumnIndex2TsBlockColumnIndexList
             );
-        }
-        public List<string> ColumnNames => _columnNames;
-
-        private List<string> GetColumnNames()
-        {
-            var lst = new List<string>
-            {
-                "timestamp"
-            };
-            lst.AddRange(_columnNames);
-            return lst;
-        }
-
-        public void ShowTableNames()
-        {
-            var str = GetColumnNames()
-                .Aggregate("", (current, name) => current + (name + "\t\t"));
-
-            Console.WriteLine(str);
         }
         public bool HasNext()
         {
-            if (_hasCatchedResult)
-            {
-                return true;
-            }
-
-            // we have consumed all current data, fetch some more
-            if (!_timeBuffer.HasRemaining())
-            {
-                if (!FetchResults())
-                {
-                    return false;
-                }
-            }
-
-            ConstructOneRow();
-            _hasCatchedResult = true;
-            return true;
+            if (_rpcDataSet.HasCachedRecord) return true;
+            return Next();
         }
 
-        public RowRecord Next()
-        {
-            if (!_hasCatchedResult)
-            {
-                if (!HasNext())
-                {
-                    return null;
-                }
-            }
+        public bool Next() => _rpcDataSet.Next();
+        public bool IsNull(string columnName) => _rpcDataSet.IsNullByColumnName(columnName);
+        public bool IsNullByIndex(int columnIndex) => _rpcDataSet.IsNullByIndex(columnIndex);
 
-            _hasCatchedResult = false;
-            return _cachedRowRecord;
-        }
-        public RowRecord GetRow()
-        {
-            return _cachedRowRecord;
-        }
+        public bool GetBooleanByIndex(int columnIndex) => _rpcDataSet.GetBooleanByIndex(columnIndex);
+        public bool GetBoolean(string columnName) => _rpcDataSet.GetBoolean(columnName);
 
-        private TSDataType GetDataTypeFromStr(string str)
-        {
-            return str switch
-            {
-                "BOOLEAN" => TSDataType.BOOLEAN,
-                "INT32" => TSDataType.INT32,
-                "INT64" => TSDataType.INT64,
-                "FLOAT" => TSDataType.FLOAT,
-                "DOUBLE" => TSDataType.DOUBLE,
-                "TEXT" => TSDataType.TEXT,
-                "NULLTYPE" => TSDataType.NONE,
-                "TIMESTAMP" => TSDataType.TIMESTAMP,
-                "DATE" => TSDataType.DATE,
-                "BLOB" => TSDataType.BLOB,
-                "STRING" => TSDataType.STRING,
-                _ => TSDataType.STRING
-            };
-        }
+        public double GetDoubleByIndex(int columnIndex) => _rpcDataSet.GetDoubleByIndex(columnIndex);
+        public double GetDouble(string columnName) => _rpcDataSet.GetDouble(columnName);
 
-        private void ConstructOneRow()
-        {
-            List<object> fieldList = new List<Object>();
+        public float GetFloatByIndex(int columnIndex) => _rpcDataSet.GetFloatByIndex(columnIndex);
+        public float GetFloat(string columnName) => _rpcDataSet.GetFloat(columnName);
 
-            for (int i = 0; i < _columnSize; i++)
-            {
-                if (_duplicateLocation.ContainsKey(i))
-                {
-                    var field = fieldList[_duplicateLocation[i]];
-                    fieldList.Add(field);
-                }
-                else
-                {
-                    var columnValueBuffer = _valueBufferLst[i];
-                    var columnBitmapBuffer = _bitmapBufferLst[i];
+        public int GetIntByIndex(int columnIndex) => _rpcDataSet.GetIntByIndex(columnIndex);
+        public int GetInt(string columnName) => _rpcDataSet.GetInt(columnName);
 
-                    if (_rowIndex % 8 == 0)
-                    {
-                        _currentBitmap[i] = columnBitmapBuffer.GetByte();
-                    }
+        public long GetLongByIndex(int columnIndex) => _rpcDataSet.GetLongByIndex(columnIndex);
+        public long GetLong(string columnName) => _rpcDataSet.GetLong(columnName);
 
-                    object localField;
-                    if (!IsNull(i, _rowIndex))
-                    {
-                        var columnDataType = GetDataTypeFromStr(_columnTypeLst[i]);
+        public object GetObjectByIndex(int columnIndex) => _rpcDataSet.GetObjectByIndex(columnIndex);
+        public object GetObject(string columnName) => _rpcDataSet.GetObject(columnName);
 
+        public string GetStringByIndex(int columnIndex) => _rpcDataSet.GetStringByIndex(columnIndex);
+        public string GetString(string columnName) => _rpcDataSet.GetString(columnName);
 
-                        switch (columnDataType)
-                        {
-                            case TSDataType.BOOLEAN:
-                                localField = columnValueBuffer.GetBool();
-                                break;
-                            case TSDataType.INT32:
-                                // case TSDataType.DATE:
-                                localField = columnValueBuffer.GetInt();
-                                break;
-                            case TSDataType.DATE:
-                                localField = Utils.ParseIntToDate(columnValueBuffer.GetInt());
-                                break;
-                            case TSDataType.INT64:
-                            case TSDataType.TIMESTAMP:
-                                localField = columnValueBuffer.GetLong();
-                                break;
-                            case TSDataType.FLOAT:
-                                localField = columnValueBuffer.GetFloat();
-                                break;
-                            case TSDataType.DOUBLE:
-                                localField = columnValueBuffer.GetDouble();
-                                break;
-                            case TSDataType.TEXT:
-                            case TSDataType.STRING:
-                                // case TSDataType.BLOB:
-                                localField = columnValueBuffer.GetStr();
-                                break;
-                            case TSDataType.BLOB:
-                                localField = columnValueBuffer.GetBinary();
-                                break;
-                            // TODO
-                            default:
-                                string err_msg = "value format not supported";
-                                throw new TException(err_msg, null);
-                        }
+        public DateTime GetTimestampByIndex(int columnIndex) => _rpcDataSet.GetTimestampByIndex(columnIndex);
+        public DateTime GetTimestamp(string columnName) => _rpcDataSet.GetTimestamp(columnName);
 
-                        fieldList.Add(localField);
-                    }
-                    else
-                    {
-                        localField = null;
-                        fieldList.Add(DBNull.Value);
-                    }
-                }
-            }
+        public DateTime GetDateByIndex(int columnIndex) => _rpcDataSet.GetDateByIndex(columnIndex);
+        public DateTime GetDate(string columnName) => _rpcDataSet.GetDate(columnName);
 
-            long timestamp = _timeBuffer.GetLong();
-            _rowIndex += 1;
-            _cachedRowRecord = new RowRecord(timestamp, fieldList, _columnNames);
-        }
+        public Binary GetBlobByIndex(int columnIndex) => _rpcDataSet.GetBinaryByIndex(columnIndex);
+        public Binary GetBlob(string columnName) => _rpcDataSet.GetBinary(columnName);
 
-        private bool IsNull(int loc, int row_index)
-        {
-            byte bitmap = _currentBitmap[loc];
-            int shift = row_index % 8;
-            return ((Flag >> shift) & bitmap) == 0;
-        }
+        public int FindColumn(string columnName) => _rpcDataSet.FindColumn(columnName);
 
-        private bool FetchResults()
-        {
-            _rowIndex = 0;
-            var req = new TSFetchResultsReq(_client.SessionId, _sql, FetchSize, _queryId, true)
-            {
-                Timeout = DefaultTimeout
-            };
-            try
-            {
-                var task = _client.ServiceClient.fetchResultsAsync(req);
-
-                var resp = task.ConfigureAwait(false).GetAwaiter().GetResult();
-
-                if (resp.HasResultSet)
-                {
-                    _queryDataset = resp.QueryDataSet;
-                    // reset buffer
-                    _timeBuffer = new ByteBuffer(resp.QueryDataSet.Time);
-                    _valueBufferLst = new List<ByteBuffer>();
-                    _bitmapBufferLst = new List<ByteBuffer>();
-                    for (int index = 0; index < _queryDataset.ValueList.Count; index++)
-                    {
-                        string columnName = _columnNames[index];
-                        int valueIndex = _columnNameIndexMap[columnName];
-                        _valueBufferLst.Add(new ByteBuffer(_queryDataset.ValueList[valueIndex]));
-                        _bitmapBufferLst.Add(new ByteBuffer(_queryDataset.BitmapList[valueIndex]));
-                    }
-
-                    // reset row index
-                    _rowIndex = 0;
-                }
-
-                return resp.HasResultSet;
-            }
-            catch (TException e)
-            {
-                throw new TException("Cannot fetch result from server, because of network connection", e);
-            }
-        }
+        public IReadOnlyList<string> GetColumnNames() => _rpcDataSet._columnNameList;
+        public IReadOnlyList<string> GetColumnTypes() => _rpcDataSet._columnTypeList;
 
         public async Task Close()
         {
@@ -308,7 +151,8 @@ namespace Apache.IoTDB.DataStructure
                 }
                 finally
                 {
-                    // remain current logic
+
+                    await _rpcDataSet.Close();
                     _clientQueue.Add(_client);
                     _client = null;
                 }

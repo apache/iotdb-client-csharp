@@ -15,8 +15,8 @@ namespace Apache.IoTDB.DataStructure
         private readonly string _sql;
         private bool _isClosed;
         private readonly Client _client;
-        private readonly List<string> _columnNameList = new List<string>();
-        private readonly List<string> _columnTypeList = new List<string>();
+        public readonly List<string> _columnNameList = new List<string>();
+        public readonly List<string> _columnTypeList = new List<string>();
         private readonly Dictionary<string, int> _columnOrdinalMap = new Dictionary<string, int>();
         private readonly Dictionary<string, int> _columnName2TsBlockColumnIndexMap = new Dictionary<string, int>();
         private readonly List<int> _columnIndex2TsBlockColumnIndexList = new List<int>();
@@ -41,7 +41,6 @@ namespace Apache.IoTDB.DataStructure
         private int _tsBlockSize;
         private int _tsBlockIndex;
         private TimeZoneInfo _zoneId;
-        private string _timeFormat;
         private int _timeFactor;
         private string _timePrecision;
         private bool disposedValue;
@@ -49,7 +48,7 @@ namespace Apache.IoTDB.DataStructure
         public RpcDataSet(string sql, List<string> columnNameList, List<string> columnTypeList,
             Dictionary<string, int> columnNameIndex, bool ignoreTimestamp, bool moreData, long queryId,
             long statementId, Client client, long sessionId, List<byte[]> queryResult, int fetchSize,
-            long timeout, string zoneId, string timeFormat, List<int> columnIndex2TsBlockColumnIndexList)
+            long timeout, string zoneId, List<int> columnIndex2TsBlockColumnIndexList)
         {
             _sql = sql;
             _client = client;
@@ -123,7 +122,6 @@ namespace Apache.IoTDB.DataStructure
             _tsBlockIndex = -1;
 
             _zoneId = TimeZoneInfo.FindSystemTimeZoneById(zoneId);
-            _timeFormat = timeFormat;
 
             if (columnIndex2TsBlockColumnIndexList.Count != _columnNameList.Count)
                 throw new ArgumentException("Column index list size mismatch");
@@ -177,7 +175,7 @@ namespace Apache.IoTDB.DataStructure
             _isClosed = true;
         }
 
-        public async Task<bool> Next()
+        public bool Next()
         {
             if (HasCachedBlock())
             {
@@ -204,7 +202,7 @@ namespace Apache.IoTDB.DataStructure
                 }
             }
 
-            await Close();
+            Close().Wait();
             return false;
         }
 
@@ -253,7 +251,7 @@ namespace Apache.IoTDB.DataStructure
             return _curTsBlock != null && _tsBlockIndex < _tsBlockSize - 1;
         }
 
-        private bool HasCachedByteBuffer()
+        public bool HasCachedByteBuffer()
         {
             return _queryResult != null && _queryResultIndex < _queryResultSize;
         }
