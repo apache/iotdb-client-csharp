@@ -7,7 +7,7 @@
         <PackageProjectUrl>https://github.com/apache/iotdb-client-csharp</PackageProjectUrl>
         <RepositoryUrl>https://github.com/apache/iotdb-client-csharp</RepositoryUrl>
         <PackageLicenseExpression>APACHE-2.0</PackageLicenseExpression>
-		<RepositoryType>git</RepositoryType>
+	      <RepositoryType>git</RepositoryType>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <Description>
 		C# client of Apache IoTDB.
