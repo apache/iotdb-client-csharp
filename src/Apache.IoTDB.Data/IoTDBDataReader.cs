@@ -45,7 +45,7 @@ namespace Apache.IoTDB.Data
         private bool _closeConnection;
 
         private int _fieldCount;
-
+        
         RowRecord rowdata = null;
 
 
@@ -56,6 +56,9 @@ namespace Apache.IoTDB.Data
             _command = IoTDBCommand;
             _closeConnection = closeConnection;
             _fieldCount = dataSet.GetColumnNames().Count;
+            _hasRows = dataSet.RowCount() > 0;
+            _recordsAffected = dataSet.RowCount();
+
             _closed = _closeConnection;
             _metas = dataSet.GetColumnNames();
             _dataSet = dataSet;
@@ -134,7 +137,7 @@ namespace Apache.IoTDB.Data
             {
                 throw new InvalidOperationException($"DataReaderClosed{nameof(Read)}");
             }
-            if (_dataSet.HasNext())
+            if (_dataSet.Next())
             {
                 rowdata = _dataSet.GetRow();
             }
@@ -452,7 +455,7 @@ namespace Apache.IoTDB.Data
         /// <returns>A System.Data.DataTable that describes the column metadata.</returns>
         public override DataTable GetSchemaTable()
         {
-            if (_dataSet.HasNext())
+            if (_dataSet.Next())
             {
                 rowdata = _dataSet.GetRow();
             }

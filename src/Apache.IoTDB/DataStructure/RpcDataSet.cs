@@ -38,7 +38,7 @@ namespace Apache.IoTDB.DataStructure
         private TsBlock _curTsBlock;
         private int _queryResultSize;
         private int _queryResultIndex;
-        private int _tsBlockSize;
+        public int _tsBlockSize;
         private int _tsBlockIndex;
         private TimeZoneInfo _zoneId;
         private int _timeFactor;

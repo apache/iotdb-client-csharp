@@ -120,6 +120,7 @@ namespace Apache.IoTDB.DataStructure
         public IReadOnlyList<string> GetColumnTypes() => _rpcDataSet._columnTypeList;
 
         public RowRecord GetRow() => _rpcDataSet.GetRow();
+        public int RowCount() => _rpcDataSet._tsBlockSize;
 
         public void ShowTableNames()
         {
