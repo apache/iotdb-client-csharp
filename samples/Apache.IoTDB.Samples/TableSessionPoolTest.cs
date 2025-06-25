@@ -73,14 +73,14 @@ public class TableSessionPoolTest
         // show tables from current database
         var res = await tableSessionPool.ExecuteQueryStatementAsync("SHOW TABLES");
         res.ShowTableNames();
-        while (res.HasNext()) Console.WriteLine(res.Next());
+        while (res.Next()) Console.WriteLine(res.GetRow());
         await res.Close();
 
         // show tables by specifying another database
         // using SHOW tables FROM
         res = await tableSessionPool.ExecuteQueryStatementAsync("SHOW TABLES FROM test1");
         res.ShowTableNames();
-        while (res.HasNext()) Console.WriteLine(res.Next());
+        while (res.Next()) Console.WriteLine(res.GetRow());
         await res.Close();
 
         var tableName = "testTable1";
@@ -123,7 +123,7 @@ public class TableSessionPoolTest
         res = await tableSessionPool.ExecuteQueryStatementAsync("select * from testTable1 "
               + "where region_id = '1' and plant_id in ('3', '5') and device_id = '3'");
         res.ShowTableNames();
-        while (res.HasNext()) Console.WriteLine(res.Next());
+        while (res.Next()) Console.WriteLine(res.GetRow());
         await res.Close();
 
         await tableSessionPool.Close();
@@ -148,7 +148,7 @@ public class TableSessionPoolTest
         // show tables from current database
         var res = await tableSessionPool.ExecuteQueryStatementAsync("SHOW TABLES");
         res.ShowTableNames();
-        while (res.HasNext()) Console.WriteLine(res.Next());
+        while (res.Next()) Console.WriteLine(res.GetRow());
         await res.Close();
 
         await tableSessionPool.ExecuteNonQueryStatementAsync("use test2");
@@ -156,7 +156,7 @@ public class TableSessionPoolTest
         // show tables from current database
         res = await tableSessionPool.ExecuteQueryStatementAsync("SHOW TABLES");
         res.ShowTableNames();
-        while (res.HasNext()) Console.WriteLine(res.Next());
+        while (res.Next()) Console.WriteLine(res.GetRow());
         await res.Close();
 
         await tableSessionPool.Close();
@@ -225,9 +225,9 @@ public class TableSessionPoolTest
 
 
         var res = await tableSessionPool.ExecuteQueryStatementAsync("select count(*) from " + tableName + " where f1 is null");
-        while (res.HasNext())
+        while (res.Next())
         {
-            var row = res.Next();
+            var row = res.GetRow();
             Console.WriteLine(row);
             var value = row.Values[0];
             if (value is long longValue)

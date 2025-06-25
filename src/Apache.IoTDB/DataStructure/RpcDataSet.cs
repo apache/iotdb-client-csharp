@@ -104,7 +104,7 @@ namespace Apache.IoTDB.DataStructure
                 int tsBlockColumnIndex = columnIndex2TsBlockColumnIndexList[startIndexForColumnIndex2TsBlockColumnIndexList + i];
                 if (tsBlockColumnIndex != -1)
                 {
-                    TSDataType columnType = GetDataTypeByStr(columnTypeList[i]);
+                    TSDataType columnType = Client.GetDataTypeByStr(columnTypeList[i]);
                     _dataTypeForTsBlockColumn[tsBlockColumnIndex] = columnType;
                 }
 
@@ -166,7 +166,7 @@ namespace Apache.IoTDB.DataStructure
 
             try
             {
-                var status = await _client.ServiceClient.closeOperationAsync(closeRequest);
+                var status = await _client.ServiceClient.closeOperation(closeRequest);
             }
             catch (TException e)
             {
@@ -223,7 +223,7 @@ namespace Apache.IoTDB.DataStructure
 
             try
             {
-                var task = _client.ServiceClient.fetchResultsAsync(req);
+                var task = _client.ServiceClient.fetchResultsV2(req);
 
                 var resp = task.ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -233,6 +233,7 @@ namespace Apache.IoTDB.DataStructure
                     return false;
                 }
 
+                // return _queryResult != null && _queryResultIndex < _queryResultSize;
                 _queryResult = resp.QueryResult;
                 _queryResultIndex = 0;
                 _queryResultSize = _queryResult?.Count ?? 0;
@@ -267,28 +268,11 @@ namespace Apache.IoTDB.DataStructure
         {
             _lastReadWasNull = false;
             byte[] curTsBlockBytes = _queryResult[_queryResultIndex];
+
             _queryResultIndex++;
             _curTsBlock = TsBlock.Deserialize(new ByteBuffer(curTsBlockBytes));
             _tsBlockIndex = -1;
             _tsBlockSize = _curTsBlock.PositionCount;
-        }
-
-        private TSDataType GetDataTypeByStr(string typeStr)
-        {
-            return typeStr switch
-            {
-                "BOOLEAN" => TSDataType.BOOLEAN,
-                "INT32" => TSDataType.INT32,
-                "INT64" => TSDataType.INT64,
-                "FLOAT" => TSDataType.FLOAT,
-                "DOUBLE" => TSDataType.DOUBLE,
-                "TEXT" => TSDataType.TEXT,
-                "STRING" => TSDataType.STRING,
-                "BLOB" => TSDataType.BLOB,
-                "TIMESTAMP" => TSDataType.TIMESTAMP,
-                "DATE" => TSDataType.DATE,
-                _ => TSDataType.NONE
-            };
         }
 
         public bool IsIgnoredTimestamp => _ignoreTimestamp;
@@ -441,6 +425,7 @@ namespace Apache.IoTDB.DataStructure
             CheckRecord();
             if (!IsNull(tsBlockColumnIndex, _tsBlockIndex))
             {
+                if (tsBlockColumnIndex == -1) return _curTsBlock.GetTimeByIndex(_tsBlockIndex);
                 _lastReadWasNull = false;
                 return _curTsBlock.GetColumn(tsBlockColumnIndex).GetLong(_tsBlockIndex);
             }
@@ -520,7 +505,7 @@ namespace Apache.IoTDB.DataStructure
                 case TSDataType.TEXT:
                 case TSDataType.STRING:
                     Binary binaryStr = _curTsBlock.GetColumn(tsBlockColumnIndex).GetBinary(_tsBlockIndex);
-                    return Encoding.UTF8.GetString(binaryStr.Data);
+                    return binaryStr != null ? Encoding.UTF8.GetString(binaryStr.Data) : null;
 
                 case TSDataType.BLOB:
                     return _curTsBlock.GetColumn(tsBlockColumnIndex).GetBinary(_tsBlockIndex);
@@ -550,7 +535,6 @@ namespace Apache.IoTDB.DataStructure
         {
             CheckRecord();
 
-            // 处理时间列的特殊情况
             if (tsBlockColumnIndex == -1)
             {
                 long timestamp = _curTsBlock.GetTimeByIndex(_tsBlockIndex);
@@ -560,6 +544,7 @@ namespace Apache.IoTDB.DataStructure
             if (IsNull(tsBlockColumnIndex, _tsBlockIndex))
             {
                 _lastReadWasNull = true;
+                Console.WriteLine("null");
                 return string.Empty;
             }
 
@@ -600,7 +585,7 @@ namespace Apache.IoTDB.DataStructure
                 case TSDataType.TEXT:
                 case TSDataType.STRING:
                     Binary strBytes = _curTsBlock.GetColumn(index).GetBinary(_tsBlockIndex);
-                    return Encoding.UTF8.GetString(strBytes.Data);
+                    return strBytes != null ? Encoding.UTF8.GetString(strBytes.Data) : "0";
 
                 case TSDataType.BLOB:
                     Binary blobBytes = _curTsBlock.GetColumn(index).GetBinary(_tsBlockIndex);
@@ -614,6 +599,56 @@ namespace Apache.IoTDB.DataStructure
                 default:
                     return string.Empty;
             }
+        }
+
+        public RowRecord GetRow()
+        {
+            IReadOnlyList<string> columns = _columnNameList;
+            int i = 0;
+            List<object> fieldList = new List<Object>();
+            long timestamp = 0;
+            foreach (string columnName in columns)
+            {
+                object localfield;
+                string typeStr = _columnTypeList[i];
+                TSDataType dataType = Client.GetDataTypeByStr(typeStr);
+
+                switch (dataType)
+                {
+                    case TSDataType.BOOLEAN:
+                        localfield = GetBoolean(columnName);
+                        break;
+                    case TSDataType.INT32:
+                        localfield = GetInt(columnName);
+                        break;
+                    case TSDataType.INT64:
+                        localfield = GetLong(columnName);
+                        break;
+                    case TSDataType.TIMESTAMP:
+                        localfield = null;
+                        timestamp = GetLong(columnName);
+                        break;
+                    case TSDataType.FLOAT:
+                        localfield = GetFloat(columnName);
+                        break;
+                    case TSDataType.DOUBLE:
+                        localfield = GetDouble(columnName);
+                        break;
+                    case TSDataType.TEXT:
+                    case TSDataType.STRING:
+                    case TSDataType.BLOB:
+                    case TSDataType.DATE:
+                        localfield = GetString(columnName);
+                        break;
+                    default:
+                        string err_msg = "value format not supported";
+                        throw new TException(err_msg, null);
+                }
+                if(localfield != null)
+                    fieldList.Add(localfield);
+                i += 1;
+            }
+            return new RowRecord(timestamp, fieldList, _columnNameList);
         }
 
         public DateTime GetTimestampByIndex(int columnIndex)

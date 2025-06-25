@@ -41,7 +41,7 @@ namespace Apache.IoTDB.Data
         private bool _hasRows;
         private readonly int _recordsAffected;
         private bool _closed;
-        private readonly List<string> _metas;
+        private IReadOnlyList<string> _metas;
         private bool _closeConnection;
 
         private int _fieldCount;
@@ -55,11 +55,9 @@ namespace Apache.IoTDB.Data
             _IoTDB = IoTDBCommand.Connection._IoTDB;
             _command = IoTDBCommand;
             _closeConnection = closeConnection;
-            _fieldCount = dataSet.ColumnNames.Count;
-            _hasRows = dataSet.RowCount > 0;
-            _recordsAffected = dataSet.RowCount;
+            _fieldCount = dataSet.GetColumnNames().Count;
             _closed = _closeConnection;
-            _metas = dataSet.ColumnNames;
+            _metas = dataSet.GetColumnNames();
             _dataSet = dataSet;
         }
 
@@ -138,7 +136,7 @@ namespace Apache.IoTDB.Data
             }
             if (_dataSet.HasNext())
             {
-                rowdata = _dataSet.Next();
+                rowdata = _dataSet.GetRow();
             }
             else
             {

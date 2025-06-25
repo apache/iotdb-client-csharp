@@ -32,14 +32,9 @@ namespace Apache.IoTDB.DataStructure
         private readonly string _sql;
         private readonly List<string> _columnNames;
         private readonly Dictionary<string, int> _columnNameIndexMap;
-        private readonly Dictionary<int, int> _duplicateLocation;
         private readonly List<string> _columnTypeLst;
-        private TSQueryDataSet _queryDataset;
-        private readonly byte[] _currentBitmap;
         private readonly int _columnSize;
         private List<ByteBuffer> _valueBufferLst, _bitmapBufferLst;
-        private ByteBuffer _timeBuffer;
-        private readonly ConcurrentClientQueue _clientQueue;
         private Client _client;
         private int _rowIndex;
         private RowRecord _cachedRowRecord;
@@ -47,43 +42,36 @@ namespace Apache.IoTDB.DataStructure
         private bool disposedValue;
         private RpcDataSet _rpcDataSet;
         private string _zoneId;
+        private readonly ConcurrentClientQueue _clientQueue;
 
         private string TimestampStr => "Time";
         private int StartIndex => 2;
         private int Flag => 0x80;
         private int DefaultTimeout => 10000;
         public int FetchSize { get; set; }
-        public int RowCount { get; set; }
-        public SessionDataSet(string sql, TSExecuteStatementResp resp, Client client, ConcurrentClientQueue clientQueue, long statementId, string zoneId)
+        public SessionDataSet(
+            string sql, List<string> ColumnNameList, List<string> ColumnTypeList,
+            Dictionary<string, int> ColumnNameIndexMap, long QueryId, long statementId, Client client, List<byte[]> QueryResult,
+            bool IgnoreTimeStamp, bool MoreData, string zoneId, List<int> ColumnIndex2TsBlockColumnIndexList, ConcurrentClientQueue _clientQueueS
+        )
         {
-            _clientQueue = clientQueue;
             _client = client;
             _sql = sql;
-            _queryDataset = resp.QueryDataSet;
-            _queryId = resp.QueryId;
+            _queryId = QueryId;
             _statementId = statementId;
-            _columnSize = resp.Columns.Count;
-            _currentBitmap = new byte[_columnSize];
-            _columnNames = new List<string>();
-            _timeBuffer = new ByteBuffer(_queryDataset.Time);
-            // column name -> column location
-            _columnNameIndexMap = new Dictionary<string, int>();
-            _columnTypeLst = new List<string>();
-            _duplicateLocation = new Dictionary<int, int>();
-            _valueBufferLst = new List<ByteBuffer>();
-            _bitmapBufferLst = new List<ByteBuffer>();
-            // some internal variable
+            _columnSize = ColumnNameList.Count;
+            _columnNameIndexMap = ColumnNameIndexMap;
             _rowIndex = 0;
-            RowCount = _queryDataset.Time.Length / sizeof(long);
 
-            _columnNames = resp.Columns;
-            _columnTypeLst = resp.DataTypeList;
+            _columnNames = ColumnNameList;
+            _columnTypeLst = ColumnTypeList;
             _zoneId = zoneId;
-
+            _clientQueue = _clientQueueS;
+            
             _rpcDataSet = new RpcDataSet(
-                _sql, _columnNames, _columnTypeLst, _columnNameIndexMap, resp.IgnoreTimeStamp,
-                resp.MoreData, _queryId, _statementId, _client, _client.SessionId, resp.QueryResult, FetchSize,
-                DefaultTimeout, _zoneId, resp.ColumnIndex2TsBlockColumnIndexList
+                _sql, _columnNames, _columnTypeLst, _columnNameIndexMap, IgnoreTimeStamp,
+                MoreData, _queryId, _statementId, _client, _client.SessionId, QueryResult, FetchSize,
+                DefaultTimeout, _zoneId, ColumnIndex2TsBlockColumnIndexList
             );
         }
         public bool HasNext()
@@ -131,6 +119,18 @@ namespace Apache.IoTDB.DataStructure
         public IReadOnlyList<string> GetColumnNames() => _rpcDataSet._columnNameList;
         public IReadOnlyList<string> GetColumnTypes() => _rpcDataSet._columnTypeList;
 
+        public RowRecord GetRow() => _rpcDataSet.GetRow();
+
+        public void ShowTableNames()
+        {
+            IReadOnlyList<string> columns = GetColumnNames();
+            foreach (string columnName in columns)
+            {
+                Console.Write($"{columnName}\t");
+            }
+            Console.WriteLine();
+        }
+
         public async Task Close()
         {
             if (!_isClosed)
@@ -143,7 +143,7 @@ namespace Apache.IoTDB.DataStructure
 
                 try
                 {
-                    var status = await _client.ServiceClient.closeOperationAsync(req);
+                    var status = await _client.ServiceClient.closeOperation(req);
                 }
                 catch (TException e)
                 {
@@ -151,7 +151,6 @@ namespace Apache.IoTDB.DataStructure
                 }
                 finally
                 {
-
                     await _rpcDataSet.Close();
                     _clientQueue.Add(_client);
                     _client = null;
@@ -173,8 +172,6 @@ namespace Apache.IoTDB.DataStructure
                     {
                     }
                 }
-                _queryDataset = null;
-                _timeBuffer = null;
                 _valueBufferLst = null;
                 _bitmapBufferLst = null;
                 disposedValue = true;

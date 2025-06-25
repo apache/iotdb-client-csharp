@@ -13,26 +13,32 @@ namespace Apache.IoTDB.DataStructure
 
         public TsBlock(int positionCount, Column timeColumn, params Column[] valueColumns)
         {
+            _positionCount = positionCount;
+            _timeColumn = timeColumn;
+            _valueColumns = new List<Column>(valueColumns);
             if (valueColumns == null)
                 throw new ArgumentNullException(nameof(valueColumns));
             if (timeColumn.GetPositionCount() != positionCount)
                 throw new ArgumentException(
                     $"input positionCount {positionCount} does not match timeColumn.positionCount {timeColumn.GetPositionCount()}"
                 );
-            for (int i = 0; i <= ValueColumnCount; i++)
+            for (int i = 0; i < ValueColumnCount; i++)
             {
                 if (valueColumns[i].GetPositionCount() != positionCount)
                 throw new ArgumentException(
                     $"input positionCount {positionCount} does not match valueColumn{i}.positionCount {valueColumns[i].GetPositionCount()}"
                 );
             }
-            _timeColumn = timeColumn;
-            _valueColumns = new List<Column>(valueColumns);
-            _positionCount = positionCount;
         }
 
         public static TsBlock Deserialize(ByteBuffer reader)
         {
+            // Serialized tsblock:
+            //    +-------------+---------------+---------+------------+-----------+----------+
+            //    | val col cnt | val col types | pos cnt | encodings  | time col  | val col  |
+            //    +-------------+---------------+---------+------------+-----------+----------+
+            //    | int32       | list[byte]    | int32   | list[byte] |  bytes    | bytes    |
+            //    +-------------+---------------+---------+------------+-----------+----------+
 
             // Read value column count
             var valueColumnCount = reader.GetInt();
@@ -53,9 +59,9 @@ namespace Apache.IoTDB.DataStructure
             
             // Read value column encodings
             var valuecolumnEncodings = new ColumnEncoding[valueColumnCount];
-            for (int i = 0; i < valueColumnCount + 1; i++)
+            for (int i = 1; i < valueColumnCount + 1; i++)
             {
-                valuecolumnEncodings[i] = DeserializeColumnEncoding(reader);
+                valuecolumnEncodings[i - 1] = DeserializeColumnEncoding(reader);
             }
 
             // Read time column
@@ -64,10 +70,10 @@ namespace Apache.IoTDB.DataStructure
 
             // Read value columns
             var valueColumns = new Column[valueColumnCount];
-            for (int i = 0; i < valueColumnCount; i++)
+            for (int i = 1; i < valueColumnCount + 1; i++)
             {
-                var decoder = BaseColumnDecoder.GetDecoder(valuecolumnEncodings[i]);
-                valueColumns[i] = decoder.ReadColumn(reader, valueColumnDataTypes[i], positionCount);
+                var decoder = BaseColumnDecoder.GetDecoder(valuecolumnEncodings[i - 1]);
+                valueColumns[i - 1] = decoder.ReadColumn(reader, valueColumnDataTypes[i - 1], positionCount);
             }
 
             return new TsBlock(positionCount, timeColumn, valueColumns);
