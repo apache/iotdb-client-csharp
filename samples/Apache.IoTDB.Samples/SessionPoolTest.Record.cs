@@ -111,9 +111,8 @@ namespace Apache.IoTDB.Samples
             Console.WriteLine(string.Format("total insert string record time is {0}", end_ms - start_ms));
             var res = await session_pool.ExecuteQueryStatementAsync("select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             var res_cnt = 0;
-            while (res.HasNext())
+            while (res.Next())
             {
-                res.Next();
                 res_cnt++;
             }
             Console.WriteLine(res_cnt + " " + fetchSize * processedSize);
@@ -149,8 +148,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<2");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            UtilsTest.PrintDataSetByString(res);
 
             await res.Close();
 
@@ -171,9 +169,8 @@ namespace Apache.IoTDB.Samples
             res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             var res_count = 0;
-            while (res.HasNext())
+            while (res.Next())
             {
-                res.Next();
                 res_count += 1;
             }
 
@@ -256,8 +253,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            UtilsTest.PrintDataSetByString(res);
 
             await res.Close();
             Console.WriteLine(status);
@@ -282,12 +278,13 @@ namespace Apache.IoTDB.Samples
             Task.WaitAll(tasks.ToArray());
             res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
-            res.ShowTableNames();
+
             var record_count = fetchSize * processedSize;
+
+            res.ShowTableNames();
             var res_count = 0;
-            while (res.HasNext())
+            while (res.Next())
             {
-                res.Next();
                 res_count += 1;
             }
 
@@ -300,16 +297,16 @@ namespace Apache.IoTDB.Samples
             res = await session_pool.ExecuteQueryStatementAsync(sql);
             res.ShowTableNames();
             RowRecord row = null;
-            while (res.HasNext())
+            while (res.Next())
             {
-                row = res.Next();
+                row = res.GetRow();
                 break;
             }
 
-            Console.WriteLine($"{testDatabaseName}.{testDevice}.{row.Measurements[0]}  {testMeasurements[3]}");
-            System.Diagnostics.Debug.Assert($"{testDatabaseName}.{testDevice}.{testMeasurements[3]}" == row.Measurements[0]);
-            System.Diagnostics.Debug.Assert($"{testDatabaseName}.{testDevice}.{testMeasurements[1]}" == row.Measurements[1]);
-            System.Diagnostics.Debug.Assert($"{testDatabaseName}.{testDevice}.{testMeasurements[2]}" == row.Measurements[2]);
+            Console.WriteLine($"{testDatabaseName}.{testDevice}.{row.Measurements[1]}  {testMeasurements[3]}");
+            System.Diagnostics.Debug.Assert($"{testDatabaseName}.{testDevice}.{testMeasurements[3]}" == row.Measurements[1]);
+            System.Diagnostics.Debug.Assert($"{testDatabaseName}.{testDevice}.{testMeasurements[1]}" == row.Measurements[2]);
+            System.Diagnostics.Debug.Assert($"{testDatabaseName}.{testDevice}.{testMeasurements[2]}" == row.Measurements[3]);
 
             status = await session_pool.DeleteDatabaseAsync(testDatabaseName);
             System.Diagnostics.Debug.Assert(status == 0);
@@ -351,8 +348,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            UtilsTest.PrintDataSetByString(res);
 
             await res.Close();
 
@@ -384,9 +380,9 @@ namespace Apache.IoTDB.Samples
             res.ShowTableNames();
             var record_count = fetchSize * processedSize;
             var res_count = 0;
-            while (res.HasNext())
+            while (res.Next())
             {
-                res.Next();
+                Console.WriteLine(res.GetRow());
                 res_count += 1;
             }
 
@@ -468,8 +464,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            UtilsTest.PrintDataSetByString(res);
 
             await res.Close();
             // large data test
@@ -490,9 +485,8 @@ namespace Apache.IoTDB.Samples
             res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             var res_count = 0;
-            while (res.HasNext())
+            while (res.Next())
             {
-                res.Next();
                 res_count += 1;
             }
 
@@ -543,8 +537,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            UtilsTest.PrintDataSetByString(res);
 
             await res.Close();
             // large data test
@@ -570,9 +563,8 @@ namespace Apache.IoTDB.Samples
             res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             var res_count = 0;
-            while (res.HasNext())
+            while (res.Next())
             {
-                res.Next();
                 res_count += 1;
             }
 
@@ -651,9 +643,9 @@ namespace Apache.IoTDB.Samples
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             res.ShowTableNames();
             var res_count = 0;
-            while (res.HasNext())
+            while (res.Next())
             {
-                Console.WriteLine(res.Next());
+                Console.WriteLine(res.GetRow());
                 res_count += 1;
             }
 
