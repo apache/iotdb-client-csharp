@@ -80,7 +80,7 @@ namespace Apache.IoTDB.Samples
             Console.WriteLine("TestInvalidInputs passed.");
         }
 
-        static public void PrintDataSet0(SessionDataSet sessionDataSet)
+        static public void PrintDataSetByType(SessionDataSet sessionDataSet)
         {
             IReadOnlyList<string> columns = sessionDataSet.GetColumnNames();
 
@@ -137,7 +137,7 @@ namespace Apache.IoTDB.Samples
             }
         }
 
-        static public void PrintDataSet1(SessionDataSet sessionDataSet)
+        static public void PrintDataSetByObject(SessionDataSet sessionDataSet)
         {
             IReadOnlyList<string> columns = sessionDataSet.GetColumnNames();
 
@@ -159,7 +159,7 @@ namespace Apache.IoTDB.Samples
             }
         }
         
-        static public void PrintDataSet2(SessionDataSet sessionDataSet)
+        static public void PrintDataSetByString(SessionDataSet sessionDataSet)
         {
             IReadOnlyList<string> columns = sessionDataSet.GetColumnNames();
 
