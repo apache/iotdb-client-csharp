@@ -155,7 +155,7 @@ namespace Apache.IoTDB.DataStructure
             positionCount: positionCount,
             valueIsNull: null,
             values: values)
-        {}
+        { }
 
         public override long GetLong(int position) => _values[position + _arrayOffset];
         public override long[] GetLongs() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();
@@ -177,7 +177,7 @@ namespace Apache.IoTDB.DataStructure
             positionCount: positionCount,
             valueIsNull: null,
             values: values)
-        {}
+        { }
 
         public override Binary GetBinary(int position) => _values[position + _arrayOffset];
         public override Binary[] GetBinaries() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();
@@ -195,7 +195,7 @@ namespace Apache.IoTDB.DataStructure
             positionCount: positionCount,
             valueIsNull: null,
             values: values)
-        {}
+        { }
 
         public override int GetInt(int position) => _values[position + _arrayOffset];
         public override int[] GetInts() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();
@@ -213,7 +213,7 @@ namespace Apache.IoTDB.DataStructure
             positionCount: positionCount,
             valueIsNull: null,
             values: values)
-        {}
+        { }
 
         public override float GetFloat(int position) => _values[position + _arrayOffset];
         public override float[] GetFloats() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();
@@ -231,7 +231,7 @@ namespace Apache.IoTDB.DataStructure
             positionCount: positionCount,
             valueIsNull: null,
             values: values)
-        {}
+        { }
 
         public override long GetLong(int position) => _values[position + _arrayOffset];
         public override long[] GetLongs() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();
@@ -249,7 +249,7 @@ namespace Apache.IoTDB.DataStructure
             positionCount: positionCount,
             valueIsNull: null,
             values: values)
-        {}
+        { }
 
         public override double GetDouble(int position) => _values[position + _arrayOffset];
         public override double[] GetDoubles() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();
@@ -267,7 +267,7 @@ namespace Apache.IoTDB.DataStructure
             positionCount: positionCount,
             valueIsNull: null,
             values: values)
-        {}
+        { }
 
         public override bool GetBoolean(int position) => _values[position + _arrayOffset];
         public override bool[] GetBooleans() => _values.Skip(_arrayOffset).Take(_positionCount).ToArray();

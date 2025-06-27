@@ -612,17 +612,17 @@ namespace Apache.IoTDB.Samples
             // fetch data
             var paths = new List<string>() { string.Format("{0}.{1}", device_id, testMeasurements[0]), string.Format("{0}.{1}", device_id, testMeasurements[1]) };
             var res = await session_pool.ExecuteQueryStatementAsync("select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
-            
+
             IReadOnlyList<string> columns = res.GetColumnNames();
             foreach (string columnName in columns)
             {
                 Console.Write($"{columnName}\t");
             }
             Console.WriteLine();
-            
+
             var count = 0;
             while (res.Next()) count++;
-            
+
             Console.WriteLine(count + " " + (fetchSize * processedSize * 4 + 783));
             System.Diagnostics.Debug.Assert(count == fetchSize * processedSize * 4 + 783);
             await res.Close();

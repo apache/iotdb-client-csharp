@@ -278,7 +278,7 @@ namespace Apache.IoTDB.Samples
             Task.WaitAll(tasks.ToArray());
             res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
-                
+
             var record_count = fetchSize * processedSize;
 
             res.ShowTableNames();

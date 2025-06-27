@@ -44,9 +44,9 @@ namespace Apache.IoTDB.DataStructure
             for (int i = 0; i < ValueColumnCount; i++)
             {
                 if (valueColumns[i].GetPositionCount() != positionCount)
-                throw new ArgumentException(
-                    $"input positionCount {positionCount} does not match valueColumn{i}.positionCount {valueColumns[i].GetPositionCount()}"
-                );
+                    throw new ArgumentException(
+                        $"input positionCount {positionCount} does not match valueColumn{i}.positionCount {valueColumns[i].GetPositionCount()}"
+                    );
             }
         }
 
@@ -72,10 +72,10 @@ namespace Apache.IoTDB.DataStructure
             // Read position count
             var positionCount = reader.GetInt();
 
-            // Read column encodings 
+            // Read column encodings
             // Read time column encoding
             ColumnEncoding timeColumnEncodings = DeserializeColumnEncoding(reader);
-            
+
             // Read value column encodings
             var valuecolumnEncodings = new ColumnEncoding[valueColumnCount];
             for (int i = 1; i < valueColumnCount + 1; i++)

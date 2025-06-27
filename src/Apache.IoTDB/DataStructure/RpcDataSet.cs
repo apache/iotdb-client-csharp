@@ -20,8 +20,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Text;
+using System.Threading.Tasks;
 using Thrift;
 
 namespace Apache.IoTDB.DataStructure
@@ -663,7 +663,7 @@ namespace Apache.IoTDB.DataStructure
                         string err_msg = "value format not supported";
                         throw new TException(err_msg, null);
                 }
-                if(localfield != null)
+                if (localfield != null)
                     fieldList.Add(localfield);
                 i += 1;
             }
@@ -775,7 +775,7 @@ namespace Apache.IoTDB.DataStructure
                 throw new ArgumentException($"Column {columnName} not found");
             return index;
         }
-        
+
         public int FindColumn(string columnName)
         {
             if (!_columnOrdinalMap.TryGetValue(columnName, out int ordinal))
@@ -787,9 +787,9 @@ namespace Apache.IoTDB.DataStructure
         {
             if (columnIndex <= 0)
                 throw new ArgumentOutOfRangeException(nameof(columnIndex), "Column index should start from 1");
-            
+
             if (columnIndex > _columnNameList.Count)
-                throw new ArgumentOutOfRangeException(nameof(columnIndex), 
+                throw new ArgumentOutOfRangeException(nameof(columnIndex),
                     $"Column index {columnIndex} out of range {_columnNameList.Count}");
 
             return _columnNameList[columnIndex - 1];
@@ -799,17 +799,17 @@ namespace Apache.IoTDB.DataStructure
         {
             int adjustedIndex = columnIndex - 1;
             if (adjustedIndex < 0 || adjustedIndex >= _columnIndex2TsBlockColumnIndexList.Count)
-                throw new ArgumentOutOfRangeException(nameof(columnIndex), 
+                throw new ArgumentOutOfRangeException(nameof(columnIndex),
                     $"Index {adjustedIndex} out of range {_columnIndex2TsBlockColumnIndexList.Count}");
-            
+
             return _columnIndex2TsBlockColumnIndexList[adjustedIndex];
         }
 
         private void CheckRecord()
         {
-            if (_queryResultIndex > _queryResultSize || 
-                _tsBlockIndex >= _tsBlockSize || 
-                _queryResult == null || 
+            if (_queryResultIndex > _queryResultSize ||
+                _tsBlockIndex >= _tsBlockSize ||
+                _queryResult == null ||
                 _curTsBlock == null)
             {
                 throw new InvalidOperationException("No record remains");

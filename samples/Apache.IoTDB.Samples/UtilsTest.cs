@@ -18,9 +18,9 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Apache.IoTDB.DataStructure;
-using System.Collections.Generic;
 
 namespace Apache.IoTDB.Samples
 {
@@ -158,7 +158,7 @@ namespace Apache.IoTDB.Samples
                 Console.WriteLine();
             }
         }
-        
+
         static public void PrintDataSetByString(SessionDataSet sessionDataSet)
         {
             IReadOnlyList<string> columns = sessionDataSet.GetColumnNames();
@@ -171,7 +171,7 @@ namespace Apache.IoTDB.Samples
 
             while (sessionDataSet.Next())
             {
-                for (int i = 0; i<columns.Count; i++)
+                for (int i = 0; i < columns.Count; i++)
                 {
                     string columnName = columns[i];
                     Console.Write(sessionDataSet.GetString(columnName));

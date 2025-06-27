@@ -31,7 +31,7 @@ namespace Apache.IoTDB.DataStructure
 
     public class BaseColumnDecoder
     {
-        
+
         private static Dictionary<ColumnEncoding, ColumnDecoder> decoders = new Dictionary<ColumnEncoding, ColumnDecoder>
         {
             { ColumnEncoding.Int32Array, new Int32ArrayColumnDecoder() },

@@ -45,7 +45,7 @@ namespace Apache.IoTDB.Data
         private bool _closeConnection;
 
         private int _fieldCount;
-        
+
         RowRecord rowdata = null;
 
 
