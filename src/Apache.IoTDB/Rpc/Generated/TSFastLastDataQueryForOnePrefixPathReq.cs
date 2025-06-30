@@ -30,17 +30,16 @@ using Thrift.Processor;
 #pragma warning disable IDE0083  // pattern matching "that is not SomeType" requires net5.0 but we still support earlier versions
 
 
-public partial class TSRawDataQueryReq : TBase
+public partial class TSFastLastDataQueryForOnePrefixPathReq : TBase
 {
   private int _fetchSize;
   private bool _enableRedirectQuery;
   private bool _jdbcQuery;
   private long _timeout;
-  private bool _legalPathNodes;
 
   public long SessionId { get; set; }
 
-  public List<string> Paths { get; set; }
+  public List<string> Prefixes { get; set; }
 
   public int FetchSize
   {
@@ -54,10 +53,6 @@ public partial class TSRawDataQueryReq : TBase
       this._fetchSize = value;
     }
   }
-
-  public long StartTime { get; set; }
-
-  public long EndTime { get; set; }
 
   public long StatementId { get; set; }
 
@@ -100,19 +95,6 @@ public partial class TSRawDataQueryReq : TBase
     }
   }
 
-  public bool LegalPathNodes
-  {
-    get
-    {
-      return _legalPathNodes;
-    }
-    set
-    {
-      __isset.legalPathNodes = true;
-      this._legalPathNodes = value;
-    }
-  }
-
 
   public Isset __isset;
   public struct Isset
@@ -121,19 +103,16 @@ public partial class TSRawDataQueryReq : TBase
     public bool enableRedirectQuery;
     public bool jdbcQuery;
     public bool timeout;
-    public bool legalPathNodes;
   }
 
-  public TSRawDataQueryReq()
+  public TSFastLastDataQueryForOnePrefixPathReq()
   {
   }
 
-  public TSRawDataQueryReq(long sessionId, List<string> paths, long startTime, long endTime, long statementId) : this()
+  public TSFastLastDataQueryForOnePrefixPathReq(long sessionId, List<string> prefixes, long statementId) : this()
   {
     this.SessionId = sessionId;
-    this.Paths = paths;
-    this.StartTime = startTime;
-    this.EndTime = endTime;
+    this.Prefixes = prefixes;
     this.StatementId = statementId;
   }
 
@@ -143,9 +122,7 @@ public partial class TSRawDataQueryReq : TBase
     try
     {
       bool isset_sessionId = false;
-      bool isset_paths = false;
-      bool isset_startTime = false;
-      bool isset_endTime = false;
+      bool isset_prefixes = false;
       bool isset_statementId = false;
       TField field;
       await iprot.ReadStructBeginAsync(cancellationToken);
@@ -174,17 +151,17 @@ public partial class TSRawDataQueryReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list388 = await iprot.ReadListBeginAsync(cancellationToken);
-                Paths = new List<string>(_list388.Count);
-                for(int _i389 = 0; _i389 < _list388.Count; ++_i389)
+                TList _list404 = await iprot.ReadListBeginAsync(cancellationToken);
+                Prefixes = new List<string>(_list404.Count);
+                for(int _i405 = 0; _i405 < _list404.Count; ++_i405)
                 {
-                  string _elem390;
-                  _elem390 = await iprot.ReadStringAsync(cancellationToken);
-                  Paths.Add(_elem390);
+                  string _elem406;
+                  _elem406 = await iprot.ReadStringAsync(cancellationToken);
+                  Prefixes.Add(_elem406);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
-              isset_paths = true;
+              isset_prefixes = true;
             }
             else
             {
@@ -204,28 +181,6 @@ public partial class TSRawDataQueryReq : TBase
           case 4:
             if (field.Type == TType.I64)
             {
-              StartTime = await iprot.ReadI64Async(cancellationToken);
-              isset_startTime = true;
-            }
-            else
-            {
-              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
-            }
-            break;
-          case 5:
-            if (field.Type == TType.I64)
-            {
-              EndTime = await iprot.ReadI64Async(cancellationToken);
-              isset_endTime = true;
-            }
-            else
-            {
-              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
-            }
-            break;
-          case 6:
-            if (field.Type == TType.I64)
-            {
               StatementId = await iprot.ReadI64Async(cancellationToken);
               isset_statementId = true;
             }
@@ -234,7 +189,7 @@ public partial class TSRawDataQueryReq : TBase
               await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             }
             break;
-          case 7:
+          case 5:
             if (field.Type == TType.Bool)
             {
               EnableRedirectQuery = await iprot.ReadBoolAsync(cancellationToken);
@@ -244,7 +199,7 @@ public partial class TSRawDataQueryReq : TBase
               await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             }
             break;
-          case 8:
+          case 6:
             if (field.Type == TType.Bool)
             {
               JdbcQuery = await iprot.ReadBoolAsync(cancellationToken);
@@ -254,20 +209,10 @@ public partial class TSRawDataQueryReq : TBase
               await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             }
             break;
-          case 9:
+          case 7:
             if (field.Type == TType.I64)
             {
               Timeout = await iprot.ReadI64Async(cancellationToken);
-            }
-            else
-            {
-              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
-            }
-            break;
-          case 10:
-            if (field.Type == TType.Bool)
-            {
-              LegalPathNodes = await iprot.ReadBoolAsync(cancellationToken);
             }
             else
             {
@@ -287,15 +232,7 @@ public partial class TSRawDataQueryReq : TBase
       {
         throw new TProtocolException(TProtocolException.INVALID_DATA);
       }
-      if (!isset_paths)
-      {
-        throw new TProtocolException(TProtocolException.INVALID_DATA);
-      }
-      if (!isset_startTime)
-      {
-        throw new TProtocolException(TProtocolException.INVALID_DATA);
-      }
-      if (!isset_endTime)
+      if (!isset_prefixes)
       {
         throw new TProtocolException(TProtocolException.INVALID_DATA);
       }
@@ -315,26 +252,26 @@ public partial class TSRawDataQueryReq : TBase
     oprot.IncrementRecursionDepth();
     try
     {
-      var tmp391 = new TStruct("TSRawDataQueryReq");
-      await oprot.WriteStructBeginAsync(tmp391, cancellationToken);
-      var tmp392 = new TField();
-      tmp392.Name = "sessionId";
-      tmp392.Type = TType.I64;
-      tmp392.ID = 1;
-      await oprot.WriteFieldBeginAsync(tmp392, cancellationToken);
+      var tmp407 = new TStruct("TSFastLastDataQueryForOnePrefixPathReq");
+      await oprot.WriteStructBeginAsync(tmp407, cancellationToken);
+      var tmp408 = new TField();
+      tmp408.Name = "sessionId";
+      tmp408.Type = TType.I64;
+      tmp408.ID = 1;
+      await oprot.WriteFieldBeginAsync(tmp408, cancellationToken);
       await oprot.WriteI64Async(SessionId, cancellationToken);
       await oprot.WriteFieldEndAsync(cancellationToken);
-      if((Paths != null))
+      if((Prefixes != null))
       {
-        tmp392.Name = "paths";
-        tmp392.Type = TType.List;
-        tmp392.ID = 2;
-        await oprot.WriteFieldBeginAsync(tmp392, cancellationToken);
+        tmp408.Name = "prefixes";
+        tmp408.Type = TType.List;
+        tmp408.ID = 2;
+        await oprot.WriteFieldBeginAsync(tmp408, cancellationToken);
         {
-          await oprot.WriteListBeginAsync(new TList(TType.String, Paths.Count), cancellationToken);
-          foreach (string _iter393 in Paths)
+          await oprot.WriteListBeginAsync(new TList(TType.String, Prefixes.Count), cancellationToken);
+          foreach (string _iter409 in Prefixes)
           {
-            await oprot.WriteStringAsync(_iter393, cancellationToken);
+            await oprot.WriteStringAsync(_iter409, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -342,65 +279,44 @@ public partial class TSRawDataQueryReq : TBase
       }
       if(__isset.fetchSize)
       {
-        tmp392.Name = "fetchSize";
-        tmp392.Type = TType.I32;
-        tmp392.ID = 3;
-        await oprot.WriteFieldBeginAsync(tmp392, cancellationToken);
+        tmp408.Name = "fetchSize";
+        tmp408.Type = TType.I32;
+        tmp408.ID = 3;
+        await oprot.WriteFieldBeginAsync(tmp408, cancellationToken);
         await oprot.WriteI32Async(FetchSize, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
       }
-      tmp392.Name = "startTime";
-      tmp392.Type = TType.I64;
-      tmp392.ID = 4;
-      await oprot.WriteFieldBeginAsync(tmp392, cancellationToken);
-      await oprot.WriteI64Async(StartTime, cancellationToken);
-      await oprot.WriteFieldEndAsync(cancellationToken);
-      tmp392.Name = "endTime";
-      tmp392.Type = TType.I64;
-      tmp392.ID = 5;
-      await oprot.WriteFieldBeginAsync(tmp392, cancellationToken);
-      await oprot.WriteI64Async(EndTime, cancellationToken);
-      await oprot.WriteFieldEndAsync(cancellationToken);
-      tmp392.Name = "statementId";
-      tmp392.Type = TType.I64;
-      tmp392.ID = 6;
-      await oprot.WriteFieldBeginAsync(tmp392, cancellationToken);
+      tmp408.Name = "statementId";
+      tmp408.Type = TType.I64;
+      tmp408.ID = 4;
+      await oprot.WriteFieldBeginAsync(tmp408, cancellationToken);
       await oprot.WriteI64Async(StatementId, cancellationToken);
       await oprot.WriteFieldEndAsync(cancellationToken);
       if(__isset.enableRedirectQuery)
       {
-        tmp392.Name = "enableRedirectQuery";
-        tmp392.Type = TType.Bool;
-        tmp392.ID = 7;
-        await oprot.WriteFieldBeginAsync(tmp392, cancellationToken);
+        tmp408.Name = "enableRedirectQuery";
+        tmp408.Type = TType.Bool;
+        tmp408.ID = 5;
+        await oprot.WriteFieldBeginAsync(tmp408, cancellationToken);
         await oprot.WriteBoolAsync(EnableRedirectQuery, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
       }
       if(__isset.jdbcQuery)
       {
-        tmp392.Name = "jdbcQuery";
-        tmp392.Type = TType.Bool;
-        tmp392.ID = 8;
-        await oprot.WriteFieldBeginAsync(tmp392, cancellationToken);
+        tmp408.Name = "jdbcQuery";
+        tmp408.Type = TType.Bool;
+        tmp408.ID = 6;
+        await oprot.WriteFieldBeginAsync(tmp408, cancellationToken);
         await oprot.WriteBoolAsync(JdbcQuery, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
       }
       if(__isset.timeout)
       {
-        tmp392.Name = "timeout";
-        tmp392.Type = TType.I64;
-        tmp392.ID = 9;
-        await oprot.WriteFieldBeginAsync(tmp392, cancellationToken);
+        tmp408.Name = "timeout";
+        tmp408.Type = TType.I64;
+        tmp408.ID = 7;
+        await oprot.WriteFieldBeginAsync(tmp408, cancellationToken);
         await oprot.WriteI64Async(Timeout, cancellationToken);
-        await oprot.WriteFieldEndAsync(cancellationToken);
-      }
-      if(__isset.legalPathNodes)
-      {
-        tmp392.Name = "legalPathNodes";
-        tmp392.Type = TType.Bool;
-        tmp392.ID = 10;
-        await oprot.WriteFieldBeginAsync(tmp392, cancellationToken);
-        await oprot.WriteBoolAsync(LegalPathNodes, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
       }
       await oprot.WriteFieldStopAsync(cancellationToken);
@@ -414,34 +330,29 @@ public partial class TSRawDataQueryReq : TBase
 
   public override bool Equals(object that)
   {
-    if (!(that is TSRawDataQueryReq other)) return false;
+    if (!(that is TSFastLastDataQueryForOnePrefixPathReq other)) return false;
     if (ReferenceEquals(this, other)) return true;
     return System.Object.Equals(SessionId, other.SessionId)
-      && TCollections.Equals(Paths, other.Paths)
+      && TCollections.Equals(Prefixes, other.Prefixes)
       && ((__isset.fetchSize == other.__isset.fetchSize) && ((!__isset.fetchSize) || (System.Object.Equals(FetchSize, other.FetchSize))))
-      && System.Object.Equals(StartTime, other.StartTime)
-      && System.Object.Equals(EndTime, other.EndTime)
       && System.Object.Equals(StatementId, other.StatementId)
       && ((__isset.enableRedirectQuery == other.__isset.enableRedirectQuery) && ((!__isset.enableRedirectQuery) || (System.Object.Equals(EnableRedirectQuery, other.EnableRedirectQuery))))
       && ((__isset.jdbcQuery == other.__isset.jdbcQuery) && ((!__isset.jdbcQuery) || (System.Object.Equals(JdbcQuery, other.JdbcQuery))))
-      && ((__isset.timeout == other.__isset.timeout) && ((!__isset.timeout) || (System.Object.Equals(Timeout, other.Timeout))))
-      && ((__isset.legalPathNodes == other.__isset.legalPathNodes) && ((!__isset.legalPathNodes) || (System.Object.Equals(LegalPathNodes, other.LegalPathNodes))));
+      && ((__isset.timeout == other.__isset.timeout) && ((!__isset.timeout) || (System.Object.Equals(Timeout, other.Timeout))));
   }
 
   public override int GetHashCode() {
     int hashcode = 157;
     unchecked {
       hashcode = (hashcode * 397) + SessionId.GetHashCode();
-      if((Paths != null))
+      if((Prefixes != null))
       {
-        hashcode = (hashcode * 397) + TCollections.GetHashCode(Paths);
+        hashcode = (hashcode * 397) + TCollections.GetHashCode(Prefixes);
       }
       if(__isset.fetchSize)
       {
         hashcode = (hashcode * 397) + FetchSize.GetHashCode();
       }
-      hashcode = (hashcode * 397) + StartTime.GetHashCode();
-      hashcode = (hashcode * 397) + EndTime.GetHashCode();
       hashcode = (hashcode * 397) + StatementId.GetHashCode();
       if(__isset.enableRedirectQuery)
       {
@@ -455,57 +366,44 @@ public partial class TSRawDataQueryReq : TBase
       {
         hashcode = (hashcode * 397) + Timeout.GetHashCode();
       }
-      if(__isset.legalPathNodes)
-      {
-        hashcode = (hashcode * 397) + LegalPathNodes.GetHashCode();
-      }
     }
     return hashcode;
   }
 
   public override string ToString()
   {
-    var tmp394 = new StringBuilder("TSRawDataQueryReq(");
-    tmp394.Append(", SessionId: ");
-    SessionId.ToString(tmp394);
-    if((Paths != null))
+    var tmp410 = new StringBuilder("TSFastLastDataQueryForOnePrefixPathReq(");
+    tmp410.Append(", SessionId: ");
+    SessionId.ToString(tmp410);
+    if((Prefixes != null))
     {
-      tmp394.Append(", Paths: ");
-      Paths.ToString(tmp394);
+      tmp410.Append(", Prefixes: ");
+      Prefixes.ToString(tmp410);
     }
     if(__isset.fetchSize)
     {
-      tmp394.Append(", FetchSize: ");
-      FetchSize.ToString(tmp394);
+      tmp410.Append(", FetchSize: ");
+      FetchSize.ToString(tmp410);
     }
-    tmp394.Append(", StartTime: ");
-    StartTime.ToString(tmp394);
-    tmp394.Append(", EndTime: ");
-    EndTime.ToString(tmp394);
-    tmp394.Append(", StatementId: ");
-    StatementId.ToString(tmp394);
+    tmp410.Append(", StatementId: ");
+    StatementId.ToString(tmp410);
     if(__isset.enableRedirectQuery)
     {
-      tmp394.Append(", EnableRedirectQuery: ");
-      EnableRedirectQuery.ToString(tmp394);
+      tmp410.Append(", EnableRedirectQuery: ");
+      EnableRedirectQuery.ToString(tmp410);
     }
     if(__isset.jdbcQuery)
     {
-      tmp394.Append(", JdbcQuery: ");
-      JdbcQuery.ToString(tmp394);
+      tmp410.Append(", JdbcQuery: ");
+      JdbcQuery.ToString(tmp410);
     }
     if(__isset.timeout)
     {
-      tmp394.Append(", Timeout: ");
-      Timeout.ToString(tmp394);
+      tmp410.Append(", Timeout: ");
+      Timeout.ToString(tmp410);
     }
-    if(__isset.legalPathNodes)
-    {
-      tmp394.Append(", LegalPathNodes: ");
-      LegalPathNodes.ToString(tmp394);
-    }
-    tmp394.Append(')');
-    return tmp394.ToString();
+    tmp410.Append(')');
+    return tmp410.ToString();
   }
 }
 

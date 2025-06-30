@@ -99,9 +99,9 @@ namespace Apache.IoTDB.UserCase
             await session_pool.Open(false);
             var res = await session_pool.ExecuteQueryStatementAsync("select * from root.ln.wf01.wt01");
             res.ShowTableNames();
-            while (res.HasNext())
+            while (res.Next())
             {
-                Console.WriteLine(res.Next());
+                Console.WriteLine(res.GetRow());
             }
             await res.Close();
             await session_pool.Close();

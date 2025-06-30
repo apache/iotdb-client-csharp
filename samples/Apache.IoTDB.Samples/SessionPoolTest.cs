@@ -224,7 +224,7 @@ namespace Apache.IoTDB.Samples
             await session_pool.DeleteDatabaseAsync(testDatabaseName);
             System.Diagnostics.Debug.Assert(session_pool.IsOpen());
             var time_zone = await session_pool.GetTimeZone();
-            System.Diagnostics.Debug.Assert(time_zone == "UTC+08:00");
+            System.Diagnostics.Debug.Assert(time_zone == "Asia/Shanghai");
             await session_pool.Close();
             Console.WriteLine("TestGetTimeZone Passed!");
         }
@@ -324,8 +324,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            UtilsTest.PrintDataSetByString(res);
 
             await res.Close();
             var ts_path_lst = new List<string>()
@@ -336,8 +335,7 @@ namespace Apache.IoTDB.Samples
             await session_pool.DeleteDataAsync(ts_path_lst, 2, 3);
             res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            UtilsTest.PrintDataSetByString(res);
 
             await res.Close();
             status = await session_pool.DeleteDatabaseAsync(testDatabaseName);
@@ -374,8 +372,8 @@ namespace Apache.IoTDB.Samples
                 "insert into " + string.Format("{0}.{1}", testDatabaseName, testDevice) + "(timestamp, status, hardware) VALUES (7, true,'lz')");
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+
+            UtilsTest.PrintDataSetByString(res);
 
             await res.Close();
             status = await session_pool.DeleteDatabaseAsync(testDatabaseName);
@@ -452,33 +450,28 @@ namespace Apache.IoTDB.Samples
                 "insert into " + string.Format("{0}.{1}", testDatabaseName, testDevice) + "(timestamp, status, hardware) VALUES (7, true,'lz')");
 
             var res = await session_pool.ExecuteQueryStatementAsync("show timeseries root");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            UtilsTest.PrintDataSetByString(res);
 
             await res.Close();
             Console.WriteLine("SHOW TIMESERIES ROOT sql passed!");
             res = await session_pool.ExecuteQueryStatementAsync("show devices");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            UtilsTest.PrintDataSetByString(res);
 
             await res.Close();
             Console.WriteLine("SHOW DEVICES sql passed!");
             res = await session_pool.ExecuteQueryStatementAsync($"COUNT TIMESERIES {testDatabaseName}");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            UtilsTest.PrintDataSetByString(res);
 
             await res.Close();
             Console.WriteLine("COUNT TIMESERIES root sql Passed");
             res = await session_pool.ExecuteQueryStatementAsync("select * from root.ln.wf01 where time<10");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            UtilsTest.PrintDataSetByString(res);
 
             await res.Close();
             Console.WriteLine("SELECT sql Passed");
             res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            UtilsTest.PrintDataSetByString(res);
 
             await res.Close();
             status = await session_pool.DeleteDatabaseAsync(testDatabaseName);
@@ -519,9 +512,8 @@ namespace Apache.IoTDB.Samples
 
             var res = await session_pool.ExecuteRawDataQuery(paths, 10, fetchSize * processedSize);
             var count = 0;
-            while (res.HasNext())
+            while (res.Next())
             {
-                var record = res.Next();
                 count++;
             }
             Console.WriteLine(count + " " + (fetchSize * processedSize - 10));
@@ -566,10 +558,9 @@ namespace Apache.IoTDB.Samples
 
             var res = await session_pool.ExecuteLastDataQueryAsync(paths, fetchSize * processedSize - 10);
             var count = 0;
-            while (res.HasNext())
+            while (res.Next())
             {
-                var record = res.Next();
-                Console.WriteLine(record);
+                Console.WriteLine(count);
                 count++;
             }
             Console.WriteLine(count + " " + (fetchSize * processedSize - 10));
@@ -621,13 +612,17 @@ namespace Apache.IoTDB.Samples
             // fetch data
             var paths = new List<string>() { string.Format("{0}.{1}", device_id, testMeasurements[0]), string.Format("{0}.{1}", device_id, testMeasurements[1]) };
             var res = await session_pool.ExecuteQueryStatementAsync("select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
-            res.ShowTableNames();
-            var count = 0;
-            while (res.HasNext())
+
+            IReadOnlyList<string> columns = res.GetColumnNames();
+            foreach (string columnName in columns)
             {
-                var record = res.Next();
-                count++;
+                Console.Write($"{columnName}\t");
             }
+            Console.WriteLine();
+
+            var count = 0;
+            while (res.Next()) count++;
+
             Console.WriteLine(count + " " + (fetchSize * processedSize * 4 + 783));
             System.Diagnostics.Debug.Assert(count == fetchSize * processedSize * 4 + 783);
             await res.Close();

@@ -18,7 +18,9 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using Apache.IoTDB.DataStructure;
 
 namespace Apache.IoTDB.Samples
 {
@@ -76,6 +78,107 @@ namespace Apache.IoTDB.Samples
                 // Expected exception
             }
             Console.WriteLine("TestInvalidInputs passed.");
+        }
+
+        static public void PrintDataSetByType(SessionDataSet sessionDataSet)
+        {
+            IReadOnlyList<string> columns = sessionDataSet.GetColumnNames();
+
+            foreach (string columnName in columns)
+            {
+                Console.Write($"{columnName}\t");
+            }
+            Console.WriteLine();
+
+            while (sessionDataSet.Next())
+            {
+                for (int i = 0; i < columns.Count; i++)
+                {
+                    string columnName = columns[i];
+                    string typeStr = sessionDataSet.GetColumnTypes()[i];
+                    TSDataType dataType = Client.GetDataTypeByStr(typeStr);
+
+                    switch (dataType)
+                    {
+                        case TSDataType.BOOLEAN:
+                            bool boolValue = sessionDataSet.GetBoolean(columnName);
+                            Console.Write(boolValue);
+                            break;
+                        case TSDataType.INT32:
+                            int intValue = sessionDataSet.GetInt(columnName);
+                            Console.Write(intValue);
+                            break;
+                        case TSDataType.INT64:
+                        case TSDataType.TIMESTAMP:
+                            long longValue = sessionDataSet.GetLong(columnName);
+                            Console.Write(longValue);
+                            break;
+                        case TSDataType.FLOAT:
+                            float floatValue = sessionDataSet.GetFloat(columnName);
+                            Console.Write(floatValue);
+                            break;
+                        case TSDataType.DOUBLE:
+                            double doubleValue = sessionDataSet.GetDouble(columnName);
+                            Console.Write(doubleValue);
+                            break;
+                        case TSDataType.TEXT:
+                        case TSDataType.STRING:
+                        case TSDataType.BLOB:
+                        case TSDataType.DATE:
+                            string stringValue = sessionDataSet.GetString(columnName);
+                            Console.Write(stringValue);
+                            break;
+                        default:
+                            break;
+                    }
+                    Console.Write("\t\t");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        static public void PrintDataSetByObject(SessionDataSet sessionDataSet)
+        {
+            IReadOnlyList<string> columns = sessionDataSet.GetColumnNames();
+
+            foreach (string columnName in columns)
+            {
+                Console.Write($"{columnName}\t");
+            }
+            Console.WriteLine();
+
+            while (sessionDataSet.Next())
+            {
+                for (int i = 0; i < columns.Count; i++)
+                {
+                    string columnName = columns[i];
+                    Console.Write(sessionDataSet.GetObject(columnName));
+                    Console.Write("\t\t");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        static public void PrintDataSetByString(SessionDataSet sessionDataSet)
+        {
+            IReadOnlyList<string> columns = sessionDataSet.GetColumnNames();
+
+            foreach (string columnName in columns)
+            {
+                Console.Write($"{columnName}\t");
+            }
+            Console.WriteLine();
+
+            while (sessionDataSet.Next())
+            {
+                for (int i = 0; i < columns.Count; i++)
+                {
+                    string columnName = columns[i];
+                    Console.Write(sessionDataSet.GetString(columnName));
+                    Console.Write("\t\t");
+                }
+                Console.WriteLine();
+            }
         }
     }
 }

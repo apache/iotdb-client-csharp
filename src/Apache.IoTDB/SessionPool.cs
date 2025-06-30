@@ -66,23 +66,23 @@ namespace Apache.IoTDB
 
         [Obsolete("This method is deprecated, please use new SessionPool.Builder().")]
         public SessionPool(string host, int port, int poolSize)
-                        : this(host, port, "root", "root", 1024, "UTC+08:00", poolSize, true, 60)
+                        : this(host, port, "root", "root", 1024, "Asia/Shanghai", poolSize, true, 60)
         {
         }
 
         [Obsolete(" This method is deprecated, please use new SessionPool.Builder().")]
         public SessionPool(string host, int port, string username, string password)
-                        : this(host, port, username, password, 1024, "UTC+08:00", 8, true, 60)
+                        : this(host, port, username, password, 1024, "Asia/Shanghai", 8, true, 60)
         {
         }
 
         public SessionPool(string host, int port, string username, string password, int fetchSize)
-                        : this(host, port, username, password, fetchSize, "UTC+08:00", 8, true, 60)
+                        : this(host, port, username, password, fetchSize, "Asia/Shanghai", 8, true, 60)
         {
 
         }
 
-        public SessionPool(string host, int port) : this(host, port, "root", "root", 1024, "UTC+08:00", 8, true, 60)
+        public SessionPool(string host, int port) : this(host, port, "root", "root", 1024, "Asia/Shanghai", 8, true, 60)
         {
         }
         public SessionPool(string host, int port, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout)
@@ -110,15 +110,15 @@ namespace Apache.IoTDB
         ///  <param name="nodeUrls">The list of node URLs to connect to, multiple ip:rpcPort eg.127.0.0.1:9001</param>
         ///  <param name="poolSize">The size of the session pool.</param>
         public SessionPool(List<string> nodeUrls, int poolSize)
-                        : this(nodeUrls, "root", "root", 1024, "UTC+08:00", poolSize, true, 60)
+                        : this(nodeUrls, "root", "root", 1024, "Asia/Shanghai", poolSize, true, 60)
         {
         }
         public SessionPool(List<string> nodeUrls, string username, string password)
-                        : this(nodeUrls, username, password, 1024, "UTC+08:00", 8, true, 60)
+                        : this(nodeUrls, username, password, 1024, "Asia/Shanghai", 8, true, 60)
         {
         }
         public SessionPool(List<string> nodeUrls, string username, string password, int fetchSize)
-                        : this(nodeUrls, username, password, fetchSize, "UTC+08:00", 8, true, 60)
+                        : this(nodeUrls, username, password, fetchSize, "Asia/Shanghai", 8, true, 60)
         {
         }
         public SessionPool(List<string> nodeUrls, string username, string password, int fetchSize, string zoneId)
@@ -361,7 +361,7 @@ namespace Apache.IoTDB
                 var closeSessionRequest = new TSCloseSessionReq(client.SessionId);
                 try
                 {
-                    await client.ServiceClient.closeSessionAsync(closeSessionRequest);
+                    await client.ServiceClient.closeSession(closeSessionRequest);
                 }
                 catch (TException e)
                 {
@@ -385,7 +385,7 @@ namespace Apache.IoTDB
                 var req = new TSSetTimeZoneReq(client.SessionId, zoneId);
                 try
                 {
-                    var resp = await client.ServiceClient.setTimeZoneAsync(req);
+                    var resp = await client.ServiceClient.setTimeZone(req);
                     if (_debugMode)
                     {
                         _logger.LogInformation("setting time zone_id as {0}, server message:{1}", zoneId, resp.Message);
@@ -409,7 +409,7 @@ namespace Apache.IoTDB
 
             try
             {
-                var response = await client.ServiceClient.getTimeZoneAsync(client.SessionId);
+                var response = await client.ServiceClient.getTimeZone(client.SessionId);
 
                 return response?.TimeZone;
             }
@@ -455,7 +455,7 @@ namespace Apache.IoTDB
 
             try
             {
-                var openResp = await client.openSessionAsync(openReq, cancellationToken);
+                var openResp = await client.openSession(openReq, cancellationToken);
 
                 if (openResp.ServerProtocolVersion != ProtocolVersion)
                 {
@@ -468,7 +468,7 @@ namespace Apache.IoTDB
                 }
 
                 var sessionId = openResp.SessionId;
-                var statementId = await client.requestStatementIdAsync(sessionId, cancellationToken);
+                var statementId = await client.requestStatementId(sessionId, cancellationToken);
 
                 var endpoint = new TEndPoint(host, port);
 
@@ -494,7 +494,7 @@ namespace Apache.IoTDB
             return await ExecuteClientOperationAsync<int>(
                 async client =>
                 {
-                    var status = await client.ServiceClient.setStorageGroupAsync(client.SessionId, dbName);
+                    var status = await client.ServiceClient.setStorageGroup(client.SessionId, dbName);
 
                     if (_debugMode)
                     {
@@ -513,7 +513,7 @@ namespace Apache.IoTDB
             return await ExecuteClientOperationAsync<int>(
                 async client =>
                 {
-                    var status = await client.ServiceClient.setStorageGroupAsync(client.SessionId, groupName);
+                    var status = await client.ServiceClient.setStorageGroup(client.SessionId, groupName);
                     if (_debugMode)
                     {
                         _logger.LogInformation("set storage group {0} successfully, server message is {1}", groupName, status.Message);
@@ -539,7 +539,7 @@ namespace Apache.IoTDB
                         (int)encoding,
                         (int)compressor);
 
-                    var status = await client.ServiceClient.createTimeseriesAsync(req);
+                    var status = await client.ServiceClient.createTimeseries(req);
 
                     if (_debugMode)
                     {
@@ -573,7 +573,7 @@ namespace Apache.IoTDB
                         encodings,
                         compressors);
 
-                    var status = await client.ServiceClient.createAlignedTimeseriesAsync(req);
+                    var status = await client.ServiceClient.createAlignedTimeseries(req);
 
                     if (_debugMode)
                     {
@@ -590,7 +590,7 @@ namespace Apache.IoTDB
             return await ExecuteClientOperationAsync<int>(
                 async client =>
                 {
-                    var status = await client.ServiceClient.deleteStorageGroupsAsync(client.SessionId, new List<string> { dbName });
+                    var status = await client.ServiceClient.deleteStorageGroups(client.SessionId, new List<string> { dbName });
 
                     if (_debugMode)
                     {
@@ -608,7 +608,7 @@ namespace Apache.IoTDB
             return await ExecuteClientOperationAsync<int>(
                 async client =>
                 {
-                    var status = await client.ServiceClient.deleteStorageGroupsAsync(client.SessionId, new List<string> { groupName });
+                    var status = await client.ServiceClient.deleteStorageGroups(client.SessionId, new List<string> { groupName });
 
                     if (_debugMode)
                     {
@@ -625,7 +625,7 @@ namespace Apache.IoTDB
             return await ExecuteClientOperationAsync<int>(
                 async client =>
                 {
-                    var status = await client.ServiceClient.deleteStorageGroupsAsync(client.SessionId, dbNames);
+                    var status = await client.ServiceClient.deleteStorageGroups(client.SessionId, dbNames);
 
                     if (_debugMode)
                     {
@@ -643,7 +643,7 @@ namespace Apache.IoTDB
             return await ExecuteClientOperationAsync<int>(
                 async client =>
                 {
-                    var status = await client.ServiceClient.deleteStorageGroupsAsync(client.SessionId, groupNames);
+                    var status = await client.ServiceClient.deleteStorageGroups(client.SessionId, groupNames);
 
                     if (_debugMode)
                     {
@@ -670,7 +670,7 @@ namespace Apache.IoTDB
 
                     var req = new TSCreateMultiTimeseriesReq(client.SessionId, tsPathLst, dataTypes, encodings, compressors);
 
-                    var status = await client.ServiceClient.createMultiTimeseriesAsync(req);
+                    var status = await client.ServiceClient.createMultiTimeseries(req);
 
                     if (_debugMode)
                     {
@@ -687,7 +687,7 @@ namespace Apache.IoTDB
             return await ExecuteClientOperationAsync<int>(
                 async client =>
                 {
-                    var status = await client.ServiceClient.deleteTimeseriesAsync(client.SessionId, pathList);
+                    var status = await client.ServiceClient.deleteTimeseries(client.SessionId, pathList);
 
                     if (_debugMode)
                     {
@@ -710,9 +710,9 @@ namespace Apache.IoTDB
             try
             {
                 var sql = "SHOW TIMESERIES " + tsPath;
-                var sessionDataset = await ExecuteQueryStatementAsync(sql);
-                bool timeSeriesExists = sessionDataset.HasNext();
-                await sessionDataset.Close(); // be sure to close the sessionDataset to put the client back to the pool
+                var sessionDataSet = await ExecuteQueryStatementAsync(sql);
+                bool timeSeriesExists = sessionDataSet.HasNext();
+                await sessionDataSet.Close(); // be sure to close the SessionDataSet to put the client back to the pool
                 return timeSeriesExists;
             }
             catch (TException e)
@@ -727,7 +727,7 @@ namespace Apache.IoTDB
                 {
                     var req = new TSDeleteDataReq(client.SessionId, tsPathLst, startTime, endTime);
 
-                    var status = await client.ServiceClient.deleteDataAsync(req);
+                    var status = await client.ServiceClient.deleteData(req);
 
                     if (_debugMode)
                     {
@@ -749,7 +749,7 @@ namespace Apache.IoTDB
                 {
                     var req = new TSInsertRecordReq(client.SessionId, deviceId, record.Measurements, record.ToBytes(), record.Timestamps);
 
-                    var status = await client.ServiceClient.insertRecordAsync(req);
+                    var status = await client.ServiceClient.insertRecord(req);
 
                     if (_debugMode)
                     {
@@ -771,7 +771,7 @@ namespace Apache.IoTDB
                     // ASSERT that the insert plan is aligned
                     System.Diagnostics.Debug.Assert(req.IsAligned == true);
 
-                    var status = await client.ServiceClient.insertRecordAsync(req);
+                    var status = await client.ServiceClient.insertRecord(req);
 
                     if (_debugMode)
                     {
@@ -828,7 +828,7 @@ namespace Apache.IoTDB
                 {
                     var req = GenInsertStrRecordReq(deviceId, measurements, values, timestamp, client.SessionId);
 
-                    var status = await client.ServiceClient.insertStringRecordAsync(req);
+                    var status = await client.ServiceClient.insertStringRecord(req);
 
                     if (_debugMode)
                     {
@@ -848,7 +848,7 @@ namespace Apache.IoTDB
                 {
                     var req = GenInsertStrRecordReq(deviceId, measurements, values, timestamp, client.SessionId, true);
 
-                    var status = await client.ServiceClient.insertStringRecordAsync(req);
+                    var status = await client.ServiceClient.insertStringRecord(req);
 
                     if (_debugMode)
                     {
@@ -868,7 +868,7 @@ namespace Apache.IoTDB
                 {
                     var req = GenInsertStringRecordsReq(deviceIds, measurements, values, timestamps, client.SessionId);
 
-                    var status = await client.ServiceClient.insertStringRecordsAsync(req);
+                    var status = await client.ServiceClient.insertStringRecords(req);
 
                     if (_debugMode)
                     {
@@ -888,7 +888,7 @@ namespace Apache.IoTDB
                 {
                     var req = GenInsertStringRecordsReq(deviceIds, measurements, values, timestamps, client.SessionId, true);
 
-                    var status = await client.ServiceClient.insertStringRecordsAsync(req);
+                    var status = await client.ServiceClient.insertStringRecords(req);
 
                     if (_debugMode)
                     {
@@ -907,7 +907,7 @@ namespace Apache.IoTDB
                 {
                     var req = GenInsertRecordsReq(deviceId, rowRecords, client.SessionId);
 
-                    var status = await client.ServiceClient.insertRecordsAsync(req);
+                    var status = await client.ServiceClient.insertRecords(req);
 
                     if (_debugMode)
                     {
@@ -929,7 +929,7 @@ namespace Apache.IoTDB
                     // ASSERT that the insert plan is aligned
                     System.Diagnostics.Debug.Assert(req.IsAligned == true);
 
-                    var status = await client.ServiceClient.insertRecordsAsync(req);
+                    var status = await client.ServiceClient.insertRecords(req);
 
                     if (_debugMode)
                     {
@@ -959,7 +959,7 @@ namespace Apache.IoTDB
                 {
                     var req = GenInsertTabletReq(tablet, client.SessionId);
 
-                    var status = await client.ServiceClient.insertTabletAsync(req);
+                    var status = await client.ServiceClient.insertTablet(req);
 
                     if (_debugMode)
                     {
@@ -979,7 +979,7 @@ namespace Apache.IoTDB
                     var req = GenInsertTabletReq(tablet, client.SessionId);
                     req.IsAligned = true;
 
-                    var status = await client.ServiceClient.insertTabletAsync(req);
+                    var status = await client.ServiceClient.insertTablet(req);
 
                     if (_debugMode)
                     {
@@ -1001,7 +1001,7 @@ namespace Apache.IoTDB
                     req.ColumnCategories = tablet.GetColumnColumnCategories();
                     req.WriteToTable = true;
 
-                    var status = await client.ServiceClient.insertTabletAsync(req);
+                    var status = await client.ServiceClient.insertTablet(req);
 
                     if (_debugMode)
                     {
@@ -1051,7 +1051,7 @@ namespace Apache.IoTDB
                 {
                     var req = GenInsertTabletsReq(tabletLst, client.SessionId);
 
-                    var status = await client.ServiceClient.insertTabletsAsync(req);
+                    var status = await client.ServiceClient.insertTablets(req);
 
                     if (_debugMode)
                     {
@@ -1071,7 +1071,7 @@ namespace Apache.IoTDB
                     var req = GenInsertTabletsReq(tabletLst, client.SessionId);
                     req.IsAligned = true;
 
-                    var status = await client.ServiceClient.insertTabletsAsync(req);
+                    var status = await client.ServiceClient.insertTablets(req);
 
                     if (_debugMode)
                     {
@@ -1133,7 +1133,7 @@ namespace Apache.IoTDB
 
                     var req = GenInsertStringRecordsOfOneDeviceReq(deviceId, timestamps, measurementsList, valuesList, client.SessionId, isAligned);
 
-                    var status = await client.ServiceClient.insertStringRecordsOfOneDeviceAsync(req);
+                    var status = await client.ServiceClient.insertStringRecordsOfOneDevice(req);
 
                     if (_debugMode)
                     {
@@ -1189,7 +1189,7 @@ namespace Apache.IoTDB
 
                     var req = GenInsertRecordsOfOneDeviceRequest(deviceId, rowRecords, client.SessionId);
 
-                    var status = await client.ServiceClient.insertRecordsOfOneDeviceAsync(req);
+                    var status = await client.ServiceClient.insertRecordsOfOneDevice(req);
 
                     if (_debugMode)
                     {
@@ -1216,7 +1216,7 @@ namespace Apache.IoTDB
                     var req = GenInsertRecordsOfOneDeviceRequest(deviceId, rowRecords, client.SessionId);
                     req.IsAligned = true;
 
-                    var status = await client.ServiceClient.insertRecordsOfOneDeviceAsync(req);
+                    var status = await client.ServiceClient.insertRecordsOfOneDevice(req);
 
                     if (_debugMode)
                     {
@@ -1240,7 +1240,7 @@ namespace Apache.IoTDB
                         record.ToBytes(),
                         record.Timestamps);
 
-                    var status = await client.ServiceClient.testInsertRecordAsync(req);
+                    var status = await client.ServiceClient.testInsertRecord(req);
 
                     if (_debugMode)
                     {
@@ -1259,7 +1259,7 @@ namespace Apache.IoTDB
                 {
                     var req = GenInsertRecordsReq(deviceId, rowRecords, client.SessionId);
 
-                    var status = await client.ServiceClient.testInsertRecordsAsync(req);
+                    var status = await client.ServiceClient.testInsertRecords(req);
 
                     if (_debugMode)
                     {
@@ -1278,7 +1278,7 @@ namespace Apache.IoTDB
                 {
                     var req = GenInsertTabletReq(tablet, client.SessionId);
 
-                    var status = await client.ServiceClient.testInsertTabletAsync(req);
+                    var status = await client.ServiceClient.testInsertTablet(req);
 
                     if (_debugMode)
                     {
@@ -1297,7 +1297,7 @@ namespace Apache.IoTDB
                 {
                     var req = GenInsertTabletsReq(tabletLst, client.SessionId);
 
-                    var status = await client.ServiceClient.testInsertTabletsAsync(req);
+                    var status = await client.ServiceClient.testInsertTablets(req);
 
                     if (_debugMode)
                     {
@@ -1327,7 +1327,7 @@ namespace Apache.IoTDB
                         Timeout = timeoutInMs
                     };
 
-                    var resp = await client.ServiceClient.executeQueryStatementAsync(req);
+                    var resp = await client.ServiceClient.executeQueryStatementV2(req);
                     var status = resp.Status;
 
                     if (_utilFunctions.VerifySuccess(status) == -1)
@@ -1335,7 +1335,11 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute query failed, sql: {0}, message: {1}", sql, status.Message));
                     }
 
-                    return new SessionDataSet(sql, resp, client, _clients, client.StatementId)
+                    return new SessionDataSet(
+                        sql, resp.Columns, resp.DataTypeList, resp.ColumnNameIndexMap, resp.QueryId,
+                        client.StatementId, client, resp.QueryResult, resp.IgnoreTimeStamp,
+                        resp.MoreData, _zoneId, resp.ColumnIndex2TsBlockColumnIndexList, _clients
+                    )
                     {
                         FetchSize = _fetchSize,
                     };
@@ -1356,7 +1360,7 @@ namespace Apache.IoTDB
                         Timeout = timeout
                     };
 
-                    var resp = await client.ServiceClient.executeStatementAsync(req);
+                    var resp = await client.ServiceClient.executeStatementV2(req);
                     var status = resp.Status;
 
                     if (_utilFunctions.VerifySuccess(status) == -1)
@@ -1364,7 +1368,11 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute query failed, sql: {0}, message: {1}", sql, status.Message));
                     }
 
-                    return new SessionDataSet(sql, resp, client, _clients, client.StatementId)
+                    return new SessionDataSet(
+                        sql, resp.Columns, resp.DataTypeList, resp.ColumnNameIndexMap, resp.QueryId,
+                        client.StatementId, client, resp.QueryResult, resp.IgnoreTimeStamp,
+                        resp.MoreData, _zoneId, resp.ColumnIndex2TsBlockColumnIndexList, _clients
+                    )
                     {
                         FetchSize = _fetchSize,
                     };
@@ -1383,7 +1391,7 @@ namespace Apache.IoTDB
                     String previousDB = _database;
                     var req = new TSExecuteStatementReq(client.SessionId, sql, client.StatementId);
 
-                    var resp = await client.ServiceClient.executeUpdateStatementAsync(req);
+                    var resp = await client.ServiceClient.executeUpdateStatement(req);
                     var status = resp.Status;
 
                     if (resp.__isset.database)
@@ -1400,7 +1408,7 @@ namespace Apache.IoTDB
                                 if (c != client)
                                 {
                                     var switchReq = new TSExecuteStatementReq(c.SessionId, sql, c.StatementId);
-                                    await c.ServiceClient.executeUpdateStatementAsync(switchReq);
+                                    await c.ServiceClient.executeUpdateStatement(switchReq);
                                 }
                             }
                             catch (Exception e)
@@ -1432,7 +1440,7 @@ namespace Apache.IoTDB
                         EnableRedirectQuery = false
                     };
 
-                    var resp = await client.ServiceClient.executeRawDataQueryAsync(req);
+                    var resp = await client.ServiceClient.executeRawDataQueryV2(req);
                     var status = resp.Status;
 
                     if (_utilFunctions.VerifySuccess(status) == -1)
@@ -1440,7 +1448,11 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute raw data query failed, message: {0}", status.Message));
                     }
 
-                    return new SessionDataSet("", resp, client, _clients, client.StatementId)
+                    return new SessionDataSet(
+                        "", resp.Columns, resp.DataTypeList, resp.ColumnNameIndexMap, resp.QueryId,
+                        client.StatementId, client, resp.QueryResult, resp.IgnoreTimeStamp,
+                        resp.MoreData, _zoneId, resp.ColumnIndex2TsBlockColumnIndexList, _clients
+                    )
                     {
                         FetchSize = _fetchSize,
                     };
@@ -1460,7 +1472,7 @@ namespace Apache.IoTDB
                         EnableRedirectQuery = false
                     };
 
-                    var resp = await client.ServiceClient.executeLastDataQueryAsync(req);
+                    var resp = await client.ServiceClient.executeLastDataQueryV2(req);
                     var status = resp.Status;
 
                     if (_utilFunctions.VerifySuccess(status) == -1)
@@ -1468,7 +1480,11 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute last data query failed, message: {0}", status.Message));
                     }
 
-                    return new SessionDataSet("", resp, client, _clients, client.StatementId)
+                    return new SessionDataSet(
+                        "", resp.Columns, resp.DataTypeList, resp.ColumnNameIndexMap, resp.QueryId,
+                        client.StatementId, client, resp.QueryResult, resp.IgnoreTimeStamp,
+                        resp.MoreData, _zoneId, resp.ColumnIndex2TsBlockColumnIndexList, _clients
+                    )
                     {
                         FetchSize = _fetchSize,
                     };
@@ -1485,7 +1501,7 @@ namespace Apache.IoTDB
                 {
                     var req = new TSCreateSchemaTemplateReq(client.SessionId, template.Name, template.ToBytes());
 
-                    var status = await client.ServiceClient.createSchemaTemplateAsync(req);
+                    var status = await client.ServiceClient.createSchemaTemplate(req);
 
                     if (_debugMode)
                     {
@@ -1506,7 +1522,7 @@ namespace Apache.IoTDB
                 {
                     var req = new TSDropSchemaTemplateReq(client.SessionId, templateName);
 
-                    var status = await client.ServiceClient.dropSchemaTemplateAsync(req);
+                    var status = await client.ServiceClient.dropSchemaTemplate(req);
 
                     if (_debugMode)
                     {
@@ -1526,7 +1542,7 @@ namespace Apache.IoTDB
                 {
                     var req = new TSSetSchemaTemplateReq(client.SessionId, templateName, prefixPath);
 
-                    var status = await client.ServiceClient.setSchemaTemplateAsync(req);
+                    var status = await client.ServiceClient.setSchemaTemplate(req);
 
                     if (_debugMode)
                     {
@@ -1546,7 +1562,7 @@ namespace Apache.IoTDB
                 {
                     var req = new TSUnsetSchemaTemplateReq(client.SessionId, prefixPath, templateName);
 
-                    var status = await client.ServiceClient.unsetSchemaTemplateAsync(req);
+                    var status = await client.ServiceClient.unsetSchemaTemplate(req);
 
                     if (_debugMode)
                     {
@@ -1566,7 +1582,7 @@ namespace Apache.IoTDB
                 {
                     var req = new TSPruneSchemaTemplateReq(client.SessionId, templateName, path);
 
-                    var status = await client.ServiceClient.pruneSchemaTemplateAsync(req);
+                    var status = await client.ServiceClient.pruneSchemaTemplate(req);
 
                     if (_debugMode)
                     {
@@ -1586,7 +1602,7 @@ namespace Apache.IoTDB
                 {
                     var req = new TSQueryTemplateReq(client.SessionId, name, (int)TemplateQueryType.COUNT_MEASUREMENTS);
 
-                    var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
+                    var resp = await client.ServiceClient.querySchemaTemplate(req);
                     var status = resp.Status;
 
                     if (_debugMode)
@@ -1612,7 +1628,7 @@ namespace Apache.IoTDB
                     var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.IS_MEASUREMENT);
                     req.Measurement = path;
 
-                    var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
+                    var resp = await client.ServiceClient.querySchemaTemplate(req);
                     var status = resp.Status;
 
                     if (_debugMode)
@@ -1638,7 +1654,7 @@ namespace Apache.IoTDB
                     var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.PATH_EXIST);
                     req.Measurement = path;
 
-                    var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
+                    var resp = await client.ServiceClient.querySchemaTemplate(req);
                     var status = resp.Status;
 
                     if (_debugMode)
@@ -1664,7 +1680,7 @@ namespace Apache.IoTDB
                     var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.SHOW_MEASUREMENTS);
                     req.Measurement = pattern;
 
-                    var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
+                    var resp = await client.ServiceClient.querySchemaTemplate(req);
                     var status = resp.Status;
 
                     if (_debugMode)
@@ -1689,7 +1705,7 @@ namespace Apache.IoTDB
                 {
                     var req = new TSQueryTemplateReq(client.SessionId, "", (int)TemplateQueryType.SHOW_TEMPLATES);
 
-                    var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
+                    var resp = await client.ServiceClient.querySchemaTemplate(req);
                     var status = resp.Status;
 
                     if (_debugMode)
@@ -1715,7 +1731,7 @@ namespace Apache.IoTDB
                 {
                     var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.SHOW_SET_TEMPLATES);
 
-                    var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
+                    var resp = await client.ServiceClient.querySchemaTemplate(req);
                     var status = resp.Status;
 
                     if (_debugMode)
@@ -1740,7 +1756,7 @@ namespace Apache.IoTDB
                 {
                     var req = new TSQueryTemplateReq(client.SessionId, templateName, (int)TemplateQueryType.SHOW_USING_TEMPLATES);
 
-                    var resp = await client.ServiceClient.querySchemaTemplateAsync(req);
+                    var resp = await client.ServiceClient.querySchemaTemplate(req);
                     var status = resp.Status;
 
                     if (_debugMode)
