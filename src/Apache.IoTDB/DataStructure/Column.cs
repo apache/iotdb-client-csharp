@@ -175,7 +175,7 @@ namespace Apache.IoTDB.DataStructure
             ColumnEncoding.BinaryArray,
             arrayOffset: arrayOffset,
             positionCount: positionCount,
-            valueIsNull: null,
+            valueIsNull: valueIsNull,
             values: values)
         { }
 
@@ -193,7 +193,7 @@ namespace Apache.IoTDB.DataStructure
             ColumnEncoding.Int32Array,
             arrayOffset: arrayOffset,
             positionCount: positionCount,
-            valueIsNull: null,
+            valueIsNull: valueIsNull,
             values: values)
         { }
 
@@ -211,7 +211,7 @@ namespace Apache.IoTDB.DataStructure
             ColumnEncoding.Int32Array,
             arrayOffset: arrayOffset,
             positionCount: positionCount,
-            valueIsNull: null,
+            valueIsNull: valueIsNull,
             values: values)
         { }
 
@@ -229,7 +229,7 @@ namespace Apache.IoTDB.DataStructure
             ColumnEncoding.Int64Array,
             arrayOffset: arrayOffset,
             positionCount: positionCount,
-            valueIsNull: null,
+            valueIsNull: valueIsNull,
             values: values)
         { }
 
@@ -247,7 +247,7 @@ namespace Apache.IoTDB.DataStructure
             ColumnEncoding.Int64Array,
             arrayOffset: arrayOffset,
             positionCount: positionCount,
-            valueIsNull: null,
+            valueIsNull: valueIsNull,
             values: values)
         { }
 
@@ -265,7 +265,7 @@ namespace Apache.IoTDB.DataStructure
             ColumnEncoding.ByteArray,
             arrayOffset: arrayOffset,
             positionCount: positionCount,
-            valueIsNull: null,
+            valueIsNull: valueIsNull,
             values: values)
         { }
 
