@@ -137,9 +137,9 @@ namespace Apache.IoTDB.Data
             {
                 throw new InvalidOperationException($"DataReaderClosed{nameof(Read)}");
             }
-            if (_dataSet.Next())
+            if (_dataSet.HasNext())
             {
-                rowdata = _dataSet.GetRow();
+                rowdata = _dataSet.Next();
             }
             else
             {
@@ -455,9 +455,9 @@ namespace Apache.IoTDB.Data
         /// <returns>A System.Data.DataTable that describes the column metadata.</returns>
         public override DataTable GetSchemaTable()
         {
-            if (_dataSet.Next())
+            if (_dataSet.HasNext())
             {
-                rowdata = _dataSet.GetRow();
+                rowdata = _dataSet.Next();
             }
             var schemaTable = new DataTable("SchemaTable");
             if (_metas != null && rowdata != null)

@@ -68,7 +68,7 @@ namespace Apache.IoTDB.DataStructure
         public static bool[] DeserializeBooleanArray(ByteBuffer reader, int size)
         {
             int packedSize = (size + 7) / 8;
-            byte[] packedBytes = reader.GetBytesbyLength(packedSize);
+            byte[] packedBytes = reader.GetBytesByLengthh(packedSize);
             if (packedBytes.Length < packedSize)
                 throw new InvalidDataException(
                     $"Boolean array decoding failed: expected {packedSize} bytes for {size} bits, but only received {packedBytes.Length} bytes from buffer."
@@ -199,7 +199,7 @@ namespace Apache.IoTDB.DataStructure
                 if (nullIndicators != null && nullIndicators[i])
                     continue;
                 int length = reader.GetInt();
-                byte[] value = reader.GetBytesbyLength(length);
+                byte[] value = reader.GetBytesByLengthh(length);
                 values[i] = new Binary(value);
             }
 

@@ -77,10 +77,10 @@ namespace Apache.IoTDB.DataStructure
             ColumnEncoding timeColumnEncodings = DeserializeColumnEncoding(reader);
 
             // Read value column encodings
-            var valuecolumnEncodings = new ColumnEncoding[valueColumnCount];
+            var valueColumnEncodings = new ColumnEncoding[valueColumnCount];
             for (int i = 1; i < valueColumnCount + 1; i++)
             {
-                valuecolumnEncodings[i - 1] = DeserializeColumnEncoding(reader);
+                valueColumnEncodings[i - 1] = DeserializeColumnEncoding(reader);
             }
 
             // Read time column
@@ -91,7 +91,7 @@ namespace Apache.IoTDB.DataStructure
             var valueColumns = new Column[valueColumnCount];
             for (int i = 1; i < valueColumnCount + 1; i++)
             {
-                var decoder = BaseColumnDecoder.GetDecoder(valuecolumnEncodings[i - 1]);
+                var decoder = BaseColumnDecoder.GetDecoder(valueColumnEncodings[i - 1]);
                 valueColumns[i - 1] = decoder.ReadColumn(reader, valueColumnDataTypes[i - 1], positionCount);
             }
 

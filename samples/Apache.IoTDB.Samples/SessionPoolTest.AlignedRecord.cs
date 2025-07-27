@@ -98,7 +98,7 @@ namespace Apache.IoTDB.Samples
             Console.WriteLine(string.Format("total insert aligned string record time is {0}", end_ms - start_ms));
             var res = await session_pool.ExecuteQueryStatementAsync("select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             var res_cnt = 0;
-            while (res.Next())
+            while (res.HasNext())
             {
                 res_cnt++;
             }
@@ -215,10 +215,10 @@ namespace Apache.IoTDB.Samples
             res.ShowTableNames();
             var record_count = fetchSize * processedSize;
             var res_count = 0;
-            while (res.Next())
+            while (res.HasNext())
             {
                 res_count += 1;
-                Console.WriteLine(res.GetRow());
+                Console.WriteLine(res.Next());
             }
 
             await res.Close();
@@ -297,9 +297,9 @@ namespace Apache.IoTDB.Samples
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             res.ShowTableNames();
             var res_count = 0;
-            while (res.Next())
+            while (res.HasNext())
             {
-                Console.WriteLine(res.GetRow());
+                Console.WriteLine(res.Next());
                 res_count += 1;
             }
 
@@ -406,7 +406,7 @@ namespace Apache.IoTDB.Samples
             res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             var res_count = 0;
-            while (res.Next())
+            while (res.HasNext())
             {
                 res_count += 1;
             }
@@ -478,7 +478,7 @@ namespace Apache.IoTDB.Samples
             res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             var res_count = 0;
-            while (res.Next())
+            while (res.HasNext())
             {
                 res_count += 1;
             }

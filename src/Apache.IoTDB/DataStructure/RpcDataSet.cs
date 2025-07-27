@@ -185,7 +185,7 @@ namespace Apache.IoTDB.DataStructure
 
             try
             {
-                var status = await _client.ServiceClient.closeOperation(closeRequest);
+                var status = await _client.ServiceClient.closeOperationAsync(closeRequest);
             }
             catch (TException e)
             {
@@ -242,7 +242,7 @@ namespace Apache.IoTDB.DataStructure
 
             try
             {
-                var task = _client.ServiceClient.fetchResultsV2(req);
+                var task = _client.ServiceClient.fetchResultsV2Async(req);
 
                 var resp = task.ConfigureAwait(false).GetAwaiter().GetResult();
 
