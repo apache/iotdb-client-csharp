@@ -131,7 +131,7 @@ namespace Apache.IoTDB.DataStructure
 
                 try
                 {
-                    var status = await _client.ServiceClient.closeOperation(req);
+                    var status = await _client.ServiceClient.closeOperationAsync(req);
                 }
                 catch (TException e)
                 {
