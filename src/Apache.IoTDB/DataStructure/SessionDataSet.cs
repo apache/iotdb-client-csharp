@@ -61,7 +61,7 @@ namespace Apache.IoTDB.DataStructure
             _columnTypeLst = ColumnTypeList;
             _zoneId = zoneId;
             _clientQueue = clientQueue;
-            
+
             _rpcDataSet = new RpcDataSet(
                 _sql, _columnNames, _columnTypeLst, _columnNameIndexMap, IgnoreTimeStamp,
                 MoreData, _queryId, _statementId, _client, _client.SessionId, QueryResult, FetchSize,
