@@ -144,7 +144,7 @@ namespace Apache.IoTDB.Samples
             // System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            UtilsTest.PrintDataSetByString(res);
+            SessionPoolTest.PrintDataSetByString(res);
 
             await res.Close();
 
@@ -213,7 +213,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<15");
-            UtilsTest.PrintDataSetByString(res);
+            SessionPoolTest.PrintDataSetByString(res);
 
             await res.Close();
             // large data test
@@ -305,7 +305,7 @@ namespace Apache.IoTDB.Samples
             // System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevices[1]) + " where time<15");
-            UtilsTest.PrintDataSetByString(res);
+            SessionPoolTest.PrintDataSetByString(res);
             await res.Close();
 
             // large data test

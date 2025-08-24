@@ -149,7 +149,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<2");
-            UtilsTest.PrintDataSetByString(res);
+            SessionPoolTest.PrintDataSetByString(res);
 
             await res.Close();
 
@@ -255,7 +255,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            UtilsTest.PrintDataSetByString(res);
+            SessionPoolTest.PrintDataSetByString(res);
 
             await res.Close();
             Console.WriteLine(status);
@@ -351,7 +351,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            UtilsTest.PrintDataSetByString(res);
+            SessionPoolTest.PrintDataSetByString(res);
 
             await res.Close();
 
@@ -467,7 +467,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            UtilsTest.PrintDataSetByString(res);
+            SessionPoolTest.PrintDataSetByString(res);
 
             await res.Close();
             // large data test
@@ -541,7 +541,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            UtilsTest.PrintDataSetByString(res);
+            SessionPoolTest.PrintDataSetByString(res);
 
             await res.Close();
             // large data test
