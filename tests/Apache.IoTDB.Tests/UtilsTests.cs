@@ -75,7 +75,7 @@ namespace Apache.IoTDB.Tests
                 var endpoint = _utils.ParseTEndPointIpv4AndIpv6Url(noPort);
 
                 // Assert
-                Assert.That(string.IsNullOrEmpty(endpoint.Ip) && endpoint.Port == 0, 
+                Assert.That(string.IsNullOrEmpty(endpoint.Ip) && endpoint.Port == 0,
                            Is.True, "Failed to handle missing port.");
             }
 
@@ -89,7 +89,7 @@ namespace Apache.IoTDB.Tests
                 var endpoint = _utils.ParseTEndPointIpv4AndIpv6Url(emptyInput);
 
                 // Assert
-                Assert.That(string.IsNullOrEmpty(endpoint.Ip) && endpoint.Port == 0, 
+                Assert.That(string.IsNullOrEmpty(endpoint.Ip) && endpoint.Port == 0,
                            Is.True, "Failed to handle empty input.");
             }
 
