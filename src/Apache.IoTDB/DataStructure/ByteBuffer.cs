@@ -146,7 +146,7 @@ namespace Apache.IoTDB.DataStructure
             return _buffer[.._writePos];
         }
 
-        public byte[] GetBytesByLengthh(int length)
+        public byte[] GetBytesByLength(int length)
         {
             if (_readPos + length > _buffer.Length)
                 throw new ArgumentOutOfRangeException(nameof(length),
