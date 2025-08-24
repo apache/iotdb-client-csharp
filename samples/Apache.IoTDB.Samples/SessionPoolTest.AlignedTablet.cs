@@ -83,9 +83,10 @@ namespace Apache.IoTDB.Samples
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             res.ShowTableNames();
             var res_count = 0;
-            while (res.Next())
+            while (res.HasNext())
             {
                 res_count += 1;
+                res.Next();
             }
 
             await res.Close();
@@ -174,9 +175,10 @@ namespace Apache.IoTDB.Samples
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevices[1]));
             res.ShowTableNames();
             var res_count = 0;
-            while (res.Next())
+            while (res.HasNext())
             {
                 res_count += 1;
+                res.Next();
             }
 
             await res.Close();
