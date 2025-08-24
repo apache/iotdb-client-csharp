@@ -90,7 +90,7 @@ namespace Apache.IoTDB.Samples
             }
             Console.WriteLine();
 
-            while (sessionDataSet.Next())
+            while (sessionDataSet.HasNext())
             {
                 for (int i = 0; i < columns.Count; i++)
                 {
@@ -147,7 +147,7 @@ namespace Apache.IoTDB.Samples
             }
             Console.WriteLine();
 
-            while (sessionDataSet.Next())
+            while (sessionDataSet.HasNext())
             {
                 for (int i = 0; i < columns.Count; i++)
                 {
@@ -169,7 +169,7 @@ namespace Apache.IoTDB.Samples
             }
             Console.WriteLine();
 
-            while (sessionDataSet.Next())
+            while (sessionDataSet.HasNext())
             {
                 for (int i = 0; i < columns.Count; i++)
                 {

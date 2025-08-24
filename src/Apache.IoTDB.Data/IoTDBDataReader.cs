@@ -457,7 +457,7 @@ namespace Apache.IoTDB.Data
         {
             if (_dataSet.Next())
             {
-                rowdata = _dataSet.GetRow();
+                rowdata = _dataSet.Next();
             }
             var schemaTable = new DataTable("SchemaTable");
             if (_metas != null && rowdata != null)

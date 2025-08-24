@@ -1327,7 +1327,7 @@ namespace Apache.IoTDB
                         Timeout = timeoutInMs
                     };
 
-                    var resp = await client.ServiceClient.executeQueryStatementV2(req);
+                    var resp = await client.ServiceClient.executeQueryStatementV2Async(req);
                     var status = resp.Status;
 
                     if (_utilFunctions.VerifySuccess(status) == -1)
@@ -1360,7 +1360,7 @@ namespace Apache.IoTDB
                         Timeout = timeout
                     };
 
-                    var resp = await client.ServiceClient.executeStatementV2(req);
+                    var resp = await client.ServiceClient.executeStatementV2Async(req);
                     var status = resp.Status;
 
                     if (_utilFunctions.VerifySuccess(status) == -1)
@@ -1440,7 +1440,7 @@ namespace Apache.IoTDB
                         EnableRedirectQuery = false
                     };
 
-                    var resp = await client.ServiceClient.executeRawDataQueryV2(req);
+                    var resp = await client.ServiceClient.executeRawDataQueryV2Async(req);
                     var status = resp.Status;
 
                     if (_utilFunctions.VerifySuccess(status) == -1)
@@ -1472,7 +1472,7 @@ namespace Apache.IoTDB
                         EnableRedirectQuery = false
                     };
 
-                    var resp = await client.ServiceClient.executeLastDataQueryV2(req);
+                    var resp = await client.ServiceClient.executeLastDataQueryV2Async(req);
                     var status = resp.Status;
 
                     if (_utilFunctions.VerifySuccess(status) == -1)

@@ -382,7 +382,7 @@ namespace Apache.IoTDB.Samples
             var res_count = 0;
             while (res.Next())
             {
-                Console.WriteLine(res.GetRow());
+                Console.WriteLine(res.Next());
                 res_count += 1;
             }
 

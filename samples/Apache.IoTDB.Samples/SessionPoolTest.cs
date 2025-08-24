@@ -621,7 +621,7 @@ namespace Apache.IoTDB.Samples
             Console.WriteLine();
 
             var count = 0;
-            while (res.Next()) count++;
+            while (res.HasNext()) count++;
 
             Console.WriteLine(count + " " + (fetchSize * processedSize * 4 + 783));
             System.Diagnostics.Debug.Assert(count == fetchSize * processedSize * 4 + 783);

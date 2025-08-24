@@ -33,11 +33,7 @@ namespace Apache.IoTDB.DataStructure
         private readonly List<string> _columnNames;
         private readonly Dictionary<string, int> _columnNameIndexMap;
         private readonly List<string> _columnTypeLst;
-        private readonly int _columnSize;
-        private List<ByteBuffer> _valueBufferLst, _bitmapBufferLst;
         private Client _client;
-        private int _rowIndex;
-        private RowRecord _cachedRowRecord;
         private bool _isClosed = false;
         private bool disposedValue;
         private RpcDataSet _rpcDataSet;
@@ -52,35 +48,28 @@ namespace Apache.IoTDB.DataStructure
         public SessionDataSet(
             string sql, List<string> ColumnNameList, List<string> ColumnTypeList,
             Dictionary<string, int> ColumnNameIndexMap, long QueryId, long statementId, Client client, List<byte[]> QueryResult,
-            bool IgnoreTimeStamp, bool MoreData, string zoneId, List<int> ColumnIndex2TsBlockColumnIndexList, ConcurrentClientQueue _clientQueueS
+            bool IgnoreTimeStamp, bool MoreData, string zoneId, List<int> ColumnIndex2TsBlockColumnIndexList, ConcurrentClientQueue clientQueue
         )
         {
             _client = client;
             _sql = sql;
             _queryId = QueryId;
             _statementId = statementId;
-            _columnSize = ColumnNameList.Count;
             _columnNameIndexMap = ColumnNameIndexMap;
-            _rowIndex = 0;
 
             _columnNames = ColumnNameList;
             _columnTypeLst = ColumnTypeList;
             _zoneId = zoneId;
-            _clientQueue = _clientQueueS;
-
+            _clientQueue = clientQueue;
+            
             _rpcDataSet = new RpcDataSet(
                 _sql, _columnNames, _columnTypeLst, _columnNameIndexMap, IgnoreTimeStamp,
                 MoreData, _queryId, _statementId, _client, _client.SessionId, QueryResult, FetchSize,
                 DefaultTimeout, _zoneId, ColumnIndex2TsBlockColumnIndexList
             );
         }
-        public bool HasNext()
-        {
-            if (_rpcDataSet.HasCachedRecord) return true;
-            return Next();
-        }
-
-        public bool Next() => _rpcDataSet.Next();
+        public bool HasNext() => _rpcDataSet.Next();
+        public RowRecord Next() => _rpcDataSet.GetRow();
         public bool IsNull(string columnName) => _rpcDataSet.IsNullByColumnName(columnName);
         public bool IsNullByIndex(int columnIndex) => _rpcDataSet.IsNullByIndex(columnIndex);
 
@@ -119,9 +108,7 @@ namespace Apache.IoTDB.DataStructure
         public IReadOnlyList<string> GetColumnNames() => _rpcDataSet._columnNameList;
         public IReadOnlyList<string> GetColumnTypes() => _rpcDataSet._columnTypeList;
 
-        public RowRecord GetRow() => _rpcDataSet.GetRow();
         public int RowCount() => _rpcDataSet._tsBlockSize;
-
         public void ShowTableNames()
         {
             IReadOnlyList<string> columns = GetColumnNames();
@@ -173,8 +160,6 @@ namespace Apache.IoTDB.DataStructure
                     {
                     }
                 }
-                _valueBufferLst = null;
-                _bitmapBufferLst = null;
                 disposedValue = true;
             }
         }
