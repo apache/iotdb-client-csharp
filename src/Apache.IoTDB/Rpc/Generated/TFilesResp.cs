@@ -81,14 +81,14 @@ public partial class TFilesResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list48 = await iprot.ReadListBeginAsync(cancellationToken);
-                Files = new List<TFile>(_list48.Count);
-                for(int _i49 = 0; _i49 < _list48.Count; ++_i49)
+                TList _list52 = await iprot.ReadListBeginAsync(cancellationToken);
+                Files = new List<TFile>(_list52.Count);
+                for(int _i53 = 0; _i53 < _list52.Count; ++_i53)
                 {
-                  TFile _elem50;
-                  _elem50 = new TFile();
-                  await _elem50.ReadAsync(iprot, cancellationToken);
-                  Files.Add(_elem50);
+                  TFile _elem54;
+                  _elem54 = new TFile();
+                  await _elem54.ReadAsync(iprot, cancellationToken);
+                  Files.Add(_elem54);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -148,9 +148,9 @@ public partial class TFilesResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Struct, Files.Count), cancellationToken);
-          foreach (TFile _iter51 in Files)
+          foreach (TFile _iter55 in Files)
           {
-            await _iter51.WriteAsync(oprot, cancellationToken);
+            await _iter55.WriteAsync(oprot, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

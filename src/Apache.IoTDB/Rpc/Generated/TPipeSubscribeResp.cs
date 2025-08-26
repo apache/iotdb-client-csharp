@@ -128,13 +128,13 @@ public partial class TPipeSubscribeResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list417 = await iprot.ReadListBeginAsync(cancellationToken);
-                Body = new List<byte[]>(_list417.Count);
-                for(int _i418 = 0; _i418 < _list417.Count; ++_i418)
+                TList _list426 = await iprot.ReadListBeginAsync(cancellationToken);
+                Body = new List<byte[]>(_list426.Count);
+                for(int _i427 = 0; _i427 < _list426.Count; ++_i427)
                 {
-                  byte[] _elem419;
-                  _elem419 = await iprot.ReadBinaryAsync(cancellationToken);
-                  Body.Add(_elem419);
+                  byte[] _elem428;
+                  _elem428 = await iprot.ReadBinaryAsync(cancellationToken);
+                  Body.Add(_elem428);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -209,9 +209,9 @@ public partial class TPipeSubscribeResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Body.Count), cancellationToken);
-          foreach (byte[] _iter420 in Body)
+          foreach (byte[] _iter429 in Body)
           {
-            await oprot.WriteBinaryAsync(_iter420, cancellationToken);
+            await oprot.WriteBinaryAsync(_iter429, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

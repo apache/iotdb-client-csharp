@@ -144,8 +144,7 @@ namespace Apache.IoTDB.Samples
             // System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            SessionPoolTest.PrintDataSetByString(res);
 
             await res.Close();
 
@@ -174,8 +173,8 @@ namespace Apache.IoTDB.Samples
             var res_count = 0;
             while (res.HasNext())
             {
-                res.Next();
                 res_count += 1;
+                res.Next();
             }
 
             await res.Close();
@@ -214,8 +213,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<15");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            SessionPoolTest.PrintDataSetByString(res);
 
             await res.Close();
             // large data test
@@ -245,8 +243,8 @@ namespace Apache.IoTDB.Samples
             var res_count = 0;
             while (res.HasNext())
             {
-                res.Next();
                 res_count += 1;
+                res.Next();
             }
 
             await res.Close();
@@ -307,8 +305,7 @@ namespace Apache.IoTDB.Samples
             // System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevices[1]) + " where time<15");
-            res.ShowTableNames();
-            while (res.HasNext()) Console.WriteLine(res.Next());
+            SessionPoolTest.PrintDataSetByString(res);
             await res.Close();
 
             // large data test
@@ -338,8 +335,8 @@ namespace Apache.IoTDB.Samples
             var res_count = 0;
             while (res.HasNext())
             {
-                res.Next();
                 res_count += 1;
+                res.Next();
             }
 
             await res.Close();

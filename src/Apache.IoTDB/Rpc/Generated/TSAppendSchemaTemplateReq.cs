@@ -122,13 +122,13 @@ public partial class TSAppendSchemaTemplateReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list381 = await iprot.ReadListBeginAsync(cancellationToken);
-                Measurements = new List<string>(_list381.Count);
-                for(int _i382 = 0; _i382 < _list381.Count; ++_i382)
+                TList _list390 = await iprot.ReadListBeginAsync(cancellationToken);
+                Measurements = new List<string>(_list390.Count);
+                for(int _i391 = 0; _i391 < _list390.Count; ++_i391)
                 {
-                  string _elem383;
-                  _elem383 = await iprot.ReadStringAsync(cancellationToken);
-                  Measurements.Add(_elem383);
+                  string _elem392;
+                  _elem392 = await iprot.ReadStringAsync(cancellationToken);
+                  Measurements.Add(_elem392);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -143,13 +143,13 @@ public partial class TSAppendSchemaTemplateReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list384 = await iprot.ReadListBeginAsync(cancellationToken);
-                DataTypes = new List<int>(_list384.Count);
-                for(int _i385 = 0; _i385 < _list384.Count; ++_i385)
+                TList _list393 = await iprot.ReadListBeginAsync(cancellationToken);
+                DataTypes = new List<int>(_list393.Count);
+                for(int _i394 = 0; _i394 < _list393.Count; ++_i394)
                 {
-                  int _elem386;
-                  _elem386 = await iprot.ReadI32Async(cancellationToken);
-                  DataTypes.Add(_elem386);
+                  int _elem395;
+                  _elem395 = await iprot.ReadI32Async(cancellationToken);
+                  DataTypes.Add(_elem395);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -164,13 +164,13 @@ public partial class TSAppendSchemaTemplateReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list387 = await iprot.ReadListBeginAsync(cancellationToken);
-                Encodings = new List<int>(_list387.Count);
-                for(int _i388 = 0; _i388 < _list387.Count; ++_i388)
+                TList _list396 = await iprot.ReadListBeginAsync(cancellationToken);
+                Encodings = new List<int>(_list396.Count);
+                for(int _i397 = 0; _i397 < _list396.Count; ++_i397)
                 {
-                  int _elem389;
-                  _elem389 = await iprot.ReadI32Async(cancellationToken);
-                  Encodings.Add(_elem389);
+                  int _elem398;
+                  _elem398 = await iprot.ReadI32Async(cancellationToken);
+                  Encodings.Add(_elem398);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -185,13 +185,13 @@ public partial class TSAppendSchemaTemplateReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list390 = await iprot.ReadListBeginAsync(cancellationToken);
-                Compressors = new List<int>(_list390.Count);
-                for(int _i391 = 0; _i391 < _list390.Count; ++_i391)
+                TList _list399 = await iprot.ReadListBeginAsync(cancellationToken);
+                Compressors = new List<int>(_list399.Count);
+                for(int _i400 = 0; _i400 < _list399.Count; ++_i400)
                 {
-                  int _elem392;
-                  _elem392 = await iprot.ReadI32Async(cancellationToken);
-                  Compressors.Add(_elem392);
+                  int _elem401;
+                  _elem401 = await iprot.ReadI32Async(cancellationToken);
+                  Compressors.Add(_elem401);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -283,9 +283,9 @@ public partial class TSAppendSchemaTemplateReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Measurements.Count), cancellationToken);
-          foreach (string _iter393 in Measurements)
+          foreach (string _iter402 in Measurements)
           {
-            await oprot.WriteStringAsync(_iter393, cancellationToken);
+            await oprot.WriteStringAsync(_iter402, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -299,9 +299,9 @@ public partial class TSAppendSchemaTemplateReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I32, DataTypes.Count), cancellationToken);
-          foreach (int _iter394 in DataTypes)
+          foreach (int _iter403 in DataTypes)
           {
-            await oprot.WriteI32Async(_iter394, cancellationToken);
+            await oprot.WriteI32Async(_iter403, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -315,9 +315,9 @@ public partial class TSAppendSchemaTemplateReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I32, Encodings.Count), cancellationToken);
-          foreach (int _iter395 in Encodings)
+          foreach (int _iter404 in Encodings)
           {
-            await oprot.WriteI32Async(_iter395, cancellationToken);
+            await oprot.WriteI32Async(_iter404, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -331,9 +331,9 @@ public partial class TSAppendSchemaTemplateReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I32, Compressors.Count), cancellationToken);
-          foreach (int _iter396 in Compressors)
+          foreach (int _iter405 in Compressors)
           {
-            await oprot.WriteI32Async(_iter396, cancellationToken);
+            await oprot.WriteI32Async(_iter405, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

@@ -33,6 +33,7 @@ public partial class TFlushReq : TBase
 {
   private string _isSeq;
   private List<string> _storageGroups;
+  private List<string> _regionIds;
 
   public string IsSeq
   {
@@ -60,12 +61,26 @@ public partial class TFlushReq : TBase
     }
   }
 
+  public List<string> RegionIds
+  {
+    get
+    {
+      return _regionIds;
+    }
+    set
+    {
+      __isset.regionIds = true;
+      this._regionIds = value;
+    }
+  }
+
 
   public Isset __isset;
   public struct Isset
   {
     public bool isSeq;
     public bool storageGroups;
+    public bool regionIds;
   }
 
   public TFlushReq()
@@ -119,6 +134,26 @@ public partial class TFlushReq : TBase
               await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             }
             break;
+          case 3:
+            if (field.Type == TType.List)
+            {
+              {
+                TList _list23 = await iprot.ReadListBeginAsync(cancellationToken);
+                RegionIds = new List<string>(_list23.Count);
+                for(int _i24 = 0; _i24 < _list23.Count; ++_i24)
+                {
+                  string _elem25;
+                  _elem25 = await iprot.ReadStringAsync(cancellationToken);
+                  RegionIds.Add(_elem25);
+                }
+                await iprot.ReadListEndAsync(cancellationToken);
+              }
+            }
+            else
+            {
+              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
+            }
+            break;
           default: 
             await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             break;
@@ -160,9 +195,25 @@ public partial class TFlushReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, StorageGroups.Count), cancellationToken);
-          foreach (string _iter23 in StorageGroups)
+          foreach (string _iter26 in StorageGroups)
           {
-            await oprot.WriteStringAsync(_iter23, cancellationToken);
+            await oprot.WriteStringAsync(_iter26, cancellationToken);
+          }
+          await oprot.WriteListEndAsync(cancellationToken);
+        }
+        await oprot.WriteFieldEndAsync(cancellationToken);
+      }
+      if((RegionIds != null) && __isset.regionIds)
+      {
+        field.Name = "regionIds";
+        field.Type = TType.List;
+        field.ID = 3;
+        await oprot.WriteFieldBeginAsync(field, cancellationToken);
+        {
+          await oprot.WriteListBeginAsync(new TList(TType.String, RegionIds.Count), cancellationToken);
+          foreach (string _iter27 in RegionIds)
+          {
+            await oprot.WriteStringAsync(_iter27, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -182,7 +233,8 @@ public partial class TFlushReq : TBase
     if (!(that is TFlushReq other)) return false;
     if (ReferenceEquals(this, other)) return true;
     return ((__isset.isSeq == other.__isset.isSeq) && ((!__isset.isSeq) || (System.Object.Equals(IsSeq, other.IsSeq))))
-      && ((__isset.storageGroups == other.__isset.storageGroups) && ((!__isset.storageGroups) || (TCollections.Equals(StorageGroups, other.StorageGroups))));
+      && ((__isset.storageGroups == other.__isset.storageGroups) && ((!__isset.storageGroups) || (TCollections.Equals(StorageGroups, other.StorageGroups))))
+      && ((__isset.regionIds == other.__isset.regionIds) && ((!__isset.regionIds) || (TCollections.Equals(RegionIds, other.RegionIds))));
   }
 
   public override int GetHashCode() {
@@ -196,6 +248,10 @@ public partial class TFlushReq : TBase
       {
         hashcode = (hashcode * 397) + TCollections.GetHashCode(StorageGroups);
       }
+      if((RegionIds != null) && __isset.regionIds)
+      {
+        hashcode = (hashcode * 397) + TCollections.GetHashCode(RegionIds);
+      }
     }
     return hashcode;
   }
@@ -203,18 +259,24 @@ public partial class TFlushReq : TBase
   public override string ToString()
   {
     var sb = new StringBuilder("TFlushReq(");
-    int tmp24 = 0;
+    int tmp28 = 0;
     if((IsSeq != null) && __isset.isSeq)
     {
-      if(0 < tmp24++) { sb.Append(", "); }
+      if(0 < tmp28++) { sb.Append(", "); }
       sb.Append("IsSeq: ");
       IsSeq.ToString(sb);
     }
     if((StorageGroups != null) && __isset.storageGroups)
     {
-      if(0 < tmp24++) { sb.Append(", "); }
+      if(0 < tmp28++) { sb.Append(", "); }
       sb.Append("StorageGroups: ");
       StorageGroups.ToString(sb);
+    }
+    if((RegionIds != null) && __isset.regionIds)
+    {
+      if(0 < tmp28++) { sb.Append(", "); }
+      sb.Append("RegionIds: ");
+      RegionIds.ToString(sb);
     }
     sb.Append(')');
     return sb.ToString();

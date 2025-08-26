@@ -29,17 +29,16 @@ using Thrift.Processor;
 #pragma warning disable IDE1006  // parts of the code use IDL spelling
 
 
-public partial class TSLastDataQueryReq : TBase
+public partial class TSFastLastDataQueryForOnePrefixPathReq : TBase
 {
   private int _fetchSize;
   private bool _enableRedirectQuery;
   private bool _jdbcQuery;
   private long _timeout;
-  private bool _legalPathNodes;
 
   public long SessionId { get; set; }
 
-  public List<string> Paths { get; set; }
+  public List<string> Prefixes { get; set; }
 
   public int FetchSize
   {
@@ -53,8 +52,6 @@ public partial class TSLastDataQueryReq : TBase
       this._fetchSize = value;
     }
   }
-
-  public long Time { get; set; }
 
   public long StatementId { get; set; }
 
@@ -97,19 +94,6 @@ public partial class TSLastDataQueryReq : TBase
     }
   }
 
-  public bool LegalPathNodes
-  {
-    get
-    {
-      return _legalPathNodes;
-    }
-    set
-    {
-      __isset.legalPathNodes = true;
-      this._legalPathNodes = value;
-    }
-  }
-
 
   public Isset __isset;
   public struct Isset
@@ -118,18 +102,16 @@ public partial class TSLastDataQueryReq : TBase
     public bool enableRedirectQuery;
     public bool jdbcQuery;
     public bool timeout;
-    public bool legalPathNodes;
   }
 
-  public TSLastDataQueryReq()
+  public TSFastLastDataQueryForOnePrefixPathReq()
   {
   }
 
-  public TSLastDataQueryReq(long sessionId, List<string> paths, long time, long statementId) : this()
+  public TSFastLastDataQueryForOnePrefixPathReq(long sessionId, List<string> prefixes, long statementId) : this()
   {
     this.SessionId = sessionId;
-    this.Paths = paths;
-    this.Time = time;
+    this.Prefixes = prefixes;
     this.StatementId = statementId;
   }
 
@@ -139,8 +121,7 @@ public partial class TSLastDataQueryReq : TBase
     try
     {
       bool isset_sessionId = false;
-      bool isset_paths = false;
-      bool isset_time = false;
+      bool isset_prefixes = false;
       bool isset_statementId = false;
       TField field;
       await iprot.ReadStructBeginAsync(cancellationToken);
@@ -169,17 +150,17 @@ public partial class TSLastDataQueryReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list310 = await iprot.ReadListBeginAsync(cancellationToken);
-                Paths = new List<string>(_list310.Count);
-                for(int _i311 = 0; _i311 < _list310.Count; ++_i311)
+                TList _list315 = await iprot.ReadListBeginAsync(cancellationToken);
+                Prefixes = new List<string>(_list315.Count);
+                for(int _i316 = 0; _i316 < _list315.Count; ++_i316)
                 {
-                  string _elem312;
-                  _elem312 = await iprot.ReadStringAsync(cancellationToken);
-                  Paths.Add(_elem312);
+                  string _elem317;
+                  _elem317 = await iprot.ReadStringAsync(cancellationToken);
+                  Prefixes.Add(_elem317);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
-              isset_paths = true;
+              isset_prefixes = true;
             }
             else
             {
@@ -199,17 +180,6 @@ public partial class TSLastDataQueryReq : TBase
           case 4:
             if (field.Type == TType.I64)
             {
-              Time = await iprot.ReadI64Async(cancellationToken);
-              isset_time = true;
-            }
-            else
-            {
-              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
-            }
-            break;
-          case 5:
-            if (field.Type == TType.I64)
-            {
               StatementId = await iprot.ReadI64Async(cancellationToken);
               isset_statementId = true;
             }
@@ -218,7 +188,7 @@ public partial class TSLastDataQueryReq : TBase
               await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             }
             break;
-          case 6:
+          case 5:
             if (field.Type == TType.Bool)
             {
               EnableRedirectQuery = await iprot.ReadBoolAsync(cancellationToken);
@@ -228,7 +198,7 @@ public partial class TSLastDataQueryReq : TBase
               await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             }
             break;
-          case 7:
+          case 6:
             if (field.Type == TType.Bool)
             {
               JdbcQuery = await iprot.ReadBoolAsync(cancellationToken);
@@ -238,20 +208,10 @@ public partial class TSLastDataQueryReq : TBase
               await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             }
             break;
-          case 8:
+          case 7:
             if (field.Type == TType.I64)
             {
               Timeout = await iprot.ReadI64Async(cancellationToken);
-            }
-            else
-            {
-              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
-            }
-            break;
-          case 9:
-            if (field.Type == TType.Bool)
-            {
-              LegalPathNodes = await iprot.ReadBoolAsync(cancellationToken);
             }
             else
             {
@@ -271,11 +231,7 @@ public partial class TSLastDataQueryReq : TBase
       {
         throw new TProtocolException(TProtocolException.INVALID_DATA);
       }
-      if (!isset_paths)
-      {
-        throw new TProtocolException(TProtocolException.INVALID_DATA);
-      }
-      if (!isset_time)
+      if (!isset_prefixes)
       {
         throw new TProtocolException(TProtocolException.INVALID_DATA);
       }
@@ -295,7 +251,7 @@ public partial class TSLastDataQueryReq : TBase
     oprot.IncrementRecursionDepth();
     try
     {
-      var struc = new TStruct("TSLastDataQueryReq");
+      var struc = new TStruct("TSFastLastDataQueryForOnePrefixPathReq");
       await oprot.WriteStructBeginAsync(struc, cancellationToken);
       var field = new TField();
       field.Name = "sessionId";
@@ -304,17 +260,17 @@ public partial class TSLastDataQueryReq : TBase
       await oprot.WriteFieldBeginAsync(field, cancellationToken);
       await oprot.WriteI64Async(SessionId, cancellationToken);
       await oprot.WriteFieldEndAsync(cancellationToken);
-      if((Paths != null))
+      if((Prefixes != null))
       {
-        field.Name = "paths";
+        field.Name = "prefixes";
         field.Type = TType.List;
         field.ID = 2;
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
-          await oprot.WriteListBeginAsync(new TList(TType.String, Paths.Count), cancellationToken);
-          foreach (string _iter313 in Paths)
+          await oprot.WriteListBeginAsync(new TList(TType.String, Prefixes.Count), cancellationToken);
+          foreach (string _iter318 in Prefixes)
           {
-            await oprot.WriteStringAsync(_iter313, cancellationToken);
+            await oprot.WriteStringAsync(_iter318, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -329,15 +285,9 @@ public partial class TSLastDataQueryReq : TBase
         await oprot.WriteI32Async(FetchSize, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
       }
-      field.Name = "time";
-      field.Type = TType.I64;
-      field.ID = 4;
-      await oprot.WriteFieldBeginAsync(field, cancellationToken);
-      await oprot.WriteI64Async(Time, cancellationToken);
-      await oprot.WriteFieldEndAsync(cancellationToken);
       field.Name = "statementId";
       field.Type = TType.I64;
-      field.ID = 5;
+      field.ID = 4;
       await oprot.WriteFieldBeginAsync(field, cancellationToken);
       await oprot.WriteI64Async(StatementId, cancellationToken);
       await oprot.WriteFieldEndAsync(cancellationToken);
@@ -345,7 +295,7 @@ public partial class TSLastDataQueryReq : TBase
       {
         field.Name = "enableRedirectQuery";
         field.Type = TType.Bool;
-        field.ID = 6;
+        field.ID = 5;
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         await oprot.WriteBoolAsync(EnableRedirectQuery, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
@@ -354,7 +304,7 @@ public partial class TSLastDataQueryReq : TBase
       {
         field.Name = "jdbcQuery";
         field.Type = TType.Bool;
-        field.ID = 7;
+        field.ID = 6;
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         await oprot.WriteBoolAsync(JdbcQuery, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
@@ -363,18 +313,9 @@ public partial class TSLastDataQueryReq : TBase
       {
         field.Name = "timeout";
         field.Type = TType.I64;
-        field.ID = 8;
+        field.ID = 7;
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         await oprot.WriteI64Async(Timeout, cancellationToken);
-        await oprot.WriteFieldEndAsync(cancellationToken);
-      }
-      if(__isset.legalPathNodes)
-      {
-        field.Name = "legalPathNodes";
-        field.Type = TType.Bool;
-        field.ID = 9;
-        await oprot.WriteFieldBeginAsync(field, cancellationToken);
-        await oprot.WriteBoolAsync(LegalPathNodes, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
       }
       await oprot.WriteFieldStopAsync(cancellationToken);
@@ -388,32 +329,29 @@ public partial class TSLastDataQueryReq : TBase
 
   public override bool Equals(object that)
   {
-    if (!(that is TSLastDataQueryReq other)) return false;
+    if (!(that is TSFastLastDataQueryForOnePrefixPathReq other)) return false;
     if (ReferenceEquals(this, other)) return true;
     return System.Object.Equals(SessionId, other.SessionId)
-      && TCollections.Equals(Paths, other.Paths)
+      && TCollections.Equals(Prefixes, other.Prefixes)
       && ((__isset.fetchSize == other.__isset.fetchSize) && ((!__isset.fetchSize) || (System.Object.Equals(FetchSize, other.FetchSize))))
-      && System.Object.Equals(Time, other.Time)
       && System.Object.Equals(StatementId, other.StatementId)
       && ((__isset.enableRedirectQuery == other.__isset.enableRedirectQuery) && ((!__isset.enableRedirectQuery) || (System.Object.Equals(EnableRedirectQuery, other.EnableRedirectQuery))))
       && ((__isset.jdbcQuery == other.__isset.jdbcQuery) && ((!__isset.jdbcQuery) || (System.Object.Equals(JdbcQuery, other.JdbcQuery))))
-      && ((__isset.timeout == other.__isset.timeout) && ((!__isset.timeout) || (System.Object.Equals(Timeout, other.Timeout))))
-      && ((__isset.legalPathNodes == other.__isset.legalPathNodes) && ((!__isset.legalPathNodes) || (System.Object.Equals(LegalPathNodes, other.LegalPathNodes))));
+      && ((__isset.timeout == other.__isset.timeout) && ((!__isset.timeout) || (System.Object.Equals(Timeout, other.Timeout))));
   }
 
   public override int GetHashCode() {
     int hashcode = 157;
     unchecked {
       hashcode = (hashcode * 397) + SessionId.GetHashCode();
-      if((Paths != null))
+      if((Prefixes != null))
       {
-        hashcode = (hashcode * 397) + TCollections.GetHashCode(Paths);
+        hashcode = (hashcode * 397) + TCollections.GetHashCode(Prefixes);
       }
       if(__isset.fetchSize)
       {
         hashcode = (hashcode * 397) + FetchSize.GetHashCode();
       }
-      hashcode = (hashcode * 397) + Time.GetHashCode();
       hashcode = (hashcode * 397) + StatementId.GetHashCode();
       if(__isset.enableRedirectQuery)
       {
@@ -427,31 +365,25 @@ public partial class TSLastDataQueryReq : TBase
       {
         hashcode = (hashcode * 397) + Timeout.GetHashCode();
       }
-      if(__isset.legalPathNodes)
-      {
-        hashcode = (hashcode * 397) + LegalPathNodes.GetHashCode();
-      }
     }
     return hashcode;
   }
 
   public override string ToString()
   {
-    var sb = new StringBuilder("TSLastDataQueryReq(");
+    var sb = new StringBuilder("TSFastLastDataQueryForOnePrefixPathReq(");
     sb.Append(", SessionId: ");
     SessionId.ToString(sb);
-    if((Paths != null))
+    if((Prefixes != null))
     {
-      sb.Append(", Paths: ");
-      Paths.ToString(sb);
+      sb.Append(", Prefixes: ");
+      Prefixes.ToString(sb);
     }
     if(__isset.fetchSize)
     {
       sb.Append(", FetchSize: ");
       FetchSize.ToString(sb);
     }
-    sb.Append(", Time: ");
-    Time.ToString(sb);
     sb.Append(", StatementId: ");
     StatementId.ToString(sb);
     if(__isset.enableRedirectQuery)
@@ -468,11 +400,6 @@ public partial class TSLastDataQueryReq : TBase
     {
       sb.Append(", Timeout: ");
       Timeout.ToString(sb);
-    }
-    if(__isset.legalPathNodes)
-    {
-      sb.Append(", LegalPathNodes: ");
-      LegalPathNodes.ToString(sb);
     }
     sb.Append(')');
     return sb.ToString();

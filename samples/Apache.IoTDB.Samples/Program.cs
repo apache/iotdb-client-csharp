@@ -50,9 +50,6 @@ namespace Apache.IoTDB.Samples
 
             rootCommand.SetHandler(async (string single, List<string> multi) =>
             {
-                var utilsTest = new UtilsTest();
-                utilsTest.TestParseEndPoint();
-
                 SessionPoolTest sessionPoolTest;
 
                 if (!string.IsNullOrEmpty(single) && (multi == null || multi.Count == 0))

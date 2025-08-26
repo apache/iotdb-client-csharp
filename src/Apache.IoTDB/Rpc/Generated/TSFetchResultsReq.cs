@@ -32,6 +32,7 @@ using Thrift.Processor;
 public partial class TSFetchResultsReq : TBase
 {
   private long _timeout;
+  private long _statementId;
 
   public long SessionId { get; set; }
 
@@ -56,11 +57,25 @@ public partial class TSFetchResultsReq : TBase
     }
   }
 
+  public long StatementId
+  {
+    get
+    {
+      return _statementId;
+    }
+    set
+    {
+      __isset.statementId = true;
+      this._statementId = value;
+    }
+  }
+
 
   public Isset __isset;
   public struct Isset
   {
     public bool timeout;
+    public bool statementId;
   }
 
   public TSFetchResultsReq()
@@ -163,6 +178,16 @@ public partial class TSFetchResultsReq : TBase
               await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             }
             break;
+          case 7:
+            if (field.Type == TType.I64)
+            {
+              StatementId = await iprot.ReadI64Async(cancellationToken);
+            }
+            else
+            {
+              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
+            }
+            break;
           default: 
             await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             break;
@@ -249,6 +274,15 @@ public partial class TSFetchResultsReq : TBase
         await oprot.WriteI64Async(Timeout, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
       }
+      if(__isset.statementId)
+      {
+        field.Name = "statementId";
+        field.Type = TType.I64;
+        field.ID = 7;
+        await oprot.WriteFieldBeginAsync(field, cancellationToken);
+        await oprot.WriteI64Async(StatementId, cancellationToken);
+        await oprot.WriteFieldEndAsync(cancellationToken);
+      }
       await oprot.WriteFieldStopAsync(cancellationToken);
       await oprot.WriteStructEndAsync(cancellationToken);
     }
@@ -267,7 +301,8 @@ public partial class TSFetchResultsReq : TBase
       && System.Object.Equals(FetchSize, other.FetchSize)
       && System.Object.Equals(QueryId, other.QueryId)
       && System.Object.Equals(IsAlign, other.IsAlign)
-      && ((__isset.timeout == other.__isset.timeout) && ((!__isset.timeout) || (System.Object.Equals(Timeout, other.Timeout))));
+      && ((__isset.timeout == other.__isset.timeout) && ((!__isset.timeout) || (System.Object.Equals(Timeout, other.Timeout))))
+      && ((__isset.statementId == other.__isset.statementId) && ((!__isset.statementId) || (System.Object.Equals(StatementId, other.StatementId))));
   }
 
   public override int GetHashCode() {
@@ -284,6 +319,10 @@ public partial class TSFetchResultsReq : TBase
       if(__isset.timeout)
       {
         hashcode = (hashcode * 397) + Timeout.GetHashCode();
+      }
+      if(__isset.statementId)
+      {
+        hashcode = (hashcode * 397) + StatementId.GetHashCode();
       }
     }
     return hashcode;
@@ -309,6 +348,11 @@ public partial class TSFetchResultsReq : TBase
     {
       sb.Append(", Timeout: ");
       Timeout.ToString(sb);
+    }
+    if(__isset.statementId)
+    {
+      sb.Append(", StatementId: ");
+      StatementId.ToString(sb);
     }
     sb.Append(')');
     return sb.ToString();

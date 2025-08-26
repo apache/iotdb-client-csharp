@@ -165,13 +165,13 @@ public partial class ServerProperties : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list374 = await iprot.ReadListBeginAsync(cancellationToken);
-                SupportedTimeAggregationOperations = new List<string>(_list374.Count);
-                for(int _i375 = 0; _i375 < _list374.Count; ++_i375)
+                TList _list383 = await iprot.ReadListBeginAsync(cancellationToken);
+                SupportedTimeAggregationOperations = new List<string>(_list383.Count);
+                for(int _i384 = 0; _i384 < _list383.Count; ++_i384)
                 {
-                  string _elem376;
-                  _elem376 = await iprot.ReadStringAsync(cancellationToken);
-                  SupportedTimeAggregationOperations.Add(_elem376);
+                  string _elem385;
+                  _elem385 = await iprot.ReadStringAsync(cancellationToken);
+                  SupportedTimeAggregationOperations.Add(_elem385);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -296,9 +296,9 @@ public partial class ServerProperties : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, SupportedTimeAggregationOperations.Count), cancellationToken);
-          foreach (string _iter377 in SupportedTimeAggregationOperations)
+          foreach (string _iter386 in SupportedTimeAggregationOperations)
           {
-            await oprot.WriteStringAsync(_iter377, cancellationToken);
+            await oprot.WriteStringAsync(_iter386, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

@@ -69,15 +69,15 @@ public partial class TSetConfigurationReq : TBase
             if (field.Type == TType.Map)
             {
               {
-                TMap _map31 = await iprot.ReadMapBeginAsync(cancellationToken);
-                Configs = new Dictionary<string, string>(_map31.Count);
-                for(int _i32 = 0; _i32 < _map31.Count; ++_i32)
+                TMap _map35 = await iprot.ReadMapBeginAsync(cancellationToken);
+                Configs = new Dictionary<string, string>(_map35.Count);
+                for(int _i36 = 0; _i36 < _map35.Count; ++_i36)
                 {
-                  string _key33;
-                  string _val34;
-                  _key33 = await iprot.ReadStringAsync(cancellationToken);
-                  _val34 = await iprot.ReadStringAsync(cancellationToken);
-                  Configs[_key33] = _val34;
+                  string _key37;
+                  string _val38;
+                  _key37 = await iprot.ReadStringAsync(cancellationToken);
+                  _val38 = await iprot.ReadStringAsync(cancellationToken);
+                  Configs[_key37] = _val38;
                 }
                 await iprot.ReadMapEndAsync(cancellationToken);
               }
@@ -139,10 +139,10 @@ public partial class TSetConfigurationReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteMapBeginAsync(new TMap(TType.String, TType.String, Configs.Count), cancellationToken);
-          foreach (string _iter35 in Configs.Keys)
+          foreach (string _iter39 in Configs.Keys)
           {
-            await oprot.WriteStringAsync(_iter35, cancellationToken);
-            await oprot.WriteStringAsync(Configs[_iter35], cancellationToken);
+            await oprot.WriteStringAsync(_iter39, cancellationToken);
+            await oprot.WriteStringAsync(Configs[_iter39], cancellationToken);
           }
           await oprot.WriteMapEndAsync(cancellationToken);
         }

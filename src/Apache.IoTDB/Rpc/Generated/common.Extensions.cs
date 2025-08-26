@@ -127,6 +127,66 @@ public static class commonExtensions
   }
 
 
+  public static bool Equals(this List<bool> instance, object that)
+  {
+    if (!(that is List<bool> other)) return false;
+    if (ReferenceEquals(instance, other)) return true;
+
+    return TCollections.Equals(instance, other);
+  }
+
+
+  public static int GetHashCode(this List<bool> instance)
+  {
+    return TCollections.GetHashCode(instance);
+  }
+
+
+  public static bool Equals(this List<byte[]> instance, object that)
+  {
+    if (!(that is List<byte[]> other)) return false;
+    if (ReferenceEquals(instance, other)) return true;
+
+    return TCollections.Equals(instance, other);
+  }
+
+
+  public static int GetHashCode(this List<byte[]> instance)
+  {
+    return TCollections.GetHashCode(instance);
+  }
+
+
+  public static bool Equals(this List<double> instance, object that)
+  {
+    if (!(that is List<double> other)) return false;
+    if (ReferenceEquals(instance, other)) return true;
+
+    return TCollections.Equals(instance, other);
+  }
+
+
+  public static int GetHashCode(this List<double> instance)
+  {
+    return TCollections.GetHashCode(instance);
+  }
+
+
+  public static bool Equals(this List<long> instance, object that)
+  {
+    if (!(that is List<long> other)) return false;
+    if (ReferenceEquals(instance, other)) return true;
+
+    return TCollections.Equals(instance, other);
+  }
+
+
+  public static int GetHashCode(this List<long> instance)
+  {
+    return TCollections.GetHashCode(instance);
+  }
+
+
   public static bool Equals(this List<string> instance, object that)
   {
     if (!(that is List<string> other)) return false;

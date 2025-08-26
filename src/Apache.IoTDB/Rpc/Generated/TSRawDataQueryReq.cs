@@ -173,13 +173,13 @@ public partial class TSRawDataQueryReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list301 = await iprot.ReadListBeginAsync(cancellationToken);
-                Paths = new List<string>(_list301.Count);
-                for(int _i302 = 0; _i302 < _list301.Count; ++_i302)
+                TList _list305 = await iprot.ReadListBeginAsync(cancellationToken);
+                Paths = new List<string>(_list305.Count);
+                for(int _i306 = 0; _i306 < _list305.Count; ++_i306)
                 {
-                  string _elem303;
-                  _elem303 = await iprot.ReadStringAsync(cancellationToken);
-                  Paths.Add(_elem303);
+                  string _elem307;
+                  _elem307 = await iprot.ReadStringAsync(cancellationToken);
+                  Paths.Add(_elem307);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -331,9 +331,9 @@ public partial class TSRawDataQueryReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Paths.Count), cancellationToken);
-          foreach (string _iter304 in Paths)
+          foreach (string _iter308 in Paths)
           {
-            await oprot.WriteStringAsync(_iter304, cancellationToken);
+            await oprot.WriteStringAsync(_iter308, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

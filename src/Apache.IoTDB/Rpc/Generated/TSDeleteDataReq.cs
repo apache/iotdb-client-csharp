@@ -88,13 +88,13 @@ public partial class TSDeleteDataReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list241 = await iprot.ReadListBeginAsync(cancellationToken);
-                Paths = new List<string>(_list241.Count);
-                for(int _i242 = 0; _i242 < _list241.Count; ++_i242)
+                TList _list245 = await iprot.ReadListBeginAsync(cancellationToken);
+                Paths = new List<string>(_list245.Count);
+                for(int _i246 = 0; _i246 < _list245.Count; ++_i246)
                 {
-                  string _elem243;
-                  _elem243 = await iprot.ReadStringAsync(cancellationToken);
-                  Paths.Add(_elem243);
+                  string _elem247;
+                  _elem247 = await iprot.ReadStringAsync(cancellationToken);
+                  Paths.Add(_elem247);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -181,9 +181,9 @@ public partial class TSDeleteDataReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Paths.Count), cancellationToken);
-          foreach (string _iter244 in Paths)
+          foreach (string _iter248 in Paths)
           {
-            await oprot.WriteStringAsync(_iter244, cancellationToken);
+            await oprot.WriteStringAsync(_iter248, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

@@ -37,6 +37,7 @@ public partial class TSGroupByQueryIntervalReq : TBase
   private long _interval;
   private int _fetchSize;
   private long _timeout;
+  private bool _isAligned;
 
   public long SessionId { get; set; }
 
@@ -132,6 +133,19 @@ public partial class TSGroupByQueryIntervalReq : TBase
     }
   }
 
+  public bool IsAligned
+  {
+    get
+    {
+      return _isAligned;
+    }
+    set
+    {
+      __isset.isAligned = true;
+      this._isAligned = value;
+    }
+  }
+
 
   public Isset __isset;
   public struct Isset
@@ -142,6 +156,7 @@ public partial class TSGroupByQueryIntervalReq : TBase
     public bool interval;
     public bool fetchSize;
     public bool timeout;
+    public bool isAligned;
   }
 
   public TSGroupByQueryIntervalReq()
@@ -307,6 +322,16 @@ public partial class TSGroupByQueryIntervalReq : TBase
               await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             }
             break;
+          case 13:
+            if (field.Type == TType.Bool)
+            {
+              IsAligned = await iprot.ReadBoolAsync(cancellationToken);
+            }
+            else
+            {
+              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
+            }
+            break;
           default: 
             await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             break;
@@ -451,6 +476,15 @@ public partial class TSGroupByQueryIntervalReq : TBase
         await oprot.WriteI64Async(Timeout, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
       }
+      if(__isset.isAligned)
+      {
+        field.Name = "isAligned";
+        field.Type = TType.Bool;
+        field.ID = 13;
+        await oprot.WriteFieldBeginAsync(field, cancellationToken);
+        await oprot.WriteBoolAsync(IsAligned, cancellationToken);
+        await oprot.WriteFieldEndAsync(cancellationToken);
+      }
       await oprot.WriteFieldStopAsync(cancellationToken);
       await oprot.WriteStructEndAsync(cancellationToken);
     }
@@ -475,7 +509,8 @@ public partial class TSGroupByQueryIntervalReq : TBase
       && ((__isset.endTime == other.__isset.endTime) && ((!__isset.endTime) || (System.Object.Equals(EndTime, other.EndTime))))
       && ((__isset.interval == other.__isset.interval) && ((!__isset.interval) || (System.Object.Equals(Interval, other.Interval))))
       && ((__isset.fetchSize == other.__isset.fetchSize) && ((!__isset.fetchSize) || (System.Object.Equals(FetchSize, other.FetchSize))))
-      && ((__isset.timeout == other.__isset.timeout) && ((!__isset.timeout) || (System.Object.Equals(Timeout, other.Timeout))));
+      && ((__isset.timeout == other.__isset.timeout) && ((!__isset.timeout) || (System.Object.Equals(Timeout, other.Timeout))))
+      && ((__isset.isAligned == other.__isset.isAligned) && ((!__isset.isAligned) || (System.Object.Equals(IsAligned, other.IsAligned))));
   }
 
   public override int GetHashCode() {
@@ -516,6 +551,10 @@ public partial class TSGroupByQueryIntervalReq : TBase
       if(__isset.timeout)
       {
         hashcode = (hashcode * 397) + Timeout.GetHashCode();
+      }
+      if(__isset.isAligned)
+      {
+        hashcode = (hashcode * 397) + IsAligned.GetHashCode();
       }
     }
     return hashcode;
@@ -571,6 +610,11 @@ public partial class TSGroupByQueryIntervalReq : TBase
     {
       sb.Append(", Timeout: ");
       Timeout.ToString(sb);
+    }
+    if(__isset.isAligned)
+    {
+      sb.Append(", IsAligned: ");
+      IsAligned.ToString(sb);
     }
     sb.Append(')');
     return sb.ToString();

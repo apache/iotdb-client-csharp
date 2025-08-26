@@ -210,13 +210,13 @@ public partial class TSAggregationQueryReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list316 = await iprot.ReadListBeginAsync(cancellationToken);
-                Paths = new List<string>(_list316.Count);
-                for(int _i317 = 0; _i317 < _list316.Count; ++_i317)
+                TList _list325 = await iprot.ReadListBeginAsync(cancellationToken);
+                Paths = new List<string>(_list325.Count);
+                for(int _i326 = 0; _i326 < _list325.Count; ++_i326)
                 {
-                  string _elem318;
-                  _elem318 = await iprot.ReadStringAsync(cancellationToken);
-                  Paths.Add(_elem318);
+                  string _elem327;
+                  _elem327 = await iprot.ReadStringAsync(cancellationToken);
+                  Paths.Add(_elem327);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -231,13 +231,13 @@ public partial class TSAggregationQueryReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list319 = await iprot.ReadListBeginAsync(cancellationToken);
-                Aggregations = new List<TAggregationType>(_list319.Count);
-                for(int _i320 = 0; _i320 < _list319.Count; ++_i320)
+                TList _list328 = await iprot.ReadListBeginAsync(cancellationToken);
+                Aggregations = new List<TAggregationType>(_list328.Count);
+                for(int _i329 = 0; _i329 < _list328.Count; ++_i329)
                 {
-                  TAggregationType _elem321;
-                  _elem321 = (TAggregationType)await iprot.ReadI32Async(cancellationToken);
-                  Aggregations.Add(_elem321);
+                  TAggregationType _elem330;
+                  _elem330 = (TAggregationType)await iprot.ReadI32Async(cancellationToken);
+                  Aggregations.Add(_elem330);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -378,9 +378,9 @@ public partial class TSAggregationQueryReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Paths.Count), cancellationToken);
-          foreach (string _iter322 in Paths)
+          foreach (string _iter331 in Paths)
           {
-            await oprot.WriteStringAsync(_iter322, cancellationToken);
+            await oprot.WriteStringAsync(_iter331, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -394,9 +394,9 @@ public partial class TSAggregationQueryReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I32, Aggregations.Count), cancellationToken);
-          foreach (TAggregationType _iter323 in Aggregations)
+          foreach (TAggregationType _iter332 in Aggregations)
           {
-            await oprot.WriteI32Async((int)_iter323, cancellationToken);
+            await oprot.WriteI32Async((int)_iter332, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

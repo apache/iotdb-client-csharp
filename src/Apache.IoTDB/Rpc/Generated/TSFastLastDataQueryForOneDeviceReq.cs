@@ -195,13 +195,13 @@ public partial class TSFastLastDataQueryForOneDeviceReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list311 = await iprot.ReadListBeginAsync(cancellationToken);
-                Sensors = new List<string>(_list311.Count);
-                for(int _i312 = 0; _i312 < _list311.Count; ++_i312)
+                TList _list320 = await iprot.ReadListBeginAsync(cancellationToken);
+                Sensors = new List<string>(_list320.Count);
+                for(int _i321 = 0; _i321 < _list320.Count; ++_i321)
                 {
-                  string _elem313;
-                  _elem313 = await iprot.ReadStringAsync(cancellationToken);
-                  Sensors.Add(_elem313);
+                  string _elem322;
+                  _elem322 = await iprot.ReadStringAsync(cancellationToken);
+                  Sensors.Add(_elem322);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -349,9 +349,9 @@ public partial class TSFastLastDataQueryForOneDeviceReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Sensors.Count), cancellationToken);
-          foreach (string _iter314 in Sensors)
+          foreach (string _iter323 in Sensors)
           {
-            await oprot.WriteStringAsync(_iter314, cancellationToken);
+            await oprot.WriteStringAsync(_iter323, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

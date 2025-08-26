@@ -65,13 +65,13 @@ public partial class TShowTTLReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list42 = await iprot.ReadListBeginAsync(cancellationToken);
-                PathPattern = new List<string>(_list42.Count);
-                for(int _i43 = 0; _i43 < _list42.Count; ++_i43)
+                TList _list46 = await iprot.ReadListBeginAsync(cancellationToken);
+                PathPattern = new List<string>(_list46.Count);
+                for(int _i47 = 0; _i47 < _list46.Count; ++_i47)
                 {
-                  string _elem44;
-                  _elem44 = await iprot.ReadStringAsync(cancellationToken);
-                  PathPattern.Add(_elem44);
+                  string _elem48;
+                  _elem48 = await iprot.ReadStringAsync(cancellationToken);
+                  PathPattern.Add(_elem48);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -118,9 +118,9 @@ public partial class TShowTTLReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, PathPattern.Count), cancellationToken);
-          foreach (string _iter45 in PathPattern)
+          foreach (string _iter49 in PathPattern)
           {
-            await oprot.WriteStringAsync(_iter45, cancellationToken);
+            await oprot.WriteStringAsync(_iter49, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

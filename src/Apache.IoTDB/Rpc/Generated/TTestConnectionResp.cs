@@ -81,14 +81,14 @@ public partial class TTestConnectionResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list72 = await iprot.ReadListBeginAsync(cancellationToken);
-                ResultList = new List<TTestConnectionResult>(_list72.Count);
-                for(int _i73 = 0; _i73 < _list72.Count; ++_i73)
+                TList _list93 = await iprot.ReadListBeginAsync(cancellationToken);
+                ResultList = new List<TTestConnectionResult>(_list93.Count);
+                for(int _i94 = 0; _i94 < _list93.Count; ++_i94)
                 {
-                  TTestConnectionResult _elem74;
-                  _elem74 = new TTestConnectionResult();
-                  await _elem74.ReadAsync(iprot, cancellationToken);
-                  ResultList.Add(_elem74);
+                  TTestConnectionResult _elem95;
+                  _elem95 = new TTestConnectionResult();
+                  await _elem95.ReadAsync(iprot, cancellationToken);
+                  ResultList.Add(_elem95);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -148,9 +148,9 @@ public partial class TTestConnectionResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Struct, ResultList.Count), cancellationToken);
-          foreach (TTestConnectionResult _iter75 in ResultList)
+          foreach (TTestConnectionResult _iter96 in ResultList)
           {
-            await _iter75.WriteAsync(oprot, cancellationToken);
+            await _iter96.WriteAsync(oprot, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

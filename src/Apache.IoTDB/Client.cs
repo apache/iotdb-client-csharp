@@ -37,5 +37,23 @@ namespace Apache.IoTDB
             Transport = transport;
             EndPoint = endpoint;
         }
+
+        static public TSDataType GetDataTypeByStr(string typeStr)
+        {
+            return typeStr switch
+            {
+                "BOOLEAN" => TSDataType.BOOLEAN,
+                "INT32" => TSDataType.INT32,
+                "INT64" => TSDataType.INT64,
+                "FLOAT" => TSDataType.FLOAT,
+                "DOUBLE" => TSDataType.DOUBLE,
+                "TEXT" => TSDataType.TEXT,
+                "STRING" => TSDataType.STRING,
+                "BLOB" => TSDataType.BLOB,
+                "TIMESTAMP" => TSDataType.TIMESTAMP,
+                "DATE" => TSDataType.DATE,
+                _ => TSDataType.NONE
+            };
+        }
     }
 }

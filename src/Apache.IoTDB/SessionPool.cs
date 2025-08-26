@@ -66,23 +66,23 @@ namespace Apache.IoTDB
 
         [Obsolete("This method is deprecated, please use new SessionPool.Builder().")]
         public SessionPool(string host, int port, int poolSize)
-                        : this(host, port, "root", "root", 1024, "UTC+08:00", poolSize, true, 60)
+                        : this(host, port, "root", "root", 1024, "Asia/Shanghai", poolSize, true, 60)
         {
         }
 
         [Obsolete(" This method is deprecated, please use new SessionPool.Builder().")]
         public SessionPool(string host, int port, string username, string password)
-                        : this(host, port, username, password, 1024, "UTC+08:00", 8, true, 60)
+                        : this(host, port, username, password, 1024, "Asia/Shanghai", 8, true, 60)
         {
         }
 
         public SessionPool(string host, int port, string username, string password, int fetchSize)
-                        : this(host, port, username, password, fetchSize, "UTC+08:00", 8, true, 60)
+                        : this(host, port, username, password, fetchSize, "Asia/Shanghai", 8, true, 60)
         {
 
         }
 
-        public SessionPool(string host, int port) : this(host, port, "root", "root", 1024, "UTC+08:00", 8, true, 60)
+        public SessionPool(string host, int port) : this(host, port, "root", "root", 1024, "Asia/Shanghai", 8, true, 60)
         {
         }
         public SessionPool(string host, int port, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout)
@@ -110,15 +110,15 @@ namespace Apache.IoTDB
         ///  <param name="nodeUrls">The list of node URLs to connect to, multiple ip:rpcPort eg.127.0.0.1:9001</param>
         ///  <param name="poolSize">The size of the session pool.</param>
         public SessionPool(List<string> nodeUrls, int poolSize)
-                        : this(nodeUrls, "root", "root", 1024, "UTC+08:00", poolSize, true, 60)
+                        : this(nodeUrls, "root", "root", 1024, "Asia/Shanghai", poolSize, true, 60)
         {
         }
         public SessionPool(List<string> nodeUrls, string username, string password)
-                        : this(nodeUrls, username, password, 1024, "UTC+08:00", 8, true, 60)
+                        : this(nodeUrls, username, password, 1024, "Asia/Shanghai", 8, true, 60)
         {
         }
         public SessionPool(List<string> nodeUrls, string username, string password, int fetchSize)
-                        : this(nodeUrls, username, password, fetchSize, "UTC+08:00", 8, true, 60)
+                        : this(nodeUrls, username, password, fetchSize, "Asia/Shanghai", 8, true, 60)
         {
         }
         public SessionPool(List<string> nodeUrls, string username, string password, int fetchSize, string zoneId)
@@ -710,9 +710,9 @@ namespace Apache.IoTDB
             try
             {
                 var sql = "SHOW TIMESERIES " + tsPath;
-                var sessionDataset = await ExecuteQueryStatementAsync(sql);
-                bool timeSeriesExists = sessionDataset.HasNext();
-                await sessionDataset.Close(); // be sure to close the sessionDataset to put the client back to the pool
+                var sessionDataSet = await ExecuteQueryStatementAsync(sql);
+                bool timeSeriesExists = sessionDataSet.HasNext();
+                await sessionDataSet.Close(); // be sure to close the SessionDataSet to put the client back to the pool
                 return timeSeriesExists;
             }
             catch (TException e)
@@ -1327,7 +1327,7 @@ namespace Apache.IoTDB
                         Timeout = timeoutInMs
                     };
 
-                    var resp = await client.ServiceClient.executeQueryStatementAsync(req);
+                    var resp = await client.ServiceClient.executeQueryStatementV2Async(req);
                     var status = resp.Status;
 
                     if (_utilFunctions.VerifySuccess(status) == -1)
@@ -1335,7 +1335,11 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute query failed, sql: {0}, message: {1}", sql, status.Message));
                     }
 
-                    return new SessionDataSet(sql, resp, client, _clients, client.StatementId)
+                    return new SessionDataSet(
+                        sql, resp.Columns, resp.DataTypeList, resp.ColumnNameIndexMap, resp.QueryId,
+                        client.StatementId, client, resp.QueryResult, resp.IgnoreTimeStamp,
+                        resp.MoreData, _zoneId, resp.ColumnIndex2TsBlockColumnIndexList, _clients
+                    )
                     {
                         FetchSize = _fetchSize,
                     };
@@ -1356,7 +1360,7 @@ namespace Apache.IoTDB
                         Timeout = timeout
                     };
 
-                    var resp = await client.ServiceClient.executeStatementAsync(req);
+                    var resp = await client.ServiceClient.executeStatementV2Async(req);
                     var status = resp.Status;
 
                     if (_utilFunctions.VerifySuccess(status) == -1)
@@ -1364,7 +1368,11 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute query failed, sql: {0}, message: {1}", sql, status.Message));
                     }
 
-                    return new SessionDataSet(sql, resp, client, _clients, client.StatementId)
+                    return new SessionDataSet(
+                        sql, resp.Columns, resp.DataTypeList, resp.ColumnNameIndexMap, resp.QueryId,
+                        client.StatementId, client, resp.QueryResult, resp.IgnoreTimeStamp,
+                        resp.MoreData, _zoneId, resp.ColumnIndex2TsBlockColumnIndexList, _clients
+                    )
                     {
                         FetchSize = _fetchSize,
                     };
@@ -1432,7 +1440,7 @@ namespace Apache.IoTDB
                         EnableRedirectQuery = false
                     };
 
-                    var resp = await client.ServiceClient.executeRawDataQueryAsync(req);
+                    var resp = await client.ServiceClient.executeRawDataQueryV2Async(req);
                     var status = resp.Status;
 
                     if (_utilFunctions.VerifySuccess(status) == -1)
@@ -1440,7 +1448,11 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute raw data query failed, message: {0}", status.Message));
                     }
 
-                    return new SessionDataSet("", resp, client, _clients, client.StatementId)
+                    return new SessionDataSet(
+                        "", resp.Columns, resp.DataTypeList, resp.ColumnNameIndexMap, resp.QueryId,
+                        client.StatementId, client, resp.QueryResult, resp.IgnoreTimeStamp,
+                        resp.MoreData, _zoneId, resp.ColumnIndex2TsBlockColumnIndexList, _clients
+                    )
                     {
                         FetchSize = _fetchSize,
                     };
@@ -1460,7 +1472,7 @@ namespace Apache.IoTDB
                         EnableRedirectQuery = false
                     };
 
-                    var resp = await client.ServiceClient.executeLastDataQueryAsync(req);
+                    var resp = await client.ServiceClient.executeLastDataQueryV2Async(req);
                     var status = resp.Status;
 
                     if (_utilFunctions.VerifySuccess(status) == -1)
@@ -1468,7 +1480,11 @@ namespace Apache.IoTDB
                         throw new Exception(string.Format("execute last data query failed, message: {0}", status.Message));
                     }
 
-                    return new SessionDataSet("", resp, client, _clients, client.StatementId)
+                    return new SessionDataSet(
+                        "", resp.Columns, resp.DataTypeList, resp.ColumnNameIndexMap, resp.QueryId,
+                        client.StatementId, client, resp.QueryResult, resp.IgnoreTimeStamp,
+                        resp.MoreData, _zoneId, resp.ColumnIndex2TsBlockColumnIndexList, _clients
+                    )
                     {
                         FetchSize = _fetchSize,
                     };

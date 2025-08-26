@@ -39,4 +39,7 @@ public enum TAggregationType
   LAST_BY = 26,
   MIN = 27,
   MAX = 28,
+  COUNT_ALL = 29,
+  APPROX_COUNT_DISTINCT = 30,
+  APPROX_MOST_FREQUENT = 31,
 }

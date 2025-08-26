@@ -163,13 +163,13 @@ public partial class TSQueryTemplateResp : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list400 = await iprot.ReadListBeginAsync(cancellationToken);
-                Measurements = new List<string>(_list400.Count);
-                for(int _i401 = 0; _i401 < _list400.Count; ++_i401)
+                TList _list409 = await iprot.ReadListBeginAsync(cancellationToken);
+                Measurements = new List<string>(_list409.Count);
+                for(int _i410 = 0; _i410 < _list409.Count; ++_i410)
                 {
-                  string _elem402;
-                  _elem402 = await iprot.ReadStringAsync(cancellationToken);
-                  Measurements.Add(_elem402);
+                  string _elem411;
+                  _elem411 = await iprot.ReadStringAsync(cancellationToken);
+                  Measurements.Add(_elem411);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -252,9 +252,9 @@ public partial class TSQueryTemplateResp : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Measurements.Count), cancellationToken);
-          foreach (string _iter403 in Measurements)
+          foreach (string _iter412 in Measurements)
           {
-            await oprot.WriteStringAsync(_iter403, cancellationToken);
+            await oprot.WriteStringAsync(_iter412, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

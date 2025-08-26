@@ -34,6 +34,9 @@ public partial class TSInsertTabletReq : TBase
   private bool _isAligned;
   private bool _writeToTable;
   private List<sbyte> _columnCategories;
+  private bool _isCompressed;
+  private List<sbyte> _encodingTypes;
+  private sbyte _compressType;
 
   public long SessionId { get; set; }
 
@@ -88,6 +91,45 @@ public partial class TSInsertTabletReq : TBase
     }
   }
 
+  public bool IsCompressed
+  {
+    get
+    {
+      return _isCompressed;
+    }
+    set
+    {
+      __isset.isCompressed = true;
+      this._isCompressed = value;
+    }
+  }
+
+  public List<sbyte> EncodingTypes
+  {
+    get
+    {
+      return _encodingTypes;
+    }
+    set
+    {
+      __isset.encodingTypes = true;
+      this._encodingTypes = value;
+    }
+  }
+
+  public sbyte CompressType
+  {
+    get
+    {
+      return _compressType;
+    }
+    set
+    {
+      __isset.compressType = true;
+      this._compressType = value;
+    }
+  }
+
 
   public Isset __isset;
   public struct Isset
@@ -95,6 +137,9 @@ public partial class TSInsertTabletReq : TBase
     public bool isAligned;
     public bool writeToTable;
     public bool columnCategories;
+    public bool isCompressed;
+    public bool encodingTypes;
+    public bool compressType;
   }
 
   public TSInsertTabletReq()
@@ -273,6 +318,46 @@ public partial class TSInsertTabletReq : TBase
               await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             }
             break;
+          case 11:
+            if (field.Type == TType.Bool)
+            {
+              IsCompressed = await iprot.ReadBoolAsync(cancellationToken);
+            }
+            else
+            {
+              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
+            }
+            break;
+          case 12:
+            if (field.Type == TType.List)
+            {
+              {
+                TList _list120 = await iprot.ReadListBeginAsync(cancellationToken);
+                EncodingTypes = new List<sbyte>(_list120.Count);
+                for(int _i121 = 0; _i121 < _list120.Count; ++_i121)
+                {
+                  sbyte _elem122;
+                  _elem122 = await iprot.ReadByteAsync(cancellationToken);
+                  EncodingTypes.Add(_elem122);
+                }
+                await iprot.ReadListEndAsync(cancellationToken);
+              }
+            }
+            else
+            {
+              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
+            }
+            break;
+          case 13:
+            if (field.Type == TType.Byte)
+            {
+              CompressType = await iprot.ReadByteAsync(cancellationToken);
+            }
+            else
+            {
+              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
+            }
+            break;
           default: 
             await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             break;
@@ -348,9 +433,9 @@ public partial class TSInsertTabletReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Measurements.Count), cancellationToken);
-          foreach (string _iter120 in Measurements)
+          foreach (string _iter123 in Measurements)
           {
-            await oprot.WriteStringAsync(_iter120, cancellationToken);
+            await oprot.WriteStringAsync(_iter123, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -382,9 +467,9 @@ public partial class TSInsertTabletReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.I32, Types.Count), cancellationToken);
-          foreach (int _iter121 in Types)
+          foreach (int _iter124 in Types)
           {
-            await oprot.WriteI32Async(_iter121, cancellationToken);
+            await oprot.WriteI32Async(_iter124, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -422,12 +507,46 @@ public partial class TSInsertTabletReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Byte, ColumnCategories.Count), cancellationToken);
-          foreach (sbyte _iter122 in ColumnCategories)
+          foreach (sbyte _iter125 in ColumnCategories)
           {
-            await oprot.WriteByteAsync(_iter122, cancellationToken);
+            await oprot.WriteByteAsync(_iter125, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
+        await oprot.WriteFieldEndAsync(cancellationToken);
+      }
+      if(__isset.isCompressed)
+      {
+        field.Name = "isCompressed";
+        field.Type = TType.Bool;
+        field.ID = 11;
+        await oprot.WriteFieldBeginAsync(field, cancellationToken);
+        await oprot.WriteBoolAsync(IsCompressed, cancellationToken);
+        await oprot.WriteFieldEndAsync(cancellationToken);
+      }
+      if((EncodingTypes != null) && __isset.encodingTypes)
+      {
+        field.Name = "encodingTypes";
+        field.Type = TType.List;
+        field.ID = 12;
+        await oprot.WriteFieldBeginAsync(field, cancellationToken);
+        {
+          await oprot.WriteListBeginAsync(new TList(TType.Byte, EncodingTypes.Count), cancellationToken);
+          foreach (sbyte _iter126 in EncodingTypes)
+          {
+            await oprot.WriteByteAsync(_iter126, cancellationToken);
+          }
+          await oprot.WriteListEndAsync(cancellationToken);
+        }
+        await oprot.WriteFieldEndAsync(cancellationToken);
+      }
+      if(__isset.compressType)
+      {
+        field.Name = "compressType";
+        field.Type = TType.Byte;
+        field.ID = 13;
+        await oprot.WriteFieldBeginAsync(field, cancellationToken);
+        await oprot.WriteByteAsync(CompressType, cancellationToken);
         await oprot.WriteFieldEndAsync(cancellationToken);
       }
       await oprot.WriteFieldStopAsync(cancellationToken);
@@ -452,7 +571,10 @@ public partial class TSInsertTabletReq : TBase
       && System.Object.Equals(Size, other.Size)
       && ((__isset.isAligned == other.__isset.isAligned) && ((!__isset.isAligned) || (System.Object.Equals(IsAligned, other.IsAligned))))
       && ((__isset.writeToTable == other.__isset.writeToTable) && ((!__isset.writeToTable) || (System.Object.Equals(WriteToTable, other.WriteToTable))))
-      && ((__isset.columnCategories == other.__isset.columnCategories) && ((!__isset.columnCategories) || (TCollections.Equals(ColumnCategories, other.ColumnCategories))));
+      && ((__isset.columnCategories == other.__isset.columnCategories) && ((!__isset.columnCategories) || (TCollections.Equals(ColumnCategories, other.ColumnCategories))))
+      && ((__isset.isCompressed == other.__isset.isCompressed) && ((!__isset.isCompressed) || (System.Object.Equals(IsCompressed, other.IsCompressed))))
+      && ((__isset.encodingTypes == other.__isset.encodingTypes) && ((!__isset.encodingTypes) || (TCollections.Equals(EncodingTypes, other.EncodingTypes))))
+      && ((__isset.compressType == other.__isset.compressType) && ((!__isset.compressType) || (System.Object.Equals(CompressType, other.CompressType))));
   }
 
   public override int GetHashCode() {
@@ -491,6 +613,18 @@ public partial class TSInsertTabletReq : TBase
       if((ColumnCategories != null) && __isset.columnCategories)
       {
         hashcode = (hashcode * 397) + TCollections.GetHashCode(ColumnCategories);
+      }
+      if(__isset.isCompressed)
+      {
+        hashcode = (hashcode * 397) + IsCompressed.GetHashCode();
+      }
+      if((EncodingTypes != null) && __isset.encodingTypes)
+      {
+        hashcode = (hashcode * 397) + TCollections.GetHashCode(EncodingTypes);
+      }
+      if(__isset.compressType)
+      {
+        hashcode = (hashcode * 397) + CompressType.GetHashCode();
       }
     }
     return hashcode;
@@ -542,6 +676,21 @@ public partial class TSInsertTabletReq : TBase
     {
       sb.Append(", ColumnCategories: ");
       ColumnCategories.ToString(sb);
+    }
+    if(__isset.isCompressed)
+    {
+      sb.Append(", IsCompressed: ");
+      IsCompressed.ToString(sb);
+    }
+    if((EncodingTypes != null) && __isset.encodingTypes)
+    {
+      sb.Append(", EncodingTypes: ");
+      EncodingTypes.ToString(sb);
+    }
+    if(__isset.compressType)
+    {
+      sb.Append(", CompressType: ");
+      CompressType.ToString(sb);
     }
     sb.Append(')');
     return sb.ToString();

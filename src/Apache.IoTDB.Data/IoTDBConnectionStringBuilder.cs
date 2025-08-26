@@ -66,7 +66,7 @@ namespace Apache.IoTDB.Data
         private string _password = "root";
         private bool _enableRpcCompression = false;
         private int _fetchSize = 1800;
-        private string _zoneId = "UTC+08:00";
+        private string _zoneId = "Asia/Shanghai";
         private int _port = 6667;
         private int _poolSize = 8;
         private int _timeOut = 10000;
@@ -413,7 +413,7 @@ namespace Apache.IoTDB.Data
                     _poolSize = 8;
                     return;
                 case Keywords.ZoneId:
-                    _zoneId = "UTC+08:00";
+                    _zoneId = "Asia/Shanghai";
                     return;
                 case Keywords.TimeOut:
                     _timeOut = 10000;//10sec.

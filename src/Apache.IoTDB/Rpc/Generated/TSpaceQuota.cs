@@ -225,22 +225,22 @@ public partial class TSpaceQuota : TBase
   public override string ToString()
   {
     var sb = new StringBuilder("TSpaceQuota(");
-    int tmp53 = 0;
+    int tmp57 = 0;
     if(__isset.diskSize)
     {
-      if(0 < tmp53++) { sb.Append(", "); }
+      if(0 < tmp57++) { sb.Append(", "); }
       sb.Append("DiskSize: ");
       DiskSize.ToString(sb);
     }
     if(__isset.deviceNum)
     {
-      if(0 < tmp53++) { sb.Append(", "); }
+      if(0 < tmp57++) { sb.Append(", "); }
       sb.Append("DeviceNum: ");
       DeviceNum.ToString(sb);
     }
     if(__isset.timeserieNum)
     {
-      if(0 < tmp53++) { sb.Append(", "); }
+      if(0 < tmp57++) { sb.Append(", "); }
       sb.Append("TimeserieNum: ");
       TimeserieNum.ToString(sb);
     }

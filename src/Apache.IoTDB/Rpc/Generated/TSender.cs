@@ -188,16 +188,16 @@ public partial class TSender : TBase
   public override string ToString()
   {
     var sb = new StringBuilder("TSender(");
-    int tmp70 = 0;
+    int tmp91 = 0;
     if((DataNodeLocation != null) && __isset.dataNodeLocation)
     {
-      if(0 < tmp70++) { sb.Append(", "); }
+      if(0 < tmp91++) { sb.Append(", "); }
       sb.Append("DataNodeLocation: ");
       DataNodeLocation.ToString(sb);
     }
     if((ConfigNodeLocation != null) && __isset.configNodeLocation)
     {
-      if(0 < tmp70++) { sb.Append(", "); }
+      if(0 < tmp91++) { sb.Append(", "); }
       sb.Append("ConfigNodeLocation: ");
       ConfigNodeLocation.ToString(sb);
     }

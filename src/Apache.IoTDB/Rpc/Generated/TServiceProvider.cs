@@ -40,14 +40,17 @@ public partial class TServiceProvider : TBase
   /// </summary>
   public TServiceType ServiceType { get; set; }
 
+  public int NodeId { get; set; }
+
   public TServiceProvider()
   {
   }
 
-  public TServiceProvider(TEndPoint endPoint, TServiceType serviceType) : this()
+  public TServiceProvider(TEndPoint endPoint, TServiceType serviceType, int nodeId) : this()
   {
     this.EndPoint = endPoint;
     this.ServiceType = serviceType;
+    this.NodeId = nodeId;
   }
 
   public async global::System.Threading.Tasks.Task ReadAsync(TProtocol iprot, CancellationToken cancellationToken)
@@ -57,6 +60,7 @@ public partial class TServiceProvider : TBase
     {
       bool isset_endPoint = false;
       bool isset_serviceType = false;
+      bool isset_nodeId = false;
       TField field;
       await iprot.ReadStructBeginAsync(cancellationToken);
       while (true)
@@ -92,6 +96,17 @@ public partial class TServiceProvider : TBase
               await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             }
             break;
+          case 3:
+            if (field.Type == TType.I32)
+            {
+              NodeId = await iprot.ReadI32Async(cancellationToken);
+              isset_nodeId = true;
+            }
+            else
+            {
+              await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
+            }
+            break;
           default: 
             await TProtocolUtil.SkipAsync(iprot, field.Type, cancellationToken);
             break;
@@ -106,6 +121,10 @@ public partial class TServiceProvider : TBase
         throw new TProtocolException(TProtocolException.INVALID_DATA);
       }
       if (!isset_serviceType)
+      {
+        throw new TProtocolException(TProtocolException.INVALID_DATA);
+      }
+      if (!isset_nodeId)
       {
         throw new TProtocolException(TProtocolException.INVALID_DATA);
       }
@@ -139,6 +158,12 @@ public partial class TServiceProvider : TBase
       await oprot.WriteFieldBeginAsync(field, cancellationToken);
       await oprot.WriteI32Async((int)ServiceType, cancellationToken);
       await oprot.WriteFieldEndAsync(cancellationToken);
+      field.Name = "nodeId";
+      field.Type = TType.I32;
+      field.ID = 3;
+      await oprot.WriteFieldBeginAsync(field, cancellationToken);
+      await oprot.WriteI32Async(NodeId, cancellationToken);
+      await oprot.WriteFieldEndAsync(cancellationToken);
       await oprot.WriteFieldStopAsync(cancellationToken);
       await oprot.WriteStructEndAsync(cancellationToken);
     }
@@ -153,7 +178,8 @@ public partial class TServiceProvider : TBase
     if (!(that is TServiceProvider other)) return false;
     if (ReferenceEquals(this, other)) return true;
     return System.Object.Equals(EndPoint, other.EndPoint)
-      && System.Object.Equals(ServiceType, other.ServiceType);
+      && System.Object.Equals(ServiceType, other.ServiceType)
+      && System.Object.Equals(NodeId, other.NodeId);
   }
 
   public override int GetHashCode() {
@@ -164,6 +190,7 @@ public partial class TServiceProvider : TBase
         hashcode = (hashcode * 397) + EndPoint.GetHashCode();
       }
       hashcode = (hashcode * 397) + ServiceType.GetHashCode();
+      hashcode = (hashcode * 397) + NodeId.GetHashCode();
     }
     return hashcode;
   }
@@ -178,6 +205,8 @@ public partial class TServiceProvider : TBase
     }
     sb.Append(", ServiceType: ");
     ServiceType.ToString(sb);
+    sb.Append(", NodeId: ");
+    NodeId.ToString(sb);
     sb.Append(')');
     return sb.ToString();
   }

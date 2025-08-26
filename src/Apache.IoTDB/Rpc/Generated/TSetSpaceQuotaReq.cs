@@ -69,13 +69,13 @@ public partial class TSetSpaceQuotaReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list61 = await iprot.ReadListBeginAsync(cancellationToken);
-                Database = new List<string>(_list61.Count);
-                for(int _i62 = 0; _i62 < _list61.Count; ++_i62)
+                TList _list65 = await iprot.ReadListBeginAsync(cancellationToken);
+                Database = new List<string>(_list65.Count);
+                for(int _i66 = 0; _i66 < _list65.Count; ++_i66)
                 {
-                  string _elem63;
-                  _elem63 = await iprot.ReadStringAsync(cancellationToken);
-                  Database.Add(_elem63);
+                  string _elem67;
+                  _elem67 = await iprot.ReadStringAsync(cancellationToken);
+                  Database.Add(_elem67);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -138,9 +138,9 @@ public partial class TSetSpaceQuotaReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Database.Count), cancellationToken);
-          foreach (string _iter64 in Database)
+          foreach (string _iter68 in Database)
           {
-            await oprot.WriteStringAsync(_iter64, cancellationToken);
+            await oprot.WriteStringAsync(_iter68, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

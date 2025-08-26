@@ -65,13 +65,13 @@ public partial class TSettleReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list25 = await iprot.ReadListBeginAsync(cancellationToken);
-                Paths = new List<string>(_list25.Count);
-                for(int _i26 = 0; _i26 < _list25.Count; ++_i26)
+                TList _list29 = await iprot.ReadListBeginAsync(cancellationToken);
+                Paths = new List<string>(_list29.Count);
+                for(int _i30 = 0; _i30 < _list29.Count; ++_i30)
                 {
-                  string _elem27;
-                  _elem27 = await iprot.ReadStringAsync(cancellationToken);
-                  Paths.Add(_elem27);
+                  string _elem31;
+                  _elem31 = await iprot.ReadStringAsync(cancellationToken);
+                  Paths.Add(_elem31);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -118,9 +118,9 @@ public partial class TSettleReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, Paths.Count), cancellationToken);
-          foreach (string _iter28 in Paths)
+          foreach (string _iter32 in Paths)
           {
-            await oprot.WriteStringAsync(_iter28, cancellationToken);
+            await oprot.WriteStringAsync(_iter32, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }

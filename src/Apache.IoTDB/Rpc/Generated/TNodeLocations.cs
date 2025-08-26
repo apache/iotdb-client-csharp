@@ -93,14 +93,14 @@ public partial class TNodeLocations : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list77 = await iprot.ReadListBeginAsync(cancellationToken);
-                ConfigNodeLocations = new List<TConfigNodeLocation>(_list77.Count);
-                for(int _i78 = 0; _i78 < _list77.Count; ++_i78)
+                TList _list98 = await iprot.ReadListBeginAsync(cancellationToken);
+                ConfigNodeLocations = new List<TConfigNodeLocation>(_list98.Count);
+                for(int _i99 = 0; _i99 < _list98.Count; ++_i99)
                 {
-                  TConfigNodeLocation _elem79;
-                  _elem79 = new TConfigNodeLocation();
-                  await _elem79.ReadAsync(iprot, cancellationToken);
-                  ConfigNodeLocations.Add(_elem79);
+                  TConfigNodeLocation _elem100;
+                  _elem100 = new TConfigNodeLocation();
+                  await _elem100.ReadAsync(iprot, cancellationToken);
+                  ConfigNodeLocations.Add(_elem100);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -114,14 +114,14 @@ public partial class TNodeLocations : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list80 = await iprot.ReadListBeginAsync(cancellationToken);
-                DataNodeLocations = new List<TDataNodeLocation>(_list80.Count);
-                for(int _i81 = 0; _i81 < _list80.Count; ++_i81)
+                TList _list101 = await iprot.ReadListBeginAsync(cancellationToken);
+                DataNodeLocations = new List<TDataNodeLocation>(_list101.Count);
+                for(int _i102 = 0; _i102 < _list101.Count; ++_i102)
                 {
-                  TDataNodeLocation _elem82;
-                  _elem82 = new TDataNodeLocation();
-                  await _elem82.ReadAsync(iprot, cancellationToken);
-                  DataNodeLocations.Add(_elem82);
+                  TDataNodeLocation _elem103;
+                  _elem103 = new TDataNodeLocation();
+                  await _elem103.ReadAsync(iprot, cancellationToken);
+                  DataNodeLocations.Add(_elem103);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -163,9 +163,9 @@ public partial class TNodeLocations : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Struct, ConfigNodeLocations.Count), cancellationToken);
-          foreach (TConfigNodeLocation _iter83 in ConfigNodeLocations)
+          foreach (TConfigNodeLocation _iter104 in ConfigNodeLocations)
           {
-            await _iter83.WriteAsync(oprot, cancellationToken);
+            await _iter104.WriteAsync(oprot, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -179,9 +179,9 @@ public partial class TNodeLocations : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.Struct, DataNodeLocations.Count), cancellationToken);
-          foreach (TDataNodeLocation _iter84 in DataNodeLocations)
+          foreach (TDataNodeLocation _iter105 in DataNodeLocations)
           {
-            await _iter84.WriteAsync(oprot, cancellationToken);
+            await _iter105.WriteAsync(oprot, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
@@ -222,16 +222,16 @@ public partial class TNodeLocations : TBase
   public override string ToString()
   {
     var sb = new StringBuilder("TNodeLocations(");
-    int tmp85 = 0;
+    int tmp106 = 0;
     if((ConfigNodeLocations != null) && __isset.configNodeLocations)
     {
-      if(0 < tmp85++) { sb.Append(", "); }
+      if(0 < tmp106++) { sb.Append(", "); }
       sb.Append("ConfigNodeLocations: ");
       ConfigNodeLocations.ToString(sb);
     }
     if((DataNodeLocations != null) && __isset.dataNodeLocations)
     {
-      if(0 < tmp85++) { sb.Append(", "); }
+      if(0 < tmp106++) { sb.Append(", "); }
       sb.Append("DataNodeLocations: ");
       DataNodeLocations.ToString(sb);
     }

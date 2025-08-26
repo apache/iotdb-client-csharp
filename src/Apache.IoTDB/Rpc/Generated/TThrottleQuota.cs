@@ -108,16 +108,16 @@ public partial class TThrottleQuota : TBase
             if (field.Type == TType.Map)
             {
               {
-                TMap _map55 = await iprot.ReadMapBeginAsync(cancellationToken);
-                ThrottleLimit = new Dictionary<ThrottleType, TTimedQuota>(_map55.Count);
-                for(int _i56 = 0; _i56 < _map55.Count; ++_i56)
+                TMap _map59 = await iprot.ReadMapBeginAsync(cancellationToken);
+                ThrottleLimit = new Dictionary<ThrottleType, TTimedQuota>(_map59.Count);
+                for(int _i60 = 0; _i60 < _map59.Count; ++_i60)
                 {
-                  ThrottleType _key57;
-                  TTimedQuota _val58;
-                  _key57 = (ThrottleType)await iprot.ReadI32Async(cancellationToken);
-                  _val58 = new TTimedQuota();
-                  await _val58.ReadAsync(iprot, cancellationToken);
-                  ThrottleLimit[_key57] = _val58;
+                  ThrottleType _key61;
+                  TTimedQuota _val62;
+                  _key61 = (ThrottleType)await iprot.ReadI32Async(cancellationToken);
+                  _val62 = new TTimedQuota();
+                  await _val62.ReadAsync(iprot, cancellationToken);
+                  ThrottleLimit[_key61] = _val62;
                 }
                 await iprot.ReadMapEndAsync(cancellationToken);
               }
@@ -179,10 +179,10 @@ public partial class TThrottleQuota : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteMapBeginAsync(new TMap(TType.I32, TType.Struct, ThrottleLimit.Count), cancellationToken);
-          foreach (ThrottleType _iter59 in ThrottleLimit.Keys)
+          foreach (ThrottleType _iter63 in ThrottleLimit.Keys)
           {
-            await oprot.WriteI32Async((int)_iter59, cancellationToken);
-            await ThrottleLimit[_iter59].WriteAsync(oprot, cancellationToken);
+            await oprot.WriteI32Async((int)_iter63, cancellationToken);
+            await ThrottleLimit[_iter63].WriteAsync(oprot, cancellationToken);
           }
           await oprot.WriteMapEndAsync(cancellationToken);
         }
@@ -246,22 +246,22 @@ public partial class TThrottleQuota : TBase
   public override string ToString()
   {
     var sb = new StringBuilder("TThrottleQuota(");
-    int tmp60 = 0;
+    int tmp64 = 0;
     if((ThrottleLimit != null) && __isset.throttleLimit)
     {
-      if(0 < tmp60++) { sb.Append(", "); }
+      if(0 < tmp64++) { sb.Append(", "); }
       sb.Append("ThrottleLimit: ");
       ThrottleLimit.ToString(sb);
     }
     if(__isset.memLimit)
     {
-      if(0 < tmp60++) { sb.Append(", "); }
+      if(0 < tmp64++) { sb.Append(", "); }
       sb.Append("MemLimit: ");
       MemLimit.ToString(sb);
     }
     if(__isset.cpuLimit)
     {
-      if(0 < tmp60++) { sb.Append(", "); }
+      if(0 < tmp64++) { sb.Append(", "); }
       sb.Append("CpuLimit: ");
       CpuLimit.ToString(sb);
     }

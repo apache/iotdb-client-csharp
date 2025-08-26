@@ -80,13 +80,13 @@ public partial class TCreateTimeseriesUsingSchemaTemplateReq : TBase
             if (field.Type == TType.List)
             {
               {
-                TList _list407 = await iprot.ReadListBeginAsync(cancellationToken);
-                DevicePathList = new List<string>(_list407.Count);
-                for(int _i408 = 0; _i408 < _list407.Count; ++_i408)
+                TList _list416 = await iprot.ReadListBeginAsync(cancellationToken);
+                DevicePathList = new List<string>(_list416.Count);
+                for(int _i417 = 0; _i417 < _list416.Count; ++_i417)
                 {
-                  string _elem409;
-                  _elem409 = await iprot.ReadStringAsync(cancellationToken);
-                  DevicePathList.Add(_elem409);
+                  string _elem418;
+                  _elem418 = await iprot.ReadStringAsync(cancellationToken);
+                  DevicePathList.Add(_elem418);
                 }
                 await iprot.ReadListEndAsync(cancellationToken);
               }
@@ -143,9 +143,9 @@ public partial class TCreateTimeseriesUsingSchemaTemplateReq : TBase
         await oprot.WriteFieldBeginAsync(field, cancellationToken);
         {
           await oprot.WriteListBeginAsync(new TList(TType.String, DevicePathList.Count), cancellationToken);
-          foreach (string _iter410 in DevicePathList)
+          foreach (string _iter419 in DevicePathList)
           {
-            await oprot.WriteStringAsync(_iter410, cancellationToken);
+            await oprot.WriteStringAsync(_iter419, cancellationToken);
           }
           await oprot.WriteListEndAsync(cancellationToken);
         }
