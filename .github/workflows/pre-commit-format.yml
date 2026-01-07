@@ -38,12 +38,15 @@ jobs:
         run: |
           echo "TMPDIR=${{ runner.temp }}/dotnet-tmp" >> "$GITHUB_ENV"
           echo "DOTNET_CLI_HOME=${{ runner.temp }}/dotnet-home" >> "$GITHUB_ENV"
+          echo "XDG_RUNTIME_DIR=${{ runner.temp }}/xdg-runtime" >> "$GITHUB_ENV"
+          echo "NUGET_PACKAGES=${{ runner.temp }}/nuget-packages" >> "$GITHUB_ENV"
 
       - name: Clean dotnet temporary folder
         run: |
           sudo rm -rf /tmp/.dotnet
-          rm -rf "$TMPDIR/.dotnet" "$DOTNET_CLI_HOME"
-          mkdir -p "$TMPDIR/.dotnet" "$DOTNET_CLI_HOME"
+          rm -rf "$TMPDIR/.dotnet" "$DOTNET_CLI_HOME" "$XDG_RUNTIME_DIR" "$NUGET_PACKAGES"
+          mkdir -p "$TMPDIR/.dotnet" "$DOTNET_CLI_HOME" "$XDG_RUNTIME_DIR" "$NUGET_PACKAGES"
+          chmod 700 "$XDG_RUNTIME_DIR"
 
       - name: Install pre-commit and dependencies
         run: |
