@@ -20,8 +20,6 @@ jobs:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
-      TMPDIR: ${{ runner.temp }}
-      DOTNET_CLI_HOME: ${{ runner.temp }}/dotnet-home
 
     steps:
       - uses: actions/checkout@v4
@@ -35,6 +33,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+
+      - name: Configure temp directories
+        run: |
+          echo "TMPDIR=${{ runner.temp }}/dotnet-tmp" >> "$GITHUB_ENV"
+          echo "DOTNET_CLI_HOME=${{ runner.temp }}/dotnet-home" >> "$GITHUB_ENV"
 
       - name: Clean dotnet temporary folder
         run: |
