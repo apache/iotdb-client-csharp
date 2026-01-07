@@ -34,19 +34,11 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Configure temp directories
-        run: |
-          echo "TMPDIR=${{ runner.temp }}/dotnet-tmp" >> "$GITHUB_ENV"
-          echo "DOTNET_CLI_HOME=${{ runner.temp }}/dotnet-home" >> "$GITHUB_ENV"
-          echo "XDG_RUNTIME_DIR=${{ runner.temp }}/xdg-runtime" >> "$GITHUB_ENV"
-          echo "NUGET_PACKAGES=${{ runner.temp }}/nuget-packages" >> "$GITHUB_ENV"
-
       - name: Clean dotnet temporary folder
         run: |
           sudo rm -rf /tmp/.dotnet
-          rm -rf "$TMPDIR/.dotnet" "$DOTNET_CLI_HOME" "$XDG_RUNTIME_DIR" "$NUGET_PACKAGES"
-          mkdir -p "$TMPDIR/.dotnet" "$DOTNET_CLI_HOME" "$XDG_RUNTIME_DIR" "$NUGET_PACKAGES"
-          chmod 700 "$XDG_RUNTIME_DIR"
+          mkdir -p ${{ runner.temp }}/dotnet-home
+          mkdir -p ${{ runner.temp }}/xdg-runtime
 
       - name: Install pre-commit and dependencies
         run: |
@@ -54,5 +46,10 @@ jobs:
           pre-commit install-hooks
 
       - name: Run pre-commit checks
+        env:
+          TMPDIR: ${{ runner.temp }}
+          DOTNET_CLI_HOME: ${{ runner.temp }}/dotnet-home
+          XDG_RUNTIME_DIR: ${{ runner.temp }}/xdg-runtime
+          NUGET_PACKAGES: ${{ runner. temp }}/nuget-packages
         run: |
           pre-commit run --all-files
