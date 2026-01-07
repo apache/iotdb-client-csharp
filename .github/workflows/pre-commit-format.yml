@@ -20,6 +20,8 @@ jobs:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      TMPDIR: ${{ runner.temp }}
+      DOTNET_CLI_HOME: ${{ runner.temp }}/dotnet-home
 
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +39,8 @@ jobs:
       - name: Clean dotnet temporary folder
         run: |
           sudo rm -rf /tmp/.dotnet
+          rm -rf "$TMPDIR/.dotnet" "$DOTNET_CLI_HOME"
+          mkdir -p "$TMPDIR/.dotnet" "$DOTNET_CLI_HOME"
 
       - name: Install pre-commit and dependencies
         run: |
@@ -44,8 +48,5 @@ jobs:
           pre-commit install-hooks
 
       - name: Run pre-commit checks
-        env:
-          TMPDIR: ${{ runner.temp }}
-          DOTNET_CLI_HOME: ${{ runner.temp }}
         run: |
           pre-commit run --all-files
