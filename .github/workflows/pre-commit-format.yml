@@ -37,6 +37,8 @@ jobs:
       - name: Clean dotnet temporary folder
         run: |
           sudo rm -rf /tmp/.dotnet
+          mkdir -p ${{ runner.temp }}/dotnet-home
+          mkdir -p ${{ runner.temp }}/xdg-runtime
 
       - name: Install pre-commit and dependencies
         run: |
@@ -46,6 +48,8 @@ jobs:
       - name: Run pre-commit checks
         env:
           TMPDIR: ${{ runner.temp }}
-          DOTNET_CLI_HOME: ${{ runner.temp }}
+          DOTNET_CLI_HOME: ${{ runner.temp }}/dotnet-home
+          XDG_RUNTIME_DIR: ${{ runner.temp }}/xdg-runtime
+          NUGET_PACKAGES: ${{ runner. temp }}/nuget-packages
         run: |
           pre-commit run --all-files
