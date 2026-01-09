@@ -129,7 +129,7 @@ namespace Apache.IoTDB
         {
         }
         public SessionPool(List<string> nodeUrls, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout)
-                        : this(nodeUrls, username, password, fetchSize, zoneId, poolSize, enableRpcCompression, timeout,false, null,  IoTDBConstant.TREE_SQL_DIALECT, "")
+                        : this(nodeUrls, username, password, fetchSize, zoneId, poolSize, enableRpcCompression, timeout, false, null,  IoTDBConstant.TREE_SQL_DIALECT, "")
         {
 
         }
@@ -246,7 +246,7 @@ namespace Apache.IoTDB
                 {
                     try
                     {
-                        _clients.Add(await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, _useSsl,_certificatePath, _sqlDialect, _database, cancellationToken));
+                        _clients.Add(await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, _useSsl, _certificatePath, _sqlDialect, _database, cancellationToken));
                     }
                     catch (Exception e)
                     {
@@ -269,7 +269,7 @@ namespace Apache.IoTDB
                         var endPoint = _endPoints[endPointIndex];
                         try
                         {
-                            var client = await CreateAndOpen(endPoint.Ip, endPoint.Port, _enableRpcCompression, _timeout, _useSsl,_certificatePath, _sqlDialect, _database, cancellationToken);
+                            var client = await CreateAndOpen(endPoint.Ip, endPoint.Port, _enableRpcCompression, _timeout, _useSsl, _certificatePath, _sqlDialect, _database, cancellationToken);
                             _clients.Add(client);
                             isConnected = true;
                             startIndex = (endPointIndex + 1) % _endPoints.Count;
@@ -308,7 +308,7 @@ namespace Apache.IoTDB
                 {
                     try
                     {
-                        var client = await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, _useSsl,_certificatePath, _sqlDialect, _database, cancellationToken);
+                        var client = await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, _useSsl, _certificatePath, _sqlDialect, _database, cancellationToken);
                         return client;
                     }
                     catch (Exception e)
@@ -335,7 +335,7 @@ namespace Apache.IoTDB
                         int j = (startIndex + i) % _endPoints.Count;
                         try
                         {
-                            var client = await CreateAndOpen(_endPoints[j].Ip, _endPoints[j].Port, _enableRpcCompression, _timeout, _useSsl,_certificatePath, _sqlDialect, _database, cancellationToken);
+                            var client = await CreateAndOpen(_endPoints[j].Ip, _endPoints[j].Port, _enableRpcCompression, _timeout, _useSsl, _certificatePath, _sqlDialect, _database, cancellationToken);
                             return client;
                         }
                         catch (Exception e)
