@@ -129,7 +129,7 @@ namespace Apache.IoTDB
         {
         }
         public SessionPool(List<string> nodeUrls, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout)
-                        : this(nodeUrls, username, password, fetchSize, zoneId, poolSize, enableRpcCompression, timeout, false, null,  IoTDBConstant.TREE_SQL_DIALECT, "")
+                        : this(nodeUrls, username, password, fetchSize, zoneId, poolSize, enableRpcCompression, timeout, false, null, IoTDBConstant.TREE_SQL_DIALECT, "")
         {
 
         }

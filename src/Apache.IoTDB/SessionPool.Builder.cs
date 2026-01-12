@@ -146,9 +146,9 @@ public partial class SessionPool
             // if nodeUrls is not empty, use nodeUrls to create session pool
             if (_nodeUrls.Count > 0)
             {
-                return new SessionPool(_nodeUrls, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _useSsl, _certificatePath ,_sqlDialect, _database);
+                return new SessionPool(_nodeUrls, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _useSsl, _certificatePath, _sqlDialect, _database);
             }
-            return new SessionPool(_host, _port, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _useSsl, _certificatePath,  _sqlDialect, _database);
+            return new SessionPool(_host, _port, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _useSsl, _certificatePath, _sqlDialect, _database);
         }
     }
 }
