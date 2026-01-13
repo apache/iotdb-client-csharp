@@ -19,13 +19,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Net.Sockets;
-using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
 using Apache.IoTDB.DataStructure;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Thrift;
 using Thrift.Protocol;
@@ -47,6 +46,8 @@ namespace Apache.IoTDB
         private readonly List<TEndPoint> _endPoints = new();
         private readonly string _host;
         private readonly int _port;
+        private readonly bool _useSsl;
+        private readonly string _certificatePath;
         private readonly int _fetchSize;
         /// <summary>
         /// _timeout is the amount of time a Session will wait for a send operation to complete successfully.
@@ -86,10 +87,10 @@ namespace Apache.IoTDB
         {
         }
         public SessionPool(string host, int port, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout)
-                         : this(host, port, username, password, fetchSize, zoneId, poolSize, enableRpcCompression, timeout, IoTDBConstant.TREE_SQL_DIALECT, "")
+                         : this(host, port, username, password, fetchSize, zoneId, poolSize, enableRpcCompression, timeout, false, null, IoTDBConstant.TREE_SQL_DIALECT, "")
         {
         }
-        protected internal SessionPool(string host, int port, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout, string sqlDialect, string database)
+        protected internal SessionPool(string host, int port, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout, bool useSsl, string certificatePath, string sqlDialect, string database)
         {
             _host = host;
             _port = port;
@@ -101,6 +102,8 @@ namespace Apache.IoTDB
             _poolSize = poolSize;
             _enableRpcCompression = enableRpcCompression;
             _timeout = timeout;
+            _useSsl = useSsl;
+            _certificatePath = certificatePath;
             _sqlDialect = sqlDialect;
             _database = database;
         }
@@ -126,11 +129,11 @@ namespace Apache.IoTDB
         {
         }
         public SessionPool(List<string> nodeUrls, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout)
-                        : this(nodeUrls, username, password, fetchSize, zoneId, poolSize, enableRpcCompression, timeout, IoTDBConstant.TREE_SQL_DIALECT, "")
+                        : this(nodeUrls, username, password, fetchSize, zoneId, poolSize, enableRpcCompression, timeout, false, null, IoTDBConstant.TREE_SQL_DIALECT, "")
         {
 
         }
-        protected internal SessionPool(List<string> nodeUrls, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout, string sqlDialect, string database)
+        protected internal SessionPool(List<string> nodeUrls, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout, bool useSsl, string certificatePath, string sqlDialect, string database)
         {
             if (nodeUrls.Count == 0)
             {
@@ -146,6 +149,8 @@ namespace Apache.IoTDB
             _poolSize = poolSize;
             _enableRpcCompression = enableRpcCompression;
             _timeout = timeout;
+            _useSsl = useSsl;
+            _certificatePath = certificatePath;
             _sqlDialect = sqlDialect;
             _database = database;
         }
@@ -241,7 +246,7 @@ namespace Apache.IoTDB
                 {
                     try
                     {
-                        _clients.Add(await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, _sqlDialect, _database, cancellationToken));
+                        _clients.Add(await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, _useSsl, _certificatePath, _sqlDialect, _database, cancellationToken));
                     }
                     catch (Exception e)
                     {
@@ -264,7 +269,7 @@ namespace Apache.IoTDB
                         var endPoint = _endPoints[endPointIndex];
                         try
                         {
-                            var client = await CreateAndOpen(endPoint.Ip, endPoint.Port, _enableRpcCompression, _timeout, _sqlDialect, _database, cancellationToken);
+                            var client = await CreateAndOpen(endPoint.Ip, endPoint.Port, _enableRpcCompression, _timeout, _useSsl, _certificatePath, _sqlDialect, _database, cancellationToken);
                             _clients.Add(client);
                             isConnected = true;
                             startIndex = (endPointIndex + 1) % _endPoints.Count;
@@ -303,7 +308,7 @@ namespace Apache.IoTDB
                 {
                     try
                     {
-                        var client = await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, _sqlDialect, _database, cancellationToken);
+                        var client = await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, _useSsl, _certificatePath, _sqlDialect, _database, cancellationToken);
                         return client;
                     }
                     catch (Exception e)
@@ -330,7 +335,7 @@ namespace Apache.IoTDB
                         int j = (startIndex + i) % _endPoints.Count;
                         try
                         {
-                            var client = await CreateAndOpen(_endPoints[j].Ip, _endPoints[j].Port, _enableRpcCompression, _timeout, _sqlDialect, _database, cancellationToken);
+                            var client = await CreateAndOpen(_endPoints[j].Ip, _endPoints[j].Port, _enableRpcCompression, _timeout, _useSsl, _certificatePath, _sqlDialect, _database, cancellationToken);
                             return client;
                         }
                         catch (Exception e)
@@ -423,12 +428,14 @@ namespace Apache.IoTDB
             }
         }
 
-        private async Task<Client> CreateAndOpen(string host, int port, bool enableRpcCompression, int timeout, string sqlDialect, string database, CancellationToken cancellationToken = default)
+        private async Task<Client> CreateAndOpen(string host, int port, bool enableRpcCompression, int timeout, bool useSsl, string cert, string sqlDialect, string database, CancellationToken cancellationToken = default)
         {
-            var tcpClient = new TcpClient(host, port);
-            tcpClient.SendTimeout = timeout;
-            tcpClient.ReceiveTimeout = timeout;
-            var transport = new TFramedTransport(new TSocketTransport(tcpClient, null));
+
+            TTransport socket = useSsl ?
+                new TTlsSocketTransport(host, port, null, timeout, new X509Certificate2(File.ReadAllBytes(cert))) :
+                new TSocketTransport(host, port, null, timeout);
+
+            var transport = new TFramedTransport(socket);
 
             if (!transport.IsOpen)
             {
