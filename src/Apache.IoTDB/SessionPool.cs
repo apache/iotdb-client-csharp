@@ -1428,7 +1428,7 @@ namespace Apache.IoTDB
                     {
                         // all client should switch to the same database
                         var failedClients = new List<(long SessionId, Exception Error)>();
-                        foreach (var c in _clients.ClientQueue)
+                        foreach (var c in _clients.ClientQueue.AsEnumerable())
                         {
                             try
                             {
