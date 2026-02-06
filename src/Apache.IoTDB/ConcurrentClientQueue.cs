@@ -43,9 +43,15 @@ namespace Apache.IoTDB
         public void Return(Client client)
         {
             Monitor.Enter(ClientQueue);
-            ClientQueue.Enqueue(client);
-            Monitor.PulseAll(ClientQueue); // wake up all threads waiting on the queue, refresh the waiting time
-            Monitor.Exit(ClientQueue);
+            try
+            {
+                ClientQueue.Enqueue(client);
+                Monitor.PulseAll(ClientQueue); // wake up all threads waiting on the queue, refresh the waiting time
+            }
+            finally
+            {
+                Monitor.Exit(ClientQueue);
+            }
             Thread.Sleep(0);
         }
         private int _ref = 0;
