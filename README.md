@@ -82,5 +82,23 @@ NLog >= 4.7.9
 * dotnet CLI
 * Thrift
 
+## Code Formatting
+
+This project uses `dotnet format` to enforce consistent code style based on the [.editorconfig](.editorconfig) rules.
+
+### Check formatting locally
+
+```bash
+dotnet format --verify-no-changes
+```
+
+### Auto-fix formatting issues
+
+```bash
+dotnet format
+```
+
+The CI pipeline will automatically check code formatting on all pull requests. Please ensure your code is properly formatted before submitting a PR.
+
 ## Publish your own client on nuget.org
 You can find out how to publish from this [doc](./PUBLISH.md).

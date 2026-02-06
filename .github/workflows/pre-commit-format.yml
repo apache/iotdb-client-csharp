@@ -7,15 +7,13 @@ on:
       - "**"
   merge_group:
     branches: [main]
-  # schedule:
-  #   - cron: "0 0 * * *"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  formatting-checks:
+  dotnet-format:
     runs-on: ubuntu-22.04
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -29,27 +27,9 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      - name: Setup Python environment (for pre-commit)
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
+      - name: Restore dependencies
+        run: dotnet restore
 
-      - name: Clean dotnet temporary folder
+      - name: Check formatting
         run: |
-          sudo rm -rf /tmp/.dotnet
-          mkdir -p ${{ runner.temp }}/dotnet-home
-          mkdir -p ${{ runner.temp }}/xdg-runtime
-
-      - name: Install pre-commit and dependencies
-        run: |
-          pip install pre-commit
-          pre-commit install-hooks
-
-      - name: Run pre-commit checks
-        env:
-          TMPDIR: ${{ runner.temp }}
-          DOTNET_CLI_HOME: ${{ runner.temp }}/dotnet-home
-          XDG_RUNTIME_DIR: ${{ runner.temp }}/xdg-runtime
-          NUGET_PACKAGES: ${{ runner. temp }}/nuget-packages
-        run: |
-          pre-commit run --all-files
+          dotnet format --verify-no-changes --verbosity diagnostic

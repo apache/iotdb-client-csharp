@@ -37,6 +37,10 @@ indent_size = 2
 [*{_AssemblyInfo.cs,.notsupported.cs,*/obj/*/External/**/*,*/obj/dotnet-new.IntegrationTests/*/TemplatePackagesPaths.cs}]
 generated_code = true
 
+# Thrift generated code
+[src/Apache.IoTDB/Rpc/Generated/**]
+generated_code = true
+
 # C# files
 [*.cs]
 # New line preferences
