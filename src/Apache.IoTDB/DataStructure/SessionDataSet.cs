@@ -108,7 +108,20 @@ namespace Apache.IoTDB.DataStructure
         public IReadOnlyList<string> GetColumnNames() => _rpcDataSet._columnNameList;
         public IReadOnlyList<string> GetColumnTypes() => _rpcDataSet._columnTypeList;
 
+        /// <summary>
+        /// Gets the number of rows in the current fetched batch (tsBlock).
+        /// Note: This is NOT the total row count of the query result. Use HasNext() to check for more data.
+        /// </summary>
+        /// <returns>The number of rows in the current batch.</returns>
+        public int CurrentBatchRowCount() => _rpcDataSet._tsBlockSize;
+
+        /// <summary>
+        /// Gets the number of rows in the current fetched batch.
+        /// </summary>
+        /// <returns>The number of rows in the current batch.</returns>
+        [Obsolete("Use CurrentBatchRowCount() instead. This method returns batch size, not total row count.")]
         public int RowCount() => _rpcDataSet._tsBlockSize;
+
         public void ShowTableNames()
         {
             IReadOnlyList<string> columns = GetColumnNames();
