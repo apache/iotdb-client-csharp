@@ -46,7 +46,7 @@ namespace Apache.IoTDB
         }
 
         public int GetReconnectionFailureTally() => Volatile.Read(ref _reconnectionFailureTally);
-        
+
         public int GetConfiguredMaxSize() => _configuredMaxSize;
     }
 }

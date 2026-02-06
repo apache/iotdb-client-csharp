@@ -21,9 +21,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Security.Cryptography.X509Certificates;
 using Apache.IoTDB.DataStructure;
 using Microsoft.Extensions.Logging;
 using Thrift;
@@ -64,19 +64,19 @@ namespace Apache.IoTDB
         private ConcurrentClientQueue _clients;
         private ILogger _logger;
         private PoolHealthMetrics _healthMetrics;
-        
+
         public delegate Task<TResult> AsyncOperation<TResult>(Client client);
-        
+
         /// <summary>
         /// Retrieves current count of idle clients ready for operations.
         /// </summary>
         public int AvailableClients => _clients?.ClientQueue.Count ?? 0;
-        
+
         /// <summary>
         /// Retrieves the configured maximum capacity of the session pool.
         /// </summary>
         public int TotalPoolSize => _healthMetrics?.GetConfiguredMaxSize() ?? _poolSize;
-        
+
         /// <summary>
         /// Retrieves cumulative tally of reconnection failures since pool was opened.
         /// </summary>
