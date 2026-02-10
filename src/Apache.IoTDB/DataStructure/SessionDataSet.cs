@@ -52,7 +52,22 @@ namespace Apache.IoTDB.DataStructure
         private int Flag => 0x80;
         private int DefaultTimeout => 10000;
         public int FetchSize { get; set; }
+
+        /// <summary>
+        /// Gets the number of rows in the current fetched batch.
+        /// Note: This is NOT the total row count of the query result. Use HasNext() to check for more data.
+        /// </summary>
+        /// <returns>The number of rows in the current batch.</returns>
+        public int CurrentBatchRowCount() => _currentBatchRowCount;
+
+        /// <summary>
+        /// Gets the number of rows in the current fetched batch.
+        /// </summary>
+        /// <returns>The number of rows in the current batch.</returns>
+        [Obsolete("Use CurrentBatchRowCount() instead. This property returns batch size, not total row count.")]
         public int RowCount { get; set; }
+
+        private int _currentBatchRowCount;
         public SessionDataSet(string sql, TSExecuteStatementResp resp, Client client, ConcurrentClientQueue clientQueue, long statementId)
         {
             _clientQueue = clientQueue;
@@ -74,7 +89,8 @@ namespace Apache.IoTDB.DataStructure
             // some internal variable
             _hasCatchedResult = false;
             _rowIndex = 0;
-            RowCount = _queryDataset.Time.Length / sizeof(long);
+            _currentBatchRowCount = _queryDataset.Time.Length / sizeof(long);
+            RowCount = _currentBatchRowCount;
 
             _columnNames = resp.Columns;
             _columnTypeLst = resp.DataTypeList;
