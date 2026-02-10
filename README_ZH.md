@@ -81,5 +81,23 @@ NLog >= 4.7.9
 * dotnet CLI
 * Thrift
 
+## 代码格式化
+
+本项目使用 `dotnet format` 基于 [.editorconfig](.editorconfig) 规则来强制执行一致的代码风格。
+
+### 本地检查格式
+
+```bash
+dotnet format --verify-no-changes
+```
+
+### 自动修复格式问题
+
+```bash
+dotnet format
+```
+
+CI 流水线会在所有 Pull Request 上自动检查代码格式。请确保在提交 PR 之前代码格式正确。
+
 ## 在 nuget.org 上发布你自己的客户端
 你可以在这个[文档](./PUBLISH.md)中找到如何发布

@@ -56,8 +56,8 @@ namespace Apache.IoTDB.Data
             _command = IoTDBCommand;
             _closeConnection = closeConnection;
             _fieldCount = dataSet.GetColumnNames().Count;
-            _hasRows = dataSet.RowCount() > 0;
-            _recordsAffected = dataSet.RowCount();
+            _hasRows = dataSet.CurrentBatchRowCount() > 0;
+            _recordsAffected = -1; // Total row count is unknown; use -1 per ADO.NET convention
 
             _closed = _closeConnection;
             _metas = dataSet.GetColumnNames();
