@@ -100,7 +100,11 @@ namespace Apache.IoTDB.Samples
         }
         public async Task TestCreateTimeSeries()
         {
-            var session_pool = new SessionPool(host, port, poolSize);
+            var session_pool = new SessionPool.Builder()
+                .SetHost(host)
+                .SetPort(port)
+                .SetPoolSize(poolSize)
+                .Build();
             await session_pool.Open(false);
             if (debug) session_pool.OpenDebugMode();
 
@@ -172,7 +176,11 @@ namespace Apache.IoTDB.Samples
         }
         public async Task TestCheckTimeSeriesExists()
         {
-            var session_pool = new SessionPool(host, port, poolSize);
+            var session_pool = new SessionPool.Builder()
+                .SetHost(host)
+                .SetPort(port)
+                .SetPoolSize(poolSize)
+                .Build();
             var status = 0;
             await session_pool.Open(false);
             if (debug) session_pool.OpenDebugMode();

@@ -19,13 +19,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Apache.IoTDB.DataStructure;
 
 namespace Apache.IoTDB.Samples
 {
     public partial class SessionPoolTest
     {
-        public static void PrintDataSetByObject(SessionDataSet sessionDataSet)
+        public static async Task PrintDataSetByObject(SessionDataSet sessionDataSet)
         {
             IReadOnlyList<string> columns = sessionDataSet.GetColumnNames();
 
@@ -35,7 +36,7 @@ namespace Apache.IoTDB.Samples
             }
             Console.WriteLine();
 
-            while (sessionDataSet.HasNext())
+            while (await sessionDataSet.HasNextAsync())
             {
                 for (int i = 0; i < columns.Count; i++)
                 {
@@ -47,7 +48,7 @@ namespace Apache.IoTDB.Samples
             }
         }
 
-        public static void PrintDataSetByString(SessionDataSet sessionDataSet)
+        public static async Task PrintDataSetByString(SessionDataSet sessionDataSet)
         {
             IReadOnlyList<string> columns = sessionDataSet.GetColumnNames();
 
@@ -57,7 +58,7 @@ namespace Apache.IoTDB.Samples
             }
             Console.WriteLine();
 
-            while (sessionDataSet.HasNext())
+            while (await sessionDataSet.HasNextAsync())
             {
                 for (int i = 0; i < columns.Count; i++)
                 {

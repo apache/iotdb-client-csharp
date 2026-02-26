@@ -68,7 +68,9 @@ namespace Apache.IoTDB.DataStructure
                 DefaultTimeout, _zoneId, ColumnIndex2TsBlockColumnIndexList
             );
         }
+        [Obsolete("Use HasNextAsync() instead. This synchronous method may cause deadlocks in certain synchronization contexts.")]
         public bool HasNext() => _rpcDataSet.Next();
+        public async Task<bool> HasNextAsync() => await _rpcDataSet.NextAsync().ConfigureAwait(false);
         public RowRecord Next() => _rpcDataSet.GetRow();
         public bool IsNull(string columnName) => _rpcDataSet.IsNullByColumnName(columnName);
         public bool IsNullByIndex(int columnIndex) => _rpcDataSet.IsNullByIndex(columnIndex);

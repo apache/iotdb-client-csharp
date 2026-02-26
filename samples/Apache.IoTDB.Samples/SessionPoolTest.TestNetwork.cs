@@ -28,7 +28,11 @@ namespace Apache.IoTDB.Samples
     {
         public async Task TestTestInsertRecord()
         {
-            var session_pool = new SessionPool(host, port, poolSize);
+            var session_pool = new SessionPool.Builder()
+                .SetHost(host)
+                .SetPort(port)
+                .SetPoolSize(poolSize)
+                .Build();
             int status;
             await session_pool.Open(false);
             if (debug) session_pool.OpenDebugMode();
@@ -58,7 +62,7 @@ namespace Apache.IoTDB.Samples
             var start_ms = DateTime.Now.Ticks / 10000;
             for (var timestamp = 1; timestamp <= fetchSize * processedSize; timestamp++)
             {
-                var rowRecord = new RowRecord(timestamp, values, measures);
+                var rowRecord = new RowRecord(timestamp, values, measures, new List<TSDataType> { TSDataType.TEXT, TSDataType.BOOLEAN, TSDataType.INT32 });
                 var task = session_pool.TestInsertRecordAsync(
                     string.Format("{0}.{1}", testDatabaseName, testDevice), rowRecord);
                 tasks.Add(task);
@@ -74,7 +78,11 @@ namespace Apache.IoTDB.Samples
 
         public async Task TestTestInsertRecords()
         {
-            var session_pool = new SessionPool(host, port, poolSize);
+            var session_pool = new SessionPool.Builder()
+                .SetHost(host)
+                .SetPort(port)
+                .SetPoolSize(poolSize)
+                .Build();
             await session_pool.Open(false);
             if (debug) session_pool.OpenDebugMode();
 
@@ -132,11 +140,15 @@ namespace Apache.IoTDB.Samples
             values_lst.Add(new List<object>() { true, (int)123, (long)456, (double)1.1 });
             values_lst.Add(new List<object>()
                 {true, (int) 123, (long) 456, (double) 1.1, (float) 10001.1, "test_record"});
+            var datatypes_lst = new List<List<TSDataType>>() { };
+            datatypes_lst.Add(new List<TSDataType>() { TSDataType.BOOLEAN, TSDataType.INT32 });
+            datatypes_lst.Add(new List<TSDataType>() { TSDataType.BOOLEAN, TSDataType.INT32, TSDataType.INT64, TSDataType.DOUBLE });
+            datatypes_lst.Add(new List<TSDataType>() { TSDataType.BOOLEAN, TSDataType.INT32, TSDataType.INT64, TSDataType.DOUBLE, TSDataType.FLOAT, TSDataType.TEXT });
             var timestamp_lst = new List<long>() { 1, 2, 3 };
             var rowRecords = new List<RowRecord>() { };
             for (var i = 0; i < 3; i++)
             {
-                var rowRecord = new RowRecord(timestamp_lst[i], values_lst[i], measurements_lst[i]);
+                var rowRecord = new RowRecord(timestamp_lst[i], values_lst[i], measurements_lst[i], datatypes_lst[i]);
                 rowRecords.Add(rowRecord);
             }
 
@@ -144,7 +156,7 @@ namespace Apache.IoTDB.Samples
             // System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<10");
-            SessionPoolTest.PrintDataSetByString(res);
+            await SessionPoolTest.PrintDataSetByString(res);
 
             await res.Close();
 
@@ -156,7 +168,8 @@ namespace Apache.IoTDB.Samples
             {
                 device_id.Add(string.Format("{0}.{1}", testDatabaseName, testDevice));
                 rowRecords.Add(new RowRecord(timestamp, new List<object>() { true, (int)123 },
-                    new List<string>() { testMeasurements[1], testMeasurements[2] }));
+                    new List<string>() { testMeasurements[1], testMeasurements[2] },
+                    new List<TSDataType>() { TSDataType.BOOLEAN, TSDataType.INT32 }));
                 if (timestamp % fetchSize == 0)
                 {
                     tasks.Add(session_pool.TestInsertRecordsAsync(device_id, rowRecords));
@@ -171,7 +184,7 @@ namespace Apache.IoTDB.Samples
             res.ShowTableNames();
             var record_count = fetchSize * processedSize;
             var res_count = 0;
-            while (res.HasNext())
+            while (await res.HasNextAsync())
             {
                 res_count += 1;
                 res.Next();
@@ -188,7 +201,11 @@ namespace Apache.IoTDB.Samples
 
         public async Task TestTestInsertTablet()
         {
-            var session_pool = new SessionPool(host, port, poolSize);
+            var session_pool = new SessionPool.Builder()
+                .SetHost(host)
+                .SetPort(port)
+                .SetPoolSize(poolSize)
+                .Build();
             var status = 0;
             await session_pool.Open(false);
             if (debug) session_pool.OpenDebugMode();
@@ -213,7 +230,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<15");
-            SessionPoolTest.PrintDataSetByString(res);
+            await SessionPoolTest.PrintDataSetByString(res);
 
             await res.Close();
             // large data test
@@ -241,7 +258,7 @@ namespace Apache.IoTDB.Samples
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             res.ShowTableNames();
             var res_count = 0;
-            while (res.HasNext())
+            while (await res.HasNextAsync())
             {
                 res_count += 1;
                 res.Next();
@@ -257,7 +274,11 @@ namespace Apache.IoTDB.Samples
 
         public async Task TestTestInsertTablets()
         {
-            var session_pool = new SessionPool(host, port, poolSize);
+            var session_pool = new SessionPool.Builder()
+                .SetHost(host)
+                .SetPort(port)
+                .SetPoolSize(poolSize)
+                .Build();
             var status = 0;
             await session_pool.Open(false);
             if (debug) session_pool.OpenDebugMode();
@@ -305,7 +326,7 @@ namespace Apache.IoTDB.Samples
             // System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevices[1]) + " where time<15");
-            SessionPoolTest.PrintDataSetByString(res);
+            await SessionPoolTest.PrintDataSetByString(res);
             await res.Close();
 
             // large data test
@@ -333,7 +354,7 @@ namespace Apache.IoTDB.Samples
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevices[1]));
             res.ShowTableNames();
             var res_count = 0;
-            while (res.HasNext())
+            while (await res.HasNextAsync())
             {
                 res_count += 1;
                 res.Next();
