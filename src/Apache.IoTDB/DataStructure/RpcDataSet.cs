@@ -414,7 +414,7 @@ namespace Apache.IoTDB.DataStructure
             CheckRecord();
             if (!IsNull(tsBlockColumnIndex, _tsBlockIndex))
             {
-                if (tsBlockColumnIndex == -1) return (int)_curTsBlock.GetTimeByIndex(_tsBlockIndex);
+                if (tsBlockColumnIndex == -1) return checked((int)_curTsBlock.GetTimeByIndex(_tsBlockIndex));
                 _lastReadWasNull = false;
                 TSDataType dataType = _curTsBlock.GetColumn(tsBlockColumnIndex).GetDataType();
                 if (dataType == TSDataType.INT64)
@@ -638,6 +638,15 @@ namespace Apache.IoTDB.DataStructure
                 string typeStr = _columnTypeList[i];
                 TSDataType dataType = Client.GetDataTypeByStr(typeStr);
 
+                // Identify the real time column by tsBlock index, not by data type
+                int tsBlockColumnIndex = GetTsBlockColumnIndexForColumnName(columnName);
+                if (tsBlockColumnIndex == -1)
+                {
+                    timestamp = GetLong(columnName);
+                    i += 1;
+                    continue;
+                }
+
                 switch (dataType)
                 {
                     case TSDataType.BOOLEAN:
@@ -650,8 +659,7 @@ namespace Apache.IoTDB.DataStructure
                         localfield = GetLong(columnName);
                         break;
                     case TSDataType.TIMESTAMP:
-                        localfield = null;
-                        timestamp = GetLong(columnName);
+                        localfield = GetLong(columnName);
                         break;
                     case TSDataType.FLOAT:
                         localfield = GetFloat(columnName);
@@ -661,9 +669,14 @@ namespace Apache.IoTDB.DataStructure
                         break;
                     case TSDataType.TEXT:
                     case TSDataType.STRING:
-                    case TSDataType.BLOB:
-                    case TSDataType.DATE:
                         localfield = GetString(columnName);
+                        break;
+                    case TSDataType.BLOB:
+                        var binary = GetBinary(columnName);
+                        localfield = binary?.Data;
+                        break;
+                    case TSDataType.DATE:
+                        localfield = GetDate(columnName);
                         break;
                     default:
                         string err_msg = "value format not supported";
@@ -846,7 +859,9 @@ namespace Apache.IoTDB.DataStructure
                     }
                 }
 
-                return TimeZoneInfo.Local;
+                throw new TimeZoneNotFoundException(
+                    $"Cannot resolve time zone ID '{zoneId}'. " +
+                    $"Ensure it is a valid IANA (e.g. 'Asia/Shanghai') or Windows (e.g. 'China Standard Time') time zone ID.");
             }
         }
 
