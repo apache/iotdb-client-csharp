@@ -137,7 +137,9 @@ namespace Apache.IoTDB.Data
             {
                 throw new InvalidOperationException($"DataReaderClosed{nameof(Read)}");
             }
+#pragma warning disable CS0618 // HasNext is obsolete, but DbDataReader.Read() must be synchronous
             if (_dataSet.HasNext())
+#pragma warning restore CS0618
             {
                 rowdata = _dataSet.Next();
             }
@@ -455,7 +457,9 @@ namespace Apache.IoTDB.Data
         /// <returns>A System.Data.DataTable that describes the column metadata.</returns>
         public override DataTable GetSchemaTable()
         {
+#pragma warning disable CS0618 // HasNext is obsolete, but GetSchemaTable() must be synchronous
             if (_dataSet.HasNext())
+#pragma warning restore CS0618
             {
                 rowdata = _dataSet.Next();
             }

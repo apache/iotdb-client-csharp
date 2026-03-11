@@ -29,7 +29,11 @@ namespace Apache.IoTDB.Samples
     {
         public async Task TestInsertAlignedTablet()
         {
-            var session_pool = new SessionPool(host, port, poolSize);
+            var session_pool = new SessionPool.Builder()
+                .SetHost(host)
+                .SetPort(port)
+                .SetPoolSize(poolSize)
+                .Build();
             var status = 0;
             await session_pool.Open(false);
             if (debug) session_pool.OpenDebugMode();
@@ -54,7 +58,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice) + " where time<15");
-            SessionPoolTest.PrintDataSetByString(res);
+            await SessionPoolTest.PrintDataSetByString(res);
 
             await res.Close();
             // large data test
@@ -83,7 +87,7 @@ namespace Apache.IoTDB.Samples
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevice));
             res.ShowTableNames();
             var res_count = 0;
-            while (res.HasNext())
+            while (await res.HasNextAsync())
             {
                 res_count += 1;
                 res.Next();
@@ -100,7 +104,11 @@ namespace Apache.IoTDB.Samples
 
         public async Task TestInsertAlignedTablets()
         {
-            var session_pool = new SessionPool(host, port, poolSize);
+            var session_pool = new SessionPool.Builder()
+                .SetHost(host)
+                .SetPort(port)
+                .SetPoolSize(poolSize)
+                .Build();
             var status = 0;
             await session_pool.Open(false);
             if (debug) session_pool.OpenDebugMode();
@@ -148,7 +156,7 @@ namespace Apache.IoTDB.Samples
             System.Diagnostics.Debug.Assert(status == 0);
             var res = await session_pool.ExecuteQueryStatementAsync(
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevices[1]) + " where time<15");
-            SessionPoolTest.PrintDataSetByString(res);
+            await SessionPoolTest.PrintDataSetByString(res);
 
             // large data test
             var tasks = new List<Task<int>>();
@@ -175,7 +183,7 @@ namespace Apache.IoTDB.Samples
                 "select * from " + string.Format("{0}.{1}", testDatabaseName, testDevices[1]));
             res.ShowTableNames();
             var res_count = 0;
-            while (res.HasNext())
+            while (await res.HasNextAsync())
             {
                 res_count += 1;
                 res.Next();

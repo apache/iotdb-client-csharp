@@ -140,7 +140,7 @@ namespace Apache.IoTDB.DataStructure
             _tsBlockSize = 0;
             _tsBlockIndex = -1;
 
-            _zoneId = TimeZoneInfo.FindSystemTimeZoneById(zoneId);
+            _zoneId = FindTimeZoneSafe(zoneId);
 
             if (columnIndex2TsBlockColumnIndexList.Count != _columnNameList.Count)
                 throw new ArgumentException("Column index list size mismatch");
@@ -194,7 +194,13 @@ namespace Apache.IoTDB.DataStructure
             _isClosed = true;
         }
 
+        [Obsolete("Use NextAsync() instead. This synchronous method may cause deadlocks in certain synchronization contexts.")]
         public bool Next()
+        {
+            return NextAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        public async Task<bool> NextAsync()
         {
             if (HasCachedBlock())
             {
@@ -212,7 +218,7 @@ namespace Apache.IoTDB.DataStructure
 
             if (_moreData)
             {
-                bool hasResultSet = FetchResults();
+                bool hasResultSet = await FetchResultsAsync().ConfigureAwait(false);
                 if (hasResultSet && HasCachedByteBuffer())
                 {
                     ConstructOneTsBlock();
@@ -221,11 +227,11 @@ namespace Apache.IoTDB.DataStructure
                 }
             }
 
-            Close().Wait();
+            await Close().ConfigureAwait(false);
             return false;
         }
 
-        private bool FetchResults()
+        private async Task<bool> FetchResultsAsync()
         {
             if (_isClosed)
                 throw new InvalidOperationException("Dataset closed");
@@ -242,16 +248,14 @@ namespace Apache.IoTDB.DataStructure
 
             try
             {
-                var task = _client.ServiceClient.fetchResultsV2Async(req);
-                var resp = task.ConfigureAwait(false).GetAwaiter().GetResult();
+                var resp = await _client.ServiceClient.fetchResultsV2Async(req).ConfigureAwait(false);
 
                 if (!resp.HasResultSet)
                 {
-                    Close().Wait();
+                    await Close().ConfigureAwait(false);
                     return false;
                 }
 
-                // return _queryResult != null && _queryResultIndex < _queryResultSize;
                 _queryResult = resp.QueryResult;
                 _queryResultIndex = 0;
                 _queryResultSize = _queryResult?.Count ?? 0;
@@ -410,6 +414,7 @@ namespace Apache.IoTDB.DataStructure
             CheckRecord();
             if (!IsNull(tsBlockColumnIndex, _tsBlockIndex))
             {
+                if (tsBlockColumnIndex == -1) return checked((int)_curTsBlock.GetTimeByIndex(_tsBlockIndex));
                 _lastReadWasNull = false;
                 TSDataType dataType = _curTsBlock.GetColumn(tsBlockColumnIndex).GetDataType();
                 if (dataType == TSDataType.INT64)
@@ -624,12 +629,23 @@ namespace Apache.IoTDB.DataStructure
             IReadOnlyList<string> columns = _columnNameList;
             int i = 0;
             List<object> fieldList = new List<Object>();
+            List<string> measurementList = new List<string>();
+            List<TSDataType> dataTypeList = new List<TSDataType>();
             long timestamp = 0;
             foreach (string columnName in columns)
             {
                 object localfield;
                 string typeStr = _columnTypeList[i];
                 TSDataType dataType = Client.GetDataTypeByStr(typeStr);
+
+                // Identify the real time column by tsBlock index, not by data type
+                int tsBlockColumnIndex = GetTsBlockColumnIndexForColumnName(columnName);
+                if (tsBlockColumnIndex == -1)
+                {
+                    timestamp = GetLong(columnName);
+                    i += 1;
+                    continue;
+                }
 
                 switch (dataType)
                 {
@@ -643,8 +659,7 @@ namespace Apache.IoTDB.DataStructure
                         localfield = GetLong(columnName);
                         break;
                     case TSDataType.TIMESTAMP:
-                        localfield = null;
-                        timestamp = GetLong(columnName);
+                        localfield = GetLong(columnName);
                         break;
                     case TSDataType.FLOAT:
                         localfield = GetFloat(columnName);
@@ -654,19 +669,28 @@ namespace Apache.IoTDB.DataStructure
                         break;
                     case TSDataType.TEXT:
                     case TSDataType.STRING:
-                    case TSDataType.BLOB:
-                    case TSDataType.DATE:
                         localfield = GetString(columnName);
+                        break;
+                    case TSDataType.BLOB:
+                        var binary = GetBinary(columnName);
+                        localfield = binary?.Data;
+                        break;
+                    case TSDataType.DATE:
+                        localfield = GetDate(columnName);
                         break;
                     default:
                         string err_msg = "value format not supported";
                         throw new TException(err_msg, null);
                 }
                 if (localfield != null)
+                {
                     fieldList.Add(localfield);
+                    measurementList.Add(columnName);
+                    dataTypeList.Add(dataType);
+                }
                 i += 1;
             }
-            return new RowRecord(timestamp, fieldList, _columnNameList);
+            return new RowRecord(timestamp, fieldList, measurementList, dataTypeList);
         }
 
         public DateTime GetTimestampByIndex(int columnIndex)
@@ -701,6 +725,10 @@ namespace Apache.IoTDB.DataStructure
 
         private DateTime GetDateByTsBlockColumnIndex(int tsBlockColumnIndex)
         {
+            if (tsBlockColumnIndex == -1)
+            {
+                return GetTimestampByTsBlockColumnIndex(tsBlockColumnIndex);
+            }
             int value = GetIntByTsBlockColumnIndex(tsBlockColumnIndex);
             return Int32ToDate(value);
         }
@@ -766,6 +794,75 @@ namespace Apache.IoTDB.DataStructure
             DateTime dt = ConvertToTimestamp(value, 1); // 假设timeFactor=1
             DateTime convertedTime = TimeZoneInfo.ConvertTime(dt, zone);
             return convertedTime.ToString(format);
+        }
+
+        private static readonly Dictionary<string, string> IanaToWindows = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "Asia/Shanghai", "China Standard Time" },
+            { "Asia/Chongqing", "China Standard Time" },
+            { "Asia/Hong_Kong", "China Standard Time" },
+            { "Asia/Urumqi", "China Standard Time" },
+            { "Asia/Tokyo", "Tokyo Standard Time" },
+            { "Asia/Seoul", "Korea Standard Time" },
+            { "Asia/Singapore", "Singapore Standard Time" },
+            { "Asia/Kolkata", "India Standard Time" },
+            { "Asia/Calcutta", "India Standard Time" },
+            { "Asia/Dubai", "Arabian Standard Time" },
+            { "Europe/London", "GMT Standard Time" },
+            { "Europe/Paris", "Romance Standard Time" },
+            { "Europe/Berlin", "W. Europe Standard Time" },
+            { "Europe/Moscow", "Russian Standard Time" },
+            { "America/New_York", "Eastern Standard Time" },
+            { "America/Chicago", "Central Standard Time" },
+            { "America/Denver", "Mountain Standard Time" },
+            { "America/Los_Angeles", "Pacific Standard Time" },
+            { "America/Sao_Paulo", "E. South America Standard Time" },
+            { "Australia/Sydney", "AUS Eastern Standard Time" },
+            { "Pacific/Auckland", "New Zealand Standard Time" },
+            { "Etc/UTC", "UTC" },
+            { "UTC", "UTC" },
+            { "GMT", "GMT Standard Time" },
+        };
+
+        internal static TimeZoneInfo FindTimeZoneSafe(string zoneId)
+        {
+            if (string.IsNullOrEmpty(zoneId))
+                return TimeZoneInfo.Utc;
+
+            try
+            {
+                return TimeZoneInfo.FindSystemTimeZoneById(zoneId);
+            }
+            catch (TimeZoneNotFoundException)
+            {
+                // On Windows, IANA IDs (e.g. "Asia/Shanghai") are not recognized by older .NET runtimes.
+                // Try mapping to Windows time zone ID.
+                if (IanaToWindows.TryGetValue(zoneId, out string windowsId))
+                {
+                    try
+                    {
+                        return TimeZoneInfo.FindSystemTimeZoneById(windowsId);
+                    }
+                    catch (TimeZoneNotFoundException) { }
+                }
+
+                // Reverse lookup: if a Windows ID was passed on a non-Windows system
+                foreach (var kvp in IanaToWindows)
+                {
+                    if (string.Equals(kvp.Value, zoneId, StringComparison.OrdinalIgnoreCase))
+                    {
+                        try
+                        {
+                            return TimeZoneInfo.FindSystemTimeZoneById(kvp.Key);
+                        }
+                        catch (TimeZoneNotFoundException) { }
+                    }
+                }
+
+                throw new TimeZoneNotFoundException(
+                    $"Cannot resolve time zone ID '{zoneId}'. " +
+                    $"Ensure it is a valid IANA (e.g. 'Asia/Shanghai') or Windows (e.g. 'China Standard Time') time zone ID.");
+            }
         }
 
         private int GetTsBlockColumnIndexForColumnName(string columnName)
