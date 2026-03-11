@@ -368,6 +368,7 @@ namespace Apache.IoTDB.Data
         {
             var measures = new List<string>();
             var values = new List<object>();
+            var dataTypes = new List<TSDataType>();
 
 
             for (int i = 0; i < pms.Count; i++)
@@ -380,13 +381,16 @@ namespace Apache.IoTDB.Data
                 {
                     case TypeCode.Boolean:
                         values.Add((tp.Value as bool?).GetValueOrDefault());
+                        dataTypes.Add(TSDataType.BOOLEAN);
                         break;
                     case TypeCode.Char:
                         values.Add(tp.Value as string);
+                        dataTypes.Add(TSDataType.TEXT);
                         break;
                     case TypeCode.Byte:
                     case TypeCode.SByte:
                         values.Add((tp.Value as byte?).GetValueOrDefault());
+                        dataTypes.Add(TSDataType.INT32);
                         break;
                     case TypeCode.DateTime:
                         var t0 = tp.Value as DateTime?;
@@ -395,43 +399,53 @@ namespace Apache.IoTDB.Data
                             throw new ArgumentException($"InvalidArgumentOfDateTime{tp.Value}");
                         }
                         values.Add(t0.GetValueOrDefault());
+                        dataTypes.Add(TSDataType.DATE);
                         break;
                     case TypeCode.DBNull:
 
                         break;
                     case TypeCode.Single:
                         values.Add((tp.Value as float?).GetValueOrDefault());
+                        dataTypes.Add(TSDataType.FLOAT);
                         break;
                     case TypeCode.Decimal:
                     case TypeCode.Double:
                         values.Add((tp.Value as double?).GetValueOrDefault());
+                        dataTypes.Add(TSDataType.DOUBLE);
                         break;
                     case TypeCode.Int16:
                         values.Add((tp.Value as short?).GetValueOrDefault());
+                        dataTypes.Add(TSDataType.INT32);
                         break;
                     case TypeCode.Int32:
                         values.Add((tp.Value as int?).GetValueOrDefault());
+                        dataTypes.Add(TSDataType.INT32);
                         break;
                     case TypeCode.Int64:
                         values.Add((tp.Value as long?).GetValueOrDefault());
+                        dataTypes.Add(TSDataType.INT64);
                         break;
                     case TypeCode.UInt16:
                         values.Add((tp.Value as short?).GetValueOrDefault());
+                        dataTypes.Add(TSDataType.INT32);
                         break;
                     case TypeCode.UInt32:
                         values.Add((tp.Value as uint?).GetValueOrDefault());
+                        dataTypes.Add(TSDataType.INT64);
                         break;
                     case TypeCode.UInt64:
                         values.Add((tp.Value as ulong?).GetValueOrDefault());
+                        dataTypes.Add(TSDataType.INT64);
                         break;
                     case TypeCode.String:
                     default:
                         values.Add(tp.Value as string);
+                        dataTypes.Add(TSDataType.TEXT);
                         break;
                 }
             }
 
-            return new RowRecord(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), values, measures);
+            return new RowRecord(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), values, measures, dataTypes);
         }
 
         /// <summary>

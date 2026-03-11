@@ -136,8 +136,10 @@ namespace Apache.IoTDB.Data
             {
                 throw new InvalidOperationException($"DataReaderClosed{nameof(Read)}");
             }
+#pragma warning disable CS0618 // Sync HasNext() required by ADO.NET DbDataReader.Read() interface
             if (_dataSet.HasNext())
             {
+#pragma warning restore CS0618
                 rowdata = _dataSet.Next();
             }
             else
@@ -454,7 +456,9 @@ namespace Apache.IoTDB.Data
         /// <returns>A System.Data.DataTable that describes the column metadata.</returns>
         public override DataTable GetSchemaTable()
         {
+#pragma warning disable CS0618 // Sync HasNext() required by ADO.NET interface
             if (_dataSet.HasNext())
+#pragma warning restore CS0618
             {
                 rowdata = _dataSet.GetRow();
             }
