@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Apache.IoTDB" Version="1.0.0.3" />
+    <ProjectReference Include="..\src\Apache.IoTDB\Apache.IoTDB.csproj" />
   </ItemGroup>
 
 </Project>

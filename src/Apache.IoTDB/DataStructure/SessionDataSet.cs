@@ -145,6 +145,7 @@ namespace Apache.IoTDB.DataStructure
             Console.WriteLine(str);
         }
 
+        [Obsolete("Use HasNextAsync() instead. This synchronous method blocks on async calls and can cause deadlocks.")]
         public bool HasNext()
         {
             if (_hasCatchedResult)
@@ -166,11 +167,34 @@ namespace Apache.IoTDB.DataStructure
             return true;
         }
 
+        public async Task<bool> HasNextAsync()
+        {
+            if (_hasCatchedResult)
+            {
+                return true;
+            }
+
+            // we have consumed all current data, fetch some more
+            if (!_timeBuffer.HasRemaining())
+            {
+                if (!await FetchResultsAsync())
+                {
+                    return false;
+                }
+            }
+
+            ConstructOneRow();
+            _hasCatchedResult = true;
+            return true;
+        }
+
         public RowRecord Next()
         {
             if (!_hasCatchedResult)
             {
+#pragma warning disable CS0618
                 if (!HasNext())
+#pragma warning restore CS0618
                 {
                     return null;
                 }
@@ -278,7 +302,13 @@ namespace Apache.IoTDB.DataStructure
 
             long timestamp = _timeBuffer.GetLong();
             _rowIndex += 1;
-            _cachedRowRecord = new RowRecord(timestamp, fieldLst, _columnNames);
+
+            var dataTypes = new List<TSDataType>();
+            for (int j = 0; j < _columnSize; j++)
+            {
+                dataTypes.Add(GetDataTypeFromStr(_columnTypeLst[j]));
+            }
+            _cachedRowRecord = new RowRecord(timestamp, fieldLst, _columnNames, dataTypes);
         }
 
         private bool IsNull(int loc, int row_index)
@@ -300,6 +330,44 @@ namespace Apache.IoTDB.DataStructure
                 var task = _client.ServiceClient.fetchResultsAsync(req);
 
                 var resp = task.ConfigureAwait(false).GetAwaiter().GetResult();
+
+                if (resp.HasResultSet)
+                {
+                    _queryDataset = resp.QueryDataSet;
+                    // reset buffer
+                    _timeBuffer = new ByteBuffer(resp.QueryDataSet.Time);
+                    _valueBufferLst = new List<ByteBuffer>();
+                    _bitmapBufferLst = new List<ByteBuffer>();
+                    for (int index = 0; index < _queryDataset.ValueList.Count; index++)
+                    {
+                        string columnName = _columnNames[index];
+                        int valueIndex = _columnNameIndexMap[columnName];
+                        _valueBufferLst.Add(new ByteBuffer(_queryDataset.ValueList[valueIndex]));
+                        _bitmapBufferLst.Add(new ByteBuffer(_queryDataset.BitmapList[valueIndex]));
+                    }
+
+                    // reset row index
+                    _rowIndex = 0;
+                }
+
+                return resp.HasResultSet;
+            }
+            catch (TException e)
+            {
+                throw new TException("Cannot fetch result from server, because of network connection", e);
+            }
+        }
+
+        private async Task<bool> FetchResultsAsync()
+        {
+            _rowIndex = 0;
+            var req = new TSFetchResultsReq(_client.SessionId, _sql, FetchSize, _queryId, true)
+            {
+                Timeout = DefaultTimeout
+            };
+            try
+            {
+                var resp = await _client.ServiceClient.fetchResultsAsync(req);
 
                 if (resp.HasResultSet)
                 {

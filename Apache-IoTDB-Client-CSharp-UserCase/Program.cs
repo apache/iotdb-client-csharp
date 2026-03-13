@@ -19,7 +19,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Apache.IoTDB;
 using Apache.IoTDB.DataStructure;
@@ -32,10 +31,19 @@ namespace Apache.IoTDB.UserCase
         static int port = 6667;
         static int pool_size = 2;
 
+        static SessionPool CreateSessionPool()
+        {
+            return new SessionPool.Builder()
+                .SetHost(host)
+                .SetPort(port)
+                .SetPoolSize(pool_size)
+                .Build();
+        }
+
 
         static async Task OpenAndCloseSessionPool()
         {
-            var session_pool = new SessionPool(host, port, pool_size);
+            var session_pool = CreateSessionPool();
             await session_pool.Open(false);
             if (session_pool.IsOpen())
             {
@@ -50,7 +58,7 @@ namespace Apache.IoTDB.UserCase
 
         static async Task CreateTimeseries()
         {
-            var session_pool = new SessionPool(host, port, pool_size);
+            var session_pool = CreateSessionPool();
             await session_pool.Open(false);
 
             await session_pool.DeleteDatabaseAsync("root.ln.wf01.wt01");
@@ -63,12 +71,13 @@ namespace Apache.IoTDB.UserCase
 
         static async Task InsertRecord()
         {
-            var session_pool = new SessionPool(host, port, pool_size);
+            var session_pool = CreateSessionPool();
             await session_pool.Open(false);
             long timestamp = 1;
             var values = new List<object> { true, (double)1.1, "test" };
             var measures = new List<string> { "status", "temperature", "hardware" };
-            var rowRecord = new RowRecord(timestamp, values, measures);
+            var dataTypes = new List<TSDataType> { TSDataType.BOOLEAN, TSDataType.DOUBLE, TSDataType.TEXT };
+            var rowRecord = new RowRecord(timestamp, values, measures, dataTypes);
             var status = await session_pool.InsertRecordAsync("root.ln.wf01.wt01", rowRecord);
 
             await session_pool.Close();
@@ -76,7 +85,7 @@ namespace Apache.IoTDB.UserCase
 
         static async Task InsertTablet()
         {
-            var session_pool = new SessionPool(host, port, pool_size);
+            var session_pool = CreateSessionPool();
             await session_pool.Open(false);
             var device_id = "root.ln.wf01.wt01";
             var measurement_lst = new List<string> { "status", "temperature", "hardware" };
@@ -95,11 +104,11 @@ namespace Apache.IoTDB.UserCase
 
         static async Task ExecuteQueryStatement()
         {
-            var session_pool = new SessionPool(host, port, pool_size);
+            var session_pool = CreateSessionPool();
             await session_pool.Open(false);
             var res = await session_pool.ExecuteQueryStatementAsync("select * from root.ln.wf01.wt01");
             res.ShowTableNames();
-            while (res.HasNext())
+            while (await res.HasNextAsync())
             {
                 Console.WriteLine(res.Next());
             }
