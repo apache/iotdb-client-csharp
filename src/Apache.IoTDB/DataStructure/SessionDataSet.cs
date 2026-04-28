@@ -154,6 +154,7 @@ namespace Apache.IoTDB.DataStructure
                 }
                 finally
                 {
+                    _isClosed = true;
                     await _rpcDataSet.Close();
                     _clientQueue.Add(_client);
                     _client = null;
