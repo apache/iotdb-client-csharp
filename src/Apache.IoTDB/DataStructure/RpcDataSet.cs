@@ -26,7 +26,7 @@ using Thrift;
 
 namespace Apache.IoTDB.DataStructure
 {
-    public class RpcDataSet : System.IDisposable
+    public class RpcDataSet : System.IDisposable, System.IAsyncDisposable
     {
         private const string TimestampColumnName = "Time";
         private const string DefaultTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
@@ -140,6 +140,11 @@ namespace Apache.IoTDB.DataStructure
             _tsBlockSize = 0;
             _tsBlockIndex = -1;
 
+            if (HasCachedByteBuffer())
+            {
+                ConstructOneTsBlock();
+            }
+
             _zoneId = FindTimeZoneSafe(zoneId);
 
             if (columnIndex2TsBlockColumnIndexList.Count != _columnNameList.Count)
@@ -169,6 +174,22 @@ namespace Apache.IoTDB.DataStructure
         public void Dispose()
         {
             Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (!disposedValue)
+            {
+                try
+                {
+                    await Close().ConfigureAwait(false);
+                }
+                catch
+                {
+                }
+                disposedValue = true;
+            }
             GC.SuppressFinalize(this);
         }
 
@@ -634,11 +655,9 @@ namespace Apache.IoTDB.DataStructure
             long timestamp = 0;
             foreach (string columnName in columns)
             {
-                object localfield;
                 string typeStr = _columnTypeList[i];
                 TSDataType dataType = Client.GetDataTypeByStr(typeStr);
 
-                // Identify the real time column by tsBlock index, not by data type
                 int tsBlockColumnIndex = GetTsBlockColumnIndexForColumnName(columnName);
                 if (tsBlockColumnIndex == -1)
                 {
@@ -647,6 +666,13 @@ namespace Apache.IoTDB.DataStructure
                     continue;
                 }
 
+                if (IsNull(tsBlockColumnIndex, _tsBlockIndex))
+                {
+                    i += 1;
+                    continue;
+                }
+
+                object localfield;
                 switch (dataType)
                 {
                     case TSDataType.BOOLEAN:
@@ -682,12 +708,9 @@ namespace Apache.IoTDB.DataStructure
                         string err_msg = "value format not supported";
                         throw new TException(err_msg, null);
                 }
-                if (localfield != null)
-                {
-                    fieldList.Add(localfield);
-                    measurementList.Add(columnName);
-                    dataTypeList.Add(dataType);
-                }
+                fieldList.Add(localfield);
+                measurementList.Add(columnName);
+                dataTypeList.Add(dataType);
                 i += 1;
             }
             return new RowRecord(timestamp, fieldList, measurementList, dataTypeList);
