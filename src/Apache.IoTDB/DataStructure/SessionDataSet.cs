@@ -25,7 +25,7 @@ using Thrift;
 
 namespace Apache.IoTDB.DataStructure
 {
-    public class SessionDataSet : System.IDisposable
+    public class SessionDataSet : System.IDisposable, System.IAsyncDisposable
     {
         private readonly long _queryId;
         private readonly long _statementId;
@@ -182,6 +182,22 @@ namespace Apache.IoTDB.DataStructure
         public void Dispose()
         {
             Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (!disposedValue)
+            {
+                try
+                {
+                    await this.Close().ConfigureAwait(false);
+                }
+                catch
+                {
+                }
+                disposedValue = true;
+            }
             GC.SuppressFinalize(this);
         }
     }
