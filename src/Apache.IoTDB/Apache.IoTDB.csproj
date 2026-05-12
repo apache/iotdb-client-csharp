@@ -17,7 +17,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ApacheThrift" Version="0.22.0" />
+        <PackageReference Include="ApacheThrift" Version="0.23.0" />
     </ItemGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'net461' or '$(TargetFramework)' == 'netstandard2.0'">
         <PackageReference Include="IndexRange" Version="1.0.2" />
