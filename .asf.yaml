@@ -19,7 +19,7 @@
 
 
 notifications:
-  issues:       reviews@iotdb.apache.org
+  issues: reviews@iotdb.apache.org
   pullrequests: reviews@iotdb.apache.org
 
 github:
@@ -33,10 +33,23 @@ github:
     issues: true
   enabled_merge_buttons:
     # enable squash button:
-    squash:  true
+    squash: true
     # enable merge button:
-    merge:   false
+    merge: false
     # disable rebase button:
-    rebase:  true
+    rebase: true
   collaborators:
     - lausannel
+  rulesets:
+    - name: "Default Branch Protection"
+      type: branch
+      branches:
+        includes:
+          - "~DEFAULT_BRANCH"
+          - "release/*"
+          - "rel/*"
+        excludes: []
+      bypass_teams:
+        - root
+      restrict_deletion: true
+      restrict_force_push: true
