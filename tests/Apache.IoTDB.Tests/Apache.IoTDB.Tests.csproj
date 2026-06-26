@@ -14,6 +14,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\Apache.IoTDB\Apache.IoTDB.csproj" />
+      <ProjectReference Include="..\..\src\Apache.IoTDB.Data\Apache.IoTDB.Data.csproj" />
     </ItemGroup>
 
 </Project>

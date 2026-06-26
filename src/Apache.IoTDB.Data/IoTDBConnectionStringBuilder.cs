@@ -44,6 +44,10 @@ namespace Apache.IoTDB.Data
         private const string PoolSizeKeyword = "PoolSize";
         private const string ZoneIdKeyword = "ZoneId";
         private const string TimeOutKeyword = "TimeOut";
+        private const string UseSslKeyword = "UseSsl";
+        private const string ClientCertificatePathKeyword = "ClientCertificatePath";
+        private const string ClientCertificatePasswordKeyword = "ClientCertificatePassword";
+        private const string RootCertificatePathKeyword = "RootCertificatePath";
 
         private enum Keywords
         {
@@ -55,7 +59,11 @@ namespace Apache.IoTDB.Data
             Compression,
             PoolSize,
             ZoneId,
-            TimeOut
+            TimeOut,
+            UseSsl,
+            ClientCertificatePath,
+            ClientCertificatePassword,
+            RootCertificatePath
         }
 
         private static readonly IReadOnlyList<string> _validKeywords;
@@ -70,10 +78,14 @@ namespace Apache.IoTDB.Data
         private int _port = 6667;
         private int _poolSize = 8;
         private int _timeOut = 10000;
+        private bool _useSsl = false;
+        private string _clientCertificatePath = null;
+        private string _clientCertificatePassword = null;
+        private string _rootCertificatePath = null;
 
         static IoTDBConnectionStringBuilder()
         {
-            var validKeywords = new string[9];
+            var validKeywords = new string[13];
             validKeywords[(int)Keywords.DataSource] = DataSourceKeyword;
             validKeywords[(int)Keywords.Username] = UserNameKeyword;
             validKeywords[(int)Keywords.Password] = PasswordKeyword;
@@ -83,9 +95,13 @@ namespace Apache.IoTDB.Data
             validKeywords[(int)Keywords.PoolSize] = PoolSizeKeyword;
             validKeywords[(int)Keywords.ZoneId] = ZoneIdKeyword;
             validKeywords[(int)Keywords.TimeOut] = TimeOutKeyword;
+            validKeywords[(int)Keywords.UseSsl] = UseSslKeyword;
+            validKeywords[(int)Keywords.ClientCertificatePath] = ClientCertificatePathKeyword;
+            validKeywords[(int)Keywords.ClientCertificatePassword] = ClientCertificatePasswordKeyword;
+            validKeywords[(int)Keywords.RootCertificatePath] = RootCertificatePathKeyword;
             _validKeywords = validKeywords;
 
-            _keywords = new Dictionary<string, Keywords>(9, StringComparer.OrdinalIgnoreCase)
+            _keywords = new Dictionary<string, Keywords>(13, StringComparer.OrdinalIgnoreCase)
             {
                 [DataSourceKeyword] = Keywords.DataSource,
                 [UserNameKeyword] = Keywords.Username,
@@ -95,7 +111,11 @@ namespace Apache.IoTDB.Data
                 [CompressionKeyword] = Keywords.Compression,
                 [PoolSizeKeyword] = Keywords.PoolSize,
                 [ZoneIdKeyword] = Keywords.ZoneId,
-                [TimeOutKeyword] = Keywords.TimeOut
+                [TimeOutKeyword] = Keywords.TimeOut,
+                [UseSslKeyword] = Keywords.UseSsl,
+                [ClientCertificatePathKeyword] = Keywords.ClientCertificatePath,
+                [ClientCertificatePasswordKeyword] = Keywords.ClientCertificatePassword,
+                [RootCertificatePathKeyword] = Keywords.RootCertificatePath
             };
         }
 
@@ -165,7 +185,31 @@ namespace Apache.IoTDB.Data
         public virtual int TimeOut
         {
             get => _timeOut;
-            set => base[PoolSizeKeyword] = _timeOut = value;
+            set => base[TimeOutKeyword] = _timeOut = value;
+        }
+
+        public virtual bool UseSsl
+        {
+            get => _useSsl;
+            set => base[UseSslKeyword] = _useSsl = value;
+        }
+
+        public virtual string ClientCertificatePath
+        {
+            get => _clientCertificatePath;
+            set => base[ClientCertificatePathKeyword] = _clientCertificatePath = value;
+        }
+
+        public virtual string ClientCertificatePassword
+        {
+            get => _clientCertificatePassword;
+            set => base[ClientCertificatePasswordKeyword] = _clientCertificatePassword = value;
+        }
+
+        public virtual string RootCertificatePath
+        {
+            get => _rootCertificatePath;
+            set => base[RootCertificatePathKeyword] = _rootCertificatePath = value;
         }
 
         /// <summary>
@@ -245,6 +289,18 @@ namespace Apache.IoTDB.Data
                         return;
                     case Keywords.TimeOut:
                         TimeOut = Convert.ToInt32(value, CultureInfo.InvariantCulture);
+                        return;
+                    case Keywords.UseSsl:
+                        UseSsl = Convert.ToBoolean(value, CultureInfo.InvariantCulture);
+                        return;
+                    case Keywords.ClientCertificatePath:
+                        ClientCertificatePath = Convert.ToString(value, CultureInfo.InvariantCulture);
+                        return;
+                    case Keywords.ClientCertificatePassword:
+                        ClientCertificatePassword = Convert.ToString(value, CultureInfo.InvariantCulture);
+                        return;
+                    case Keywords.RootCertificatePath:
+                        RootCertificatePath = Convert.ToString(value, CultureInfo.InvariantCulture);
                         return;
                     default:
                         Debug.WriteLine(false, "Unexpected keyword: " + keyword);
@@ -376,6 +432,14 @@ namespace Apache.IoTDB.Data
                     return ZoneId;
                 case Keywords.TimeOut:
                     return TimeOut;
+                case Keywords.UseSsl:
+                    return UseSsl;
+                case Keywords.ClientCertificatePath:
+                    return ClientCertificatePath;
+                case Keywords.ClientCertificatePassword:
+                    return ClientCertificatePassword;
+                case Keywords.RootCertificatePath:
+                    return RootCertificatePath;
                 default:
                     Debug.Assert(false, "Unexpected keyword: " + index);
                     return null;
@@ -417,6 +481,18 @@ namespace Apache.IoTDB.Data
                     return;
                 case Keywords.TimeOut:
                     _timeOut = 10000;//10sec.
+                    return;
+                case Keywords.UseSsl:
+                    _useSsl = false;
+                    return;
+                case Keywords.ClientCertificatePath:
+                    _clientCertificatePath = null;
+                    return;
+                case Keywords.ClientCertificatePassword:
+                    _clientCertificatePassword = null;
+                    return;
+                case Keywords.RootCertificatePath:
+                    _rootCertificatePath = null;
                     return;
                 default:
                     Debug.Assert(false, "Unexpected keyword: " + index);

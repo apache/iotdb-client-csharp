@@ -35,7 +35,9 @@ public partial class SessionPool
         private bool _enableRpcCompression = false;
         private int _connectionTimeoutInMs = 500;
         private bool _useSsl = false;
-        private string _certificatePath = null;
+        private string _clientCertificatePath = null;
+        private string _clientCertificatePassword = null;
+        private string _rootCertificatePath = null;
         private string _sqlDialect = IoTDBConstant.TREE_SQL_DIALECT;
         private string _database = "";
         private List<string> _nodeUrls = new List<string>();
@@ -100,9 +102,21 @@ public partial class SessionPool
             return this;
         }
 
-        public Builder SetCertificatePath(string certificatePath)
+        public Builder SetClientCertificatePath(string clientCertificatePath)
         {
-            _certificatePath = certificatePath;
+            _clientCertificatePath = clientCertificatePath;
+            return this;
+        }
+
+        public Builder SetClientCertificatePassword(string clientCertificatePassword)
+        {
+            _clientCertificatePassword = clientCertificatePassword;
+            return this;
+        }
+
+        public Builder SetRootCertificatePath(string rootCertificatePath)
+        {
+            _rootCertificatePath = rootCertificatePath;
             return this;
         }
 
@@ -136,7 +150,9 @@ public partial class SessionPool
             _enableRpcCompression = false;
             _connectionTimeoutInMs = 500;
             _useSsl = false;
-            _certificatePath = null;
+            _clientCertificatePath = null;
+            _clientCertificatePassword = null;
+            _rootCertificatePath = null;
             _sqlDialect = IoTDBConstant.TREE_SQL_DIALECT;
             _database = "";
         }
@@ -146,9 +162,9 @@ public partial class SessionPool
             // if nodeUrls is not empty, use nodeUrls to create session pool
             if (_nodeUrls.Count > 0)
             {
-                return new SessionPool(_nodeUrls, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _useSsl, _certificatePath, _sqlDialect, _database);
+                return new SessionPool(_nodeUrls, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _useSsl, _clientCertificatePath, _clientCertificatePassword, _rootCertificatePath, _sqlDialect, _database);
             }
-            return new SessionPool(_host, _port, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _useSsl, _certificatePath, _sqlDialect, _database);
+            return new SessionPool(_host, _port, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _useSsl, _clientCertificatePath, _clientCertificatePassword, _rootCertificatePath, _sqlDialect, _database);
         }
     }
 }
