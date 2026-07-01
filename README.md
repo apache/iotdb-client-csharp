@@ -74,6 +74,8 @@ Enable TLS by calling `SetUseSsl(true)`. The C# client uses the .NET certificate
 | `client.truststore` | Java client truststore; the C# client uses `ca.crt` instead |
 | `server.truststore` | Server-side truststore for trusting client certificates; not a C# client option |
 
+When `RootCertificatePath` is set, `Host` / `DataSource` must match the server certificate SAN. If you connect by IP address, the server certificate must include the corresponding IP SAN.
+
 Only convert the keystore first if you are reusing an older JKS file, or if it was explicitly generated with `-storetype JKS`:
 
 ```bash

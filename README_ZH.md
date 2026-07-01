@@ -72,6 +72,8 @@ dotnet add package Apache.IoTDB
 | `client.truststore` | Java 客户端的 truststore；C# 侧用 `ca.crt`，不需要这个文件 |
 | `server.truststore` | 服务端用于信任客户端证书，不是 C# 客户端参数 |
 
+配置 `RootCertificatePath` 后，`Host` / `DataSource` 必须匹配服务端证书 SAN。如果使用 IP 地址连接，服务端证书需要包含对应的 IP SAN。
+
 只有在复用旧版 JDK 生成的 JKS 文件，或显式使用 `-storetype JKS` 生成 keystore 时，才需要先转换为 PKCS#12：
 
 ```bash
