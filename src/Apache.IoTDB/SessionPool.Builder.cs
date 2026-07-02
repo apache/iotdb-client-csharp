@@ -17,6 +17,7 @@
  * under the License.
  */
 
+using System;
 using System.Collections.Generic;
 
 namespace Apache.IoTDB;
@@ -106,6 +107,12 @@ public partial class SessionPool
         {
             _clientCertificatePath = clientCertificatePath;
             return this;
+        }
+
+        [Obsolete("Use SetClientCertificatePath instead.")]
+        public Builder SetCertificatePath(string certificatePath)
+        {
+            return SetClientCertificatePath(certificatePath);
         }
 
         public Builder SetClientCertificatePassword(string clientCertificatePassword)

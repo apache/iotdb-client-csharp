@@ -41,6 +41,23 @@ namespace Apache.IoTDB.Tests
         }
 
         [Test]
+        public void SessionPoolBuilder_AcceptsObsoleteCertificatePath()
+        {
+#pragma warning disable CS0618
+            var sessionPool = new SessionPool.Builder()
+                .SetHost("localhost")
+                .SetPort(6667)
+                .SetUseSsl(true)
+                .SetCertificatePath("/tmp/client.pfx")
+                .SetClientCertificatePassword("secret")
+                .SetRootCertificatePath("/tmp/root-ca.pem")
+                .Build();
+#pragma warning restore CS0618
+
+            Assert.That(sessionPool, Is.Not.Null);
+        }
+
+        [Test]
         public void TableSessionPoolBuilder_AcceptsClientCertificateConfiguration()
         {
             var tableSessionPool = new TableSessionPool.Builder()
@@ -51,6 +68,23 @@ namespace Apache.IoTDB.Tests
                 .SetClientCertificatePassword("secret")
                 .SetRootCertificatePath("/tmp/root-ca.pem")
                 .Build();
+
+            Assert.That(tableSessionPool, Is.Not.Null);
+        }
+
+        [Test]
+        public void TableSessionPoolBuilder_AcceptsObsoleteCertificatePath()
+        {
+#pragma warning disable CS0618
+            var tableSessionPool = new TableSessionPool.Builder()
+                .SetHost("localhost")
+                .SetPort(6667)
+                .SetUseSsl(true)
+                .SetCertificatePath("/tmp/client.pfx")
+                .SetClientCertificatePassword("secret")
+                .SetRootCertificatePath("/tmp/root-ca.pem")
+                .Build();
+#pragma warning restore CS0618
 
             Assert.That(tableSessionPool, Is.Not.Null);
         }

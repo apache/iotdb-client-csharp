@@ -111,6 +111,12 @@ public partial class TableSessionPool
             return this;
         }
 
+        [Obsolete("Use SetClientCertificatePath instead.")]
+        public Builder SetCertificatePath(string certificatePath)
+        {
+            return SetClientCertificatePath(certificatePath);
+        }
+
         public Builder SetClientCertificatePassword(string clientCertificatePassword)
         {
             _clientCertificatePassword = clientCertificatePassword;
