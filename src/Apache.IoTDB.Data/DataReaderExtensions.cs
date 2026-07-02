@@ -32,7 +32,21 @@ namespace Apache.IoTDB.Data
     {
         public static SessionPool CreateSession(this IoTDBConnectionStringBuilder db)
         {
-            return new SessionPool(db.DataSource, db.Port, db.Username, db.Password, db.FetchSize, db.ZoneId, db.PoolSize, db.Compression, db.TimeOut);
+            return new SessionPool.Builder()
+                .SetHost(db.DataSource)
+                .SetPort(db.Port)
+                .SetUsername(db.Username)
+                .SetPassword(db.Password)
+                .SetFetchSize(db.FetchSize)
+                .SetZoneId(db.ZoneId)
+                .SetPoolSize(db.PoolSize)
+                .SetEnableRpcCompression(db.Compression)
+                .SetConnectionTimeoutInMs(db.TimeOut)
+                .SetUseSsl(db.UseSsl)
+                .SetClientCertificatePath(db.ClientCertificatePath)
+                .SetClientCertificatePassword(db.ClientCertificatePassword)
+                .SetRootCertificatePath(db.RootCertificatePath)
+                .Build();
         }
 
         public static List<T> ToObject<T>(this IDataReader dataReader)

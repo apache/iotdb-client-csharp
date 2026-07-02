@@ -63,6 +63,52 @@ Users can quickly get started by referring to the use cases under the Apache-IoT
 
 For those who wish to delve deeper into the client's usage and explore more advanced features, the samples directory contains additional code samples. 
 
+## TLS and mTLS
+
+Enable TLS by calling `SetUseSsl(true)`. The C# client uses the .NET certificate model and does not read Java truststores directly. If your certificates were generated with the JDK 17 Java/keytool workflow, `client.keystore` is PKCS#12 by default and can be used directly as the client certificate file; use `ca.crt` directly as the trusted root.
+
+| keytool artifact | C# client usage |
+| --- | --- |
+| `ca.crt` | Pass to `SetRootCertificatePath` / `RootCertificatePath` to trust the server certificate |
+| `client.keystore` | Contains the client private key and client certificate; JDK 17 creates PKCS#12 by default, so pass it directly to `SetClientCertificatePath` |
+| `client.truststore` | Java client truststore; the C# client uses `ca.crt` instead |
+| `server.truststore` | Server-side truststore for trusting client certificates; not a C# client option |
+
+When `RootCertificatePath` is set, `Host` / `DataSource` must match the server certificate SAN. If you connect by IP address, the server certificate must include the corresponding IP SAN.
+
+Only convert the keystore first if you are reusing an older JKS file, or if it was explicitly generated with `-storetype JKS`:
+
+```bash
+$KT -importkeystore \
+  -srckeystore client.keystore \
+  -srcstorepass $PWD \
+  -srcalias client \
+  -destkeystore client.p12 \
+  -deststoretype PKCS12 \
+  -deststorepass $PWD \
+  -destkeypass $PWD \
+  -destalias client
+```
+
+C# builder example:
+
+```csharp
+var sessionPool = new SessionPool.Builder()
+    .SetHost("127.0.0.1")
+    .SetPort(6667)
+    .SetUseSsl(true)
+    .SetRootCertificatePath("tls-certs/ca.crt")
+    .SetClientCertificatePath("tls-certs/client.keystore")
+    .SetClientCertificatePassword("IoTDB")
+    .Build();
+```
+
+The ADO.NET connection string supports the same options:
+
+```text
+DataSource=127.0.0.1;Port=6667;UseSsl=True;RootCertificatePath=tls-certs/ca.crt;ClientCertificatePath=tls-certs/client.keystore;ClientCertificatePassword=IoTDB
+```
+
 ## Developer environment requirements for iotdb-client-csharp
 
 ```

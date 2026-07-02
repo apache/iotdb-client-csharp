@@ -61,6 +61,51 @@ dotnet add package Apache.IoTDB
 
 对于希望深入了解客户端用法并探索更高级特性的用户，samples目录包含了额外的代码示例。
 
+## TLS 和 mTLS
+
+通过 `SetUseSsl(true)` 开启 TLS。C# 客户端使用 .NET 的证书模型，不直接读取 Java truststore；如果证书按 JDK 17 的 Java/keytool 文档生成，`client.keystore` 默认就是 PKCS#12，可以直接作为客户端证书文件使用，并直接使用 `ca.crt` 作为信任根。
+
+| keytool 产物 | C# 客户端用法 |
+| --- | --- |
+| `ca.crt` | 传给 `SetRootCertificatePath` / `RootCertificatePath`，用于信任服务端证书 |
+| `client.keystore` | 包含客户端私钥和客户端证书；JDK 17 默认是 PKCS#12，直接传给 `SetClientCertificatePath` |
+| `client.truststore` | Java 客户端的 truststore；C# 侧用 `ca.crt`，不需要这个文件 |
+| `server.truststore` | 服务端用于信任客户端证书，不是 C# 客户端参数 |
+
+配置 `RootCertificatePath` 后，`Host` / `DataSource` 必须匹配服务端证书 SAN。如果使用 IP 地址连接，服务端证书需要包含对应的 IP SAN。
+
+只有在复用旧版 JDK 生成的 JKS 文件，或显式使用 `-storetype JKS` 生成 keystore 时，才需要先转换为 PKCS#12：
+
+```bash
+$KT -importkeystore \
+  -srckeystore client.keystore \
+  -srcstorepass $PWD \
+  -srcalias client \
+  -destkeystore client.p12 \
+  -deststoretype PKCS12 \
+  -deststorepass $PWD \
+  -destkeypass $PWD \
+  -destalias client
+```
+
+C# builder 示例：
+
+```csharp
+var sessionPool = new SessionPool.Builder()
+    .SetHost("127.0.0.1")
+    .SetPort(6667)
+    .SetUseSsl(true)
+    .SetRootCertificatePath("tls-certs/ca.crt")
+    .SetClientCertificatePath("tls-certs/client.keystore")
+    .SetClientCertificatePassword("IoTDB")
+    .Build();
+```
+
+ADO.NET 连接字符串也支持相同配置：
+
+```text
+DataSource=127.0.0.1;Port=6667;UseSsl=True;RootCertificatePath=tls-certs/ca.crt;ClientCertificatePath=tls-certs/client.keystore;ClientCertificatePassword=IoTDB
+```
 
 ## iotdb-client-csharp的开发者环境要求
 

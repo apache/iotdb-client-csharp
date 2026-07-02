@@ -22,7 +22,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Apache.IoTDB.DataStructure;
@@ -49,7 +51,13 @@ namespace Apache.IoTDB
         private readonly string _host;
         private readonly int _port;
         private readonly bool _useSsl;
-        private readonly string _certificatePath;
+        private readonly string _clientCertificatePath;
+        private readonly string _clientCertificatePassword;
+        private readonly string _rootCertificatePath;
+        private X509Certificate2 _clientCertificate;
+        private X509Certificate2Collection _rootCertificates;
+        private RemoteCertificateValidationCallback _remoteCertificateValidationCallback;
+        private LocalCertificateSelectionCallback _localCertificateSelectionCallback;
         private readonly int _fetchSize;
         /// <summary>
         /// _timeout is the amount of time a Session will wait for a send operation to complete successfully.
@@ -60,6 +68,9 @@ namespace Apache.IoTDB
         private string _database;
         private readonly Utils _utilFunctions = new();
         private const int RetryNum = 3;
+        private const string ServerAuthenticationOid = "1.3.6.1.5.5.7.3.1";
+        private readonly object _tlsConfigurationLock = new();
+        private bool _tlsConfigurationLoaded;
         private bool _debugMode;
         private bool _isClose = true;
         private ConcurrentClientQueue _clients;
@@ -106,10 +117,11 @@ namespace Apache.IoTDB
         {
         }
         public SessionPool(string host, int port, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout)
-                         : this(host, port, username, password, fetchSize, zoneId, poolSize, enableRpcCompression, timeout, false, null, IoTDBConstant.TREE_SQL_DIALECT, "")
+                         : this(host, port, username, password, fetchSize, zoneId, poolSize, enableRpcCompression, timeout, false, null, null, null, IoTDBConstant.TREE_SQL_DIALECT, "")
         {
         }
-        protected internal SessionPool(string host, int port, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout, bool useSsl, string certificatePath, string sqlDialect, string database)
+
+        protected internal SessionPool(string host, int port, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout, bool useSsl, string clientCertificatePath, string clientCertificatePassword, string rootCertificatePath, string sqlDialect, string database)
         {
             _host = host;
             _port = port;
@@ -122,7 +134,9 @@ namespace Apache.IoTDB
             _enableRpcCompression = enableRpcCompression;
             _timeout = timeout;
             _useSsl = useSsl;
-            _certificatePath = certificatePath;
+            _clientCertificatePath = clientCertificatePath;
+            _clientCertificatePassword = clientCertificatePassword;
+            _rootCertificatePath = rootCertificatePath;
             _sqlDialect = sqlDialect;
             _database = database;
         }
@@ -148,11 +162,12 @@ namespace Apache.IoTDB
         {
         }
         public SessionPool(List<string> nodeUrls, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout)
-                        : this(nodeUrls, username, password, fetchSize, zoneId, poolSize, enableRpcCompression, timeout, false, null, IoTDBConstant.TREE_SQL_DIALECT, "")
+                        : this(nodeUrls, username, password, fetchSize, zoneId, poolSize, enableRpcCompression, timeout, false, null, null, null, IoTDBConstant.TREE_SQL_DIALECT, "")
         {
 
         }
-        protected internal SessionPool(List<string> nodeUrls, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout, bool useSsl, string certificatePath, string sqlDialect, string database)
+
+        protected internal SessionPool(List<string> nodeUrls, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout, bool useSsl, string clientCertificatePath, string clientCertificatePassword, string rootCertificatePath, string sqlDialect, string database)
         {
             if (nodeUrls.Count == 0)
             {
@@ -169,7 +184,9 @@ namespace Apache.IoTDB
             _enableRpcCompression = enableRpcCompression;
             _timeout = timeout;
             _useSsl = useSsl;
-            _certificatePath = certificatePath;
+            _clientCertificatePath = clientCertificatePath;
+            _clientCertificatePassword = clientCertificatePassword;
+            _rootCertificatePath = rootCertificatePath;
             _sqlDialect = sqlDialect;
             _database = database;
         }
@@ -277,7 +294,7 @@ namespace Apache.IoTDB
                 {
                     try
                     {
-                        _clients.Add(await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, _useSsl, _certificatePath, _sqlDialect, _database, cancellationToken));
+                        _clients.Add(await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, _useSsl, _sqlDialect, _database, cancellationToken));
                     }
                     catch (Exception e)
                     {
@@ -297,7 +314,7 @@ namespace Apache.IoTDB
                         var endPoint = _endPoints[endPointIndex];
                         try
                         {
-                            var client = await CreateAndOpen(endPoint.Ip, endPoint.Port, _enableRpcCompression, _timeout, _useSsl, _certificatePath, _sqlDialect, _database, cancellationToken);
+                            var client = await CreateAndOpen(endPoint.Ip, endPoint.Port, _enableRpcCompression, _timeout, _useSsl, _sqlDialect, _database, cancellationToken);
                             _clients.Add(client);
                             isConnected = true;
                             startIndex = (endPointIndex + 1) % _endPoints.Count;
@@ -333,7 +350,7 @@ namespace Apache.IoTDB
                 {
                     try
                     {
-                        var client = await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, _useSsl, _certificatePath, _sqlDialect, _database, cancellationToken);
+                        var client = await CreateAndOpen(_host, _port, _enableRpcCompression, _timeout, _useSsl, _sqlDialect, _database, cancellationToken);
                         return client;
                     }
                     catch (Exception e)
@@ -357,7 +374,7 @@ namespace Apache.IoTDB
                         int j = (startIndex + i) % _endPoints.Count;
                         try
                         {
-                            var client = await CreateAndOpen(_endPoints[j].Ip, _endPoints[j].Port, _enableRpcCompression, _timeout, _useSsl, _certificatePath, _sqlDialect, _database, cancellationToken);
+                            var client = await CreateAndOpen(_endPoints[j].Ip, _endPoints[j].Port, _enableRpcCompression, _timeout, _useSsl, _sqlDialect, _database, cancellationToken);
                             return client;
                         }
                         catch (Exception e)
@@ -448,15 +465,16 @@ namespace Apache.IoTDB
             }
         }
 
-        private async Task<Client> CreateAndOpen(string host, int port, bool enableRpcCompression, int timeout, bool useSsl, string cert, string sqlDialect, string database, CancellationToken cancellationToken = default)
+        private async Task<Client> CreateAndOpen(string host, int port, bool enableRpcCompression, int timeout, bool useSsl, string sqlDialect, string database, CancellationToken cancellationToken = default)
         {
             TTransport socket;
 
             if (useSsl)
             {
+                EnsureTlsConfigurationLoaded();
                 socket = IPAddress.TryParse(host, out var ipAddress)
-                    ? new TTlsSocketTransport(ipAddress, port, null, cert)
-                    : new TTlsSocketTransport(host, port, null, timeout, new X509Certificate2(cert));
+                    ? new TTlsSocketTransport(ipAddress, port, null, timeout, _clientCertificate, _remoteCertificateValidationCallback, _localCertificateSelectionCallback)
+                    : new TTlsSocketTransport(host, port, null, timeout, _clientCertificate, _remoteCertificateValidationCallback, _localCertificateSelectionCallback);
             }
             else
             {
@@ -522,6 +540,187 @@ namespace Apache.IoTDB
 
                 throw;
             }
+        }
+
+        private void EnsureTlsConfigurationLoaded()
+        {
+            lock (_tlsConfigurationLock)
+            {
+                if (_tlsConfigurationLoaded)
+                {
+                    return;
+                }
+
+                _clientCertificate = LoadClientCertificate(_clientCertificatePath, _clientCertificatePassword);
+                _rootCertificates = LoadRootCertificates(_rootCertificatePath);
+                _remoteCertificateValidationCallback = CreateRemoteCertificateValidationCallback(_rootCertificates);
+                _localCertificateSelectionCallback = CreateLocalCertificateSelectionCallback(_clientCertificate);
+                _tlsConfigurationLoaded = true;
+            }
+        }
+
+        private static X509Certificate2 LoadClientCertificate(string clientCertificatePath, string clientCertificatePassword)
+        {
+            if (string.IsNullOrWhiteSpace(clientCertificatePath))
+            {
+                return null;
+            }
+
+            return string.IsNullOrEmpty(clientCertificatePassword)
+                ? new X509Certificate2(clientCertificatePath)
+                : new X509Certificate2(clientCertificatePath, clientCertificatePassword);
+        }
+
+        private static X509Certificate2Collection LoadRootCertificates(string rootCertificatePath)
+        {
+            if (string.IsNullOrWhiteSpace(rootCertificatePath))
+            {
+                return null;
+            }
+
+            var certificateBytes = File.ReadAllBytes(rootCertificatePath);
+            var certificates = LoadPemCertificates(certificateBytes);
+            if (certificates.Count > 0)
+            {
+                return certificates;
+            }
+
+            certificates.Import(certificateBytes);
+            return certificates;
+        }
+
+        private static X509Certificate2Collection LoadPemCertificates(byte[] certificateBytes)
+        {
+            const string beginCertificate = "-----BEGIN CERTIFICATE-----";
+            const string endCertificate = "-----END CERTIFICATE-----";
+
+            var certificates = new X509Certificate2Collection();
+            var certificateText = Encoding.ASCII.GetString(certificateBytes);
+            var startIndex = certificateText.IndexOf(beginCertificate, StringComparison.Ordinal);
+            while (startIndex >= 0)
+            {
+                startIndex += beginCertificate.Length;
+                var endIndex = certificateText.IndexOf(endCertificate, startIndex, StringComparison.Ordinal);
+                if (endIndex < 0)
+                {
+                    break;
+                }
+
+                var base64 = certificateText.Substring(startIndex, endIndex - startIndex)
+                    .Replace("\r", string.Empty)
+                    .Replace("\n", string.Empty)
+                    .Trim();
+                certificates.Add(new X509Certificate2(Convert.FromBase64String(base64)));
+                startIndex = certificateText.IndexOf(beginCertificate, endIndex + endCertificate.Length, StringComparison.Ordinal);
+            }
+
+            return certificates;
+        }
+
+        private static RemoteCertificateValidationCallback CreateRemoteCertificateValidationCallback(X509Certificate2Collection rootCertificates)
+        {
+            if (rootCertificates == null || rootCertificates.Count == 0)
+            {
+                return null;
+            }
+
+            return (sender, certificate, chain, sslPolicyErrors) =>
+            {
+                if ((sslPolicyErrors & SslPolicyErrors.RemoteCertificateNameMismatch) != 0 ||
+                    (sslPolicyErrors & SslPolicyErrors.RemoteCertificateNotAvailable) != 0 ||
+                    certificate == null)
+                {
+                    return false;
+                }
+
+                var serverCertificate = certificate as X509Certificate2 ?? new X509Certificate2(certificate);
+                try
+                {
+                    if (!HasServerAuthenticationEku(serverCertificate))
+                    {
+                        return false;
+                    }
+
+                    using var customChain = new X509Chain();
+                    customChain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+                    customChain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllowUnknownCertificateAuthority;
+
+                    foreach (var rootCertificate in rootCertificates)
+                    {
+                        customChain.ChainPolicy.ExtraStore.Add(rootCertificate);
+                    }
+
+                    if (chain != null)
+                    {
+                        foreach (var chainElement in chain.ChainElements)
+                        {
+                            if (!string.Equals(chainElement.Certificate.Thumbprint, serverCertificate.Thumbprint, StringComparison.OrdinalIgnoreCase))
+                            {
+                                customChain.ChainPolicy.ExtraStore.Add(chainElement.Certificate);
+                            }
+                        }
+                    }
+
+                    return customChain.Build(serverCertificate) && ChainEndsWithTrustedRoot(customChain, rootCertificates);
+                }
+                finally
+                {
+                    if (!ReferenceEquals(serverCertificate, certificate))
+                    {
+                        serverCertificate.Dispose();
+                    }
+                }
+            };
+        }
+
+        private static bool HasServerAuthenticationEku(X509Certificate2 certificate)
+        {
+            var hasEnhancedKeyUsage = false;
+            foreach (var extension in certificate.Extensions)
+            {
+                if (extension is X509EnhancedKeyUsageExtension enhancedKeyUsage)
+                {
+                    hasEnhancedKeyUsage = true;
+                    foreach (var oid in enhancedKeyUsage.EnhancedKeyUsages)
+                    {
+                        if (string.Equals(oid.Value, ServerAuthenticationOid, StringComparison.Ordinal))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return !hasEnhancedKeyUsage;
+        }
+
+        private static bool ChainEndsWithTrustedRoot(X509Chain chain, X509Certificate2Collection rootCertificates)
+        {
+            if (chain.ChainElements.Count == 0)
+            {
+                return false;
+            }
+
+            var chainRoot = chain.ChainElements[chain.ChainElements.Count - 1].Certificate;
+            foreach (var rootCertificate in rootCertificates)
+            {
+                if (string.Equals(chainRoot.Thumbprint, rootCertificate.Thumbprint, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static LocalCertificateSelectionCallback CreateLocalCertificateSelectionCallback(X509Certificate2 clientCertificate)
+        {
+            if (clientCertificate == null)
+            {
+                return null;
+            }
+
+            return (sender, targetHost, localCertificates, remoteCertificate, acceptableIssuers) => clientCertificate;
         }
 
         public async Task<int> CreateDatabase(string dbName)
@@ -1825,8 +2024,16 @@ namespace Apache.IoTDB
                 {
 #if NET461_OR_GREATER || NETSTANDARD2_0
 #else
-                    _clients.ClientQueue.Clear();
+                    _clients?.ClientQueue.Clear();
 #endif
+                    _clientCertificate?.Dispose();
+                    if (_rootCertificates != null)
+                    {
+                        foreach (var rootCertificate in _rootCertificates)
+                        {
+                            rootCertificate.Dispose();
+                        }
+                    }
                 }
                 _clients = null;
                 disposedValue = true;
