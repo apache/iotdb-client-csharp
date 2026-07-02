@@ -70,7 +70,7 @@ Enable TLS by calling `SetUseSsl(true)`. The C# client uses the .NET certificate
 | keytool artifact | C# client usage |
 | --- | --- |
 | `ca.crt` | Pass to `SetRootCertificatePath` / `RootCertificatePath` to trust the server certificate |
-| `client.keystore` | Contains the client private key and certificate chain; JDK 17 creates PKCS#12 by default, so pass it directly to `SetClientCertificatePath` |
+| `client.keystore` | Contains the client private key and client certificate; JDK 17 creates PKCS#12 by default, so pass it directly to `SetClientCertificatePath` |
 | `client.truststore` | Java client truststore; the C# client uses `ca.crt` instead |
 | `server.truststore` | Server-side truststore for trusting client certificates; not a C# client option |
 

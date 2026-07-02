@@ -68,7 +68,7 @@ dotnet add package Apache.IoTDB
 | keytool 产物 | C# 客户端用法 |
 | --- | --- |
 | `ca.crt` | 传给 `SetRootCertificatePath` / `RootCertificatePath`，用于信任服务端证书 |
-| `client.keystore` | 包含客户端私钥和证书链；JDK 17 默认是 PKCS#12，直接传给 `SetClientCertificatePath` |
+| `client.keystore` | 包含客户端私钥和客户端证书；JDK 17 默认是 PKCS#12，直接传给 `SetClientCertificatePath` |
 | `client.truststore` | Java 客户端的 truststore；C# 侧用 `ca.crt`，不需要这个文件 |
 | `server.truststore` | 服务端用于信任客户端证书，不是 C# 客户端参数 |
 
