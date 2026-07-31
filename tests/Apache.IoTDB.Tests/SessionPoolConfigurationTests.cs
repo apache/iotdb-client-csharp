@@ -19,6 +19,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace Apache.IoTDB.Tests
@@ -89,6 +90,45 @@ namespace Apache.IoTDB.Tests
             var pool = new SessionPool.Builder().SetHost("127.0.0.1").SetPort(6667).Build();
 
             Assert.That(pool.VacantSlots, Is.Zero);
+            Assert.That(pool.IsOpen(), Is.False);
+        }
+
+        private static void SetPrivateField(object target, string name, object value)
+        {
+            var field = target.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.That(field, Is.Not.Null, $"{name} field is expected to exist.");
+            field.SetValue(target, value);
+        }
+
+        [Test]
+        public async Task Close_EmptyClientQueue_StillMarksThePoolClosed()
+        {
+            // Regression guard: _isClose used to be assigned only inside the foreach over queued clients.
+            // Once every connection had become a vacant slot the queue was empty, the loop ran zero times,
+            // and Close() returned while IsOpen() stayed true - leaving the rebuild path armed.
+            var pool = new SessionPool.Builder().SetHost("127.0.0.1").SetPort(6667).Build();
+            SetPrivateField(pool, "_clients", new ConcurrentClientQueue());
+            SetPrivateField(pool, "_isClose", false);
+            SetPrivateField(pool, "_vacantSlots", 8);
+
+            Assert.That(pool.IsOpen(), Is.True, "Precondition: the pool looks open with an empty queue.");
+
+            await pool.Close();
+
+            Assert.That(pool.IsOpen(), Is.False, "Close() must flip the lifecycle flag regardless of queue contents.");
+            Assert.That(pool.VacantSlots, Is.Zero, "Close() must disarm capacity refill.");
+        }
+
+        [Test]
+        public async Task Close_IsIdempotentWhenQueueIsEmpty()
+        {
+            var pool = new SessionPool.Builder().SetHost("127.0.0.1").SetPort(6667).Build();
+            SetPrivateField(pool, "_clients", new ConcurrentClientQueue());
+            SetPrivateField(pool, "_isClose", false);
+
+            await pool.Close();
+            await pool.Close();
+
             Assert.That(pool.IsOpen(), Is.False);
         }
     }

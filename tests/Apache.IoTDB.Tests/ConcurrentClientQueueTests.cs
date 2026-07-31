@@ -102,5 +102,77 @@ namespace Apache.IoTDB.Tests
             Assert.That(queue.Timeout, Is.EqualTo(3), "Reading Timeout should scale back to seconds.");
         }
 #pragma warning restore CS0618
+
+        [Test]
+        public void Take_RepeatedWakeUps_StillHonoursTheOverallDeadline()
+        {
+            // Return() pulses ALL waiters while only one can dequeue, so a losing waiter re-enters the loop
+            // and waits again. If the full timeout were re-armed on each wake-up, that waiter could exceed
+            // its budget indefinitely under steady churn. Here the queue is deliberately never fed: the
+            // waiter is only ever pulsed, so it must still give up once the overall deadline passes.
+            var queue = new ConcurrentClientQueue { TimeoutInMs = 200 };
+            var stop = new ManualResetEventSlim(false);
+
+            var pulser = Task.Run(() =>
+            {
+                while (!stop.IsSet)
+                {
+                    Monitor.Enter(queue.ClientQueue);
+                    try
+                    {
+                        Monitor.PulseAll(queue.ClientQueue);
+                    }
+                    finally
+                    {
+                        Monitor.Exit(queue.ClientQueue);
+                    }
+                    Thread.Sleep(20);
+                }
+            });
+
+            var stopwatch = Stopwatch.StartNew();
+            Assert.Throws<TimeoutException>(() => queue.Take());
+            stopwatch.Stop();
+            stop.Set();
+            pulser.Wait(TimeSpan.FromSeconds(5));
+
+            Assert.That(stopwatch.ElapsedMilliseconds, Is.LessThan(1_000),
+                $"Take() must not re-arm its budget on every wake-up (waited {stopwatch.ElapsedMilliseconds}ms for a 200ms budget).");
+        }
+
+        [Test]
+        public void Take_MultipleWaiters_EachHonoursTheOverallDeadline()
+        {
+            var queue = new ConcurrentClientQueue { TimeoutInMs = 300 };
+            const int waiterCount = 4;
+
+            var stopwatch = Stopwatch.StartNew();
+            var waiters = new Task[waiterCount];
+            for (int i = 0; i < waiterCount; i++)
+            {
+                waiters[i] = Task.Run(() =>
+                {
+                    try
+                    {
+                        queue.Take();
+                        return true;    // won the single client
+                    }
+                    catch (TimeoutException)
+                    {
+                        return false;   // timed out within budget
+                    }
+                });
+            }
+
+            Thread.Sleep(100);
+            queue.Return(NewStubClient());  // wakes all waiters; only one can win
+
+            Assert.That(Task.WaitAll(waiters, TimeSpan.FromSeconds(5)), Is.True,
+                "Every waiter should settle within its own deadline rather than waiting indefinitely.");
+            stopwatch.Stop();
+
+            Assert.That(stopwatch.ElapsedMilliseconds, Is.LessThan(2_000),
+                $"Losing waiters must not restart their budget (took {stopwatch.ElapsedMilliseconds}ms for a 300ms budget).");
+        }
     }
 }

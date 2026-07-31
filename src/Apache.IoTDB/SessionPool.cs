@@ -77,9 +77,11 @@ namespace Apache.IoTDB
         private ILogger _logger;
         private PoolHealthMetrics _healthMetrics;
         /// <summary>
-        /// Number of pool slots whose connection was discarded because reconnection failed. The slots are
-        /// re-materialized on demand by <see cref="AcquireClientAsync"/> so that the pool keeps its
-        /// configured capacity and recovers by itself once the server comes back.
+        /// Configured capacity that currently holds no connection, because a reconnection attempt failed and
+        /// the dead connection was discarded. The pool refills this capacity on demand: a slot is only
+        /// materialized when an acquisition finds no idle client, so under light or sequential load this
+        /// stays above zero even after the server has fully recovered. It measures unrealized capacity,
+        /// not server availability.
         /// </summary>
         private int _vacantSlots;
 
@@ -101,9 +103,10 @@ namespace Apache.IoTDB
         public int FailedReconnections => _healthMetrics?.GetReconnectionFailureTally() ?? 0;
 
         /// <summary>
-        /// Number of pool slots that currently hold no connection because a reconnection attempt failed.
-        /// These slots are rebuilt lazily on the next acquisition, so a non-zero value means the pool is
-        /// degraded but will heal itself once the server is reachable again.
+        /// Configured capacity that currently holds no connection. Capacity is refilled on demand - a slot is
+        /// materialized only when an acquisition finds no idle client - so a steady non-zero value under light
+        /// load is normal and does NOT mean the server is unreachable. Use <see cref="FailedReconnections"/>
+        /// to reason about server availability.
         /// </summary>
         public int VacantSlots => Volatile.Read(ref _vacantSlots);
 
@@ -208,14 +211,14 @@ namespace Apache.IoTDB
             _poolWaitTimeoutInMs = poolWaitTimeoutInMs;
         }
         /// <summary>
-        /// Acquires a client from the pool. If the pool has no idle client but owns vacant slots left behind
-        /// by earlier failed reconnections, one of those slots is re-materialized on the spot instead of
-        /// blocking on a queue that nobody will ever feed. This is what lets the pool recover on its own
-        /// after the server has been unreachable for a while.
+        /// Acquires a client from the pool. If the pool has no idle client but still owns unrealized
+        /// capacity left behind by earlier failed reconnections, one of those slots is materialized on the
+        /// spot instead of blocking on a queue that nobody will ever feed. This is what lets the pool
+        /// recover on its own after the server has been unreachable for a while.
         /// </summary>
         private async Task<Client> AcquireClientAsync(CancellationToken cancellationToken = default)
         {
-            if (_clients.ClientQueue.IsEmpty && TryReserveVacantSlot())
+            if (!_isClose && _clients.ClientQueue.IsEmpty && TryReserveVacantSlot())
             {
                 try
                 {
@@ -481,6 +484,13 @@ namespace Apache.IoTDB
                 return;
             }
 
+            // Flip the lifecycle state first. It must not depend on how many clients happen to be queued:
+            // once every connection has become a vacant slot the queue is empty, and assigning _isClose
+            // inside the loop below would leave IsOpen() true forever. Clearing the vacant slots also
+            // disables the rebuild path in AcquireClientAsync while we are tearing down.
+            _isClose = true;
+            Volatile.Write(ref _vacantSlots, 0);
+
             foreach (var client in _clients.ClientQueue.AsEnumerable())
             {
                 var closeSessionRequest = new TSCloseSessionReq(client.SessionId);
@@ -494,8 +504,6 @@ namespace Apache.IoTDB
                 }
                 finally
                 {
-                    _isClose = true;
-
                     client.Transport?.Close();
                 }
             }

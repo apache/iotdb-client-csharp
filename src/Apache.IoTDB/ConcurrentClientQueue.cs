@@ -82,22 +82,28 @@ namespace Apache.IoTDB
         public Client Take()
         {
             Client client = null;
+            // One overall deadline for the whole call. Return() uses PulseAll, so every waiter wakes up
+            // while only one of them can dequeue the returned client; re-arming the full timeout on each
+            // wake-up would let an unlucky waiter exceed the configured bound indefinitely under churn.
+            var budgetMs = TimeoutInMs;
+            var elapsed = Stopwatch.StartNew();
             Monitor.Enter(ClientQueue);
             try
             {
                 while (true)
                 {
-                    bool timeout = false;
-                    if (ClientQueue.IsEmpty)
-                    {
-                        timeout = !Monitor.Wait(ClientQueue, TimeSpan.FromMilliseconds(TimeoutInMs));
-                    }
-                    ClientQueue.TryDequeue(out client);
-
-                    if (client != null || timeout)
+                    if (ClientQueue.TryDequeue(out client))
                     {
                         break;
                     }
+
+                    var remainingMs = budgetMs - (int)elapsed.ElapsedMilliseconds;
+                    if (remainingMs <= 0)
+                    {
+                        break;
+                    }
+
+                    Monitor.Wait(ClientQueue, TimeSpan.FromMilliseconds(remainingMs));
                 }
             }
             finally
@@ -106,7 +112,7 @@ namespace Apache.IoTDB
             }
             if (client == null)
             {
-                var reasonPhrase = $"Connection pool is empty and wait time out({TimeoutInMs}ms)";
+                var reasonPhrase = $"Connection pool is empty and wait time out({budgetMs}ms)";
                 if (DiagnosticReporter != null)
                 {
                     throw DiagnosticReporter.BuildDepletionException(reasonPhrase);

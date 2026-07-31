@@ -128,20 +128,26 @@ Console.WriteLine($"Failed Reconnections: {sessionPool.FailedReconnections}");
 | -------------------- | --------------------- | ------------------------------------------------ | --------------------------- |
 | Available Clients    | `AvailableClients`    | Number of idle clients ready for use             | Alert if < 25% of pool size |
 | Total Pool Size      | `TotalPoolSize`       | Configured maximum pool size                     | N/A (constant)              |
-| Vacant Slots         | `VacantSlots`         | Slots whose connection was dropped after a failed reconnection, pending rebuild | Alert if > 0 and not returning to 0 |
+| Vacant Slots         | `VacantSlots`         | Configured capacity currently holding no connection, refilled on demand | Not an alert signal on its own - see below |
 | Failed Reconnections | `FailedReconnections` | Cumulative count of failed reconnection attempts | Alert if > 0 and increasing |
 
-### Self-healing behaviour
+### Capacity is demand-driven
 
-When an operation fails and reconnection also fails, the dead connection is discarded but its **slot is
-retained**. `VacantSlots` counts those empty slots, and the next acquisition that finds the pool empty
-rebuilds one of them on the spot. Consequences:
+When an operation fails and reconnection also fails, the dead connection is discarded but its **capacity is
+retained** rather than lost. `VacantSlots` counts that unrealized capacity, and an acquisition that finds no
+idle client materializes one slot before falling back to waiting. Consequences:
 
-- The pool keeps its configured capacity instead of shrinking by one on every failure.
-- Once the server is reachable again, the pool repopulates itself on the next operation - no `Close()` +
+- The pool no longer shrinks by one on every failure, so it cannot reach the state where every caller blocks
+  on a queue nobody will feed.
+- Once the server is reachable again, the pool repopulates itself as load demands it - no `Close()` +
   `Open()` cycle is required.
-- A steady non-zero `VacantSlots` means the server is still unreachable; it should fall back to 0 on its
-  own after recovery.
+- **Capacity is refilled on demand, not eagerly.** A slot is only materialized when an acquisition finds the
+  idle queue empty. Under sequential or light workloads one connection is enough to serve every request, so
+  `VacantSlots` legitimately stays above zero long after the server has fully recovered. It measures
+  unrealized capacity, not server availability.
+- Therefore **do not alert on `VacantSlots` alone.** Use `FailedReconnections` to reason about server
+  reachability: it only increases when a reconnection actually fails. `VacantSlots` is useful for
+  understanding how much of the configured pool is currently materialized.
 
 ## Failure Scenarios and Recovery Strategies
 
@@ -198,20 +204,20 @@ for (int i = 0; i < maxRetries; i++)
 
 - `SessionPoolDepletedException` with reason "Reconnection failed"
 - `AvailableClients` drops toward 0 while `VacantSlots` rises
-- `FailedReconnections` > 0 and increasing
+- `FailedReconnections` > 0 and increasing (this, not `VacantSlots`, is the outage signal)
 
 **Root Cause:** IoTDB server unreachable or network issues
 
 **Recovery Strategies:**
 
-0. **Do nothing but retry.** The pool rebuilds its vacant slots on the next operation, so once the server
-   comes back a plain retry succeeds. Reinitialising is only needed if you want to change configuration or
-   drop accumulated state:
+0. **Do nothing but retry.** Capacity is retained and refilled on demand, so once the server comes back a
+   plain retry succeeds. Reinitialising is only needed if you want to change configuration or drop
+   accumulated state:
 
 ```csharp
 catch (SessionPoolDepletedException ex)
 {
-    // Slots are retained and rebuilt lazily - just back off and try again
+    // Capacity is retained and refilled on demand - just back off and try again
     await Task.Delay(2000);
 }
 ```
@@ -555,8 +561,9 @@ The SessionPool exception handling and health monitoring features provide compre
 - Use `SessionPoolDepletedException` to understand and react to pool issues
 - Treat `IsOpen()` as a lifecycle flag, never as a connectivity check
 - Tune `SetPoolWaitTimeoutInMs` separately from `SetConnectionTimeoutInMs`
-- Monitor `AvailableClients`, `TotalPoolSize`, `VacantSlots`, and `FailedReconnections` metrics
-- Rely on lazy slot rebuilding for recovery; reinitialise only when you need to change configuration
+- Monitor `AvailableClients`, `TotalPoolSize`, and `FailedReconnections`; read `VacantSlots` as unrealized
+  capacity rather than as an outage signal
+- Rely on demand-driven capacity refill for recovery; reinitialise only when you need to change configuration
 - Implement appropriate recovery strategies based on failure scenarios
 - Set up proactive monitoring and alerting to prevent issues
 - Follow best practices for pool sizing and resource management
