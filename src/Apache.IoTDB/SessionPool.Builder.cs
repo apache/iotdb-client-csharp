@@ -34,6 +34,7 @@ public partial class SessionPool
         private int _poolSize = 8;
         private bool _enableRpcCompression = false;
         private int _connectionTimeoutInMs = 500;
+        private int _poolWaitTimeoutInMs = DefaultPoolWaitTimeoutInMs;
         private bool _useSsl = false;
         private string _certificatePath = null;
         private string _sqlDialect = IoTDBConstant.TREE_SQL_DIALECT;
@@ -94,6 +95,18 @@ public partial class SessionPool
             return this;
         }
 
+        /// <summary>
+        /// Sets how long, in milliseconds, an operation waits for a client to become available in the pool
+        /// before a <see cref="SessionPoolDepletedException"/> is thrown. Defaults to
+        /// <see cref="DefaultPoolWaitTimeoutInMs"/> (10 seconds). This is independent of
+        /// <see cref="SetConnectionTimeoutInMs"/>, which controls the socket-level timeout.
+        /// </summary>
+        public Builder SetPoolWaitTimeoutInMs(int poolWaitTimeoutInMs)
+        {
+            _poolWaitTimeoutInMs = poolWaitTimeoutInMs;
+            return this;
+        }
+
         public Builder SetUseSsl(bool useSsl)
         {
             _useSsl = useSsl;
@@ -135,6 +148,7 @@ public partial class SessionPool
             _poolSize = 8;
             _enableRpcCompression = false;
             _connectionTimeoutInMs = 500;
+            _poolWaitTimeoutInMs = DefaultPoolWaitTimeoutInMs;
             _useSsl = false;
             _certificatePath = null;
             _sqlDialect = IoTDBConstant.TREE_SQL_DIALECT;
@@ -146,9 +160,9 @@ public partial class SessionPool
             // if nodeUrls is not empty, use nodeUrls to create session pool
             if (_nodeUrls.Count > 0)
             {
-                return new SessionPool(_nodeUrls, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _useSsl, _certificatePath, _sqlDialect, _database);
+                return new SessionPool(_nodeUrls, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _useSsl, _certificatePath, _sqlDialect, _database, _poolWaitTimeoutInMs);
             }
-            return new SessionPool(_host, _port, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _useSsl, _certificatePath, _sqlDialect, _database);
+            return new SessionPool(_host, _port, _username, _password, _fetchSize, _zoneId, _poolSize, _enableRpcCompression, _connectionTimeoutInMs, _useSsl, _certificatePath, _sqlDialect, _database, _poolWaitTimeoutInMs);
         }
     }
 }

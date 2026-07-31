@@ -40,6 +40,12 @@ namespace Apache.IoTDB
         private static readonly TSProtocolVersion ProtocolVersion = TSProtocolVersion.IOTDB_SERVICE_PROTOCOL_V3;
         private const string DepletionReasonReconnectFailed = "Reconnection failed";
 
+        /// <summary>
+        /// Default time, in milliseconds, that an operation waits for a client to become available
+        /// in the pool before a <see cref="SessionPoolDepletedException"/> is raised.
+        /// </summary>
+        public const int DefaultPoolWaitTimeoutInMs = 10_000;
+
         private readonly string _username;
         private readonly string _password;
         private bool _enableRpcCompression;
@@ -55,6 +61,11 @@ namespace Apache.IoTDB
         /// _timeout is the amount of time a Session will wait for a send operation to complete successfully.
         /// </summary>
         private readonly int _timeout;
+        /// <summary>
+        /// _poolWaitTimeoutInMs is the amount of time, in milliseconds, an operation waits for a client
+        /// to become available in the pool. It is unrelated to the socket-level _timeout.
+        /// </summary>
+        private readonly int _poolWaitTimeoutInMs = DefaultPoolWaitTimeoutInMs;
         private readonly int _poolSize = 4;
         private readonly string _sqlDialect = IoTDBConstant.TREE_SQL_DIALECT;
         private string _database;
@@ -65,6 +76,12 @@ namespace Apache.IoTDB
         private ConcurrentClientQueue _clients;
         private ILogger _logger;
         private PoolHealthMetrics _healthMetrics;
+        /// <summary>
+        /// Number of pool slots whose connection was discarded because reconnection failed. The slots are
+        /// re-materialized on demand by <see cref="AcquireClientAsync"/> so that the pool keeps its
+        /// configured capacity and recovers by itself once the server comes back.
+        /// </summary>
+        private int _vacantSlots;
 
         public delegate Task<TResult> AsyncOperation<TResult>(Client client);
 
@@ -82,6 +99,13 @@ namespace Apache.IoTDB
         /// Retrieves cumulative tally of reconnection failures since pool was opened.
         /// </summary>
         public int FailedReconnections => _healthMetrics?.GetReconnectionFailureTally() ?? 0;
+
+        /// <summary>
+        /// Number of pool slots that currently hold no connection because a reconnection attempt failed.
+        /// These slots are rebuilt lazily on the next acquisition, so a non-zero value means the pool is
+        /// degraded but will heal itself once the server is reachable again.
+        /// </summary>
+        public int VacantSlots => Volatile.Read(ref _vacantSlots);
 
 
         [Obsolete("This method is deprecated, please use new SessionPool.Builder().")]
@@ -110,6 +134,10 @@ namespace Apache.IoTDB
         {
         }
         protected internal SessionPool(string host, int port, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout, bool useSsl, string certificatePath, string sqlDialect, string database)
+                        : this(host, port, username, password, fetchSize, zoneId, poolSize, enableRpcCompression, timeout, useSsl, certificatePath, sqlDialect, database, DefaultPoolWaitTimeoutInMs)
+        {
+        }
+        protected internal SessionPool(string host, int port, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout, bool useSsl, string certificatePath, string sqlDialect, string database, int poolWaitTimeoutInMs)
         {
             _host = host;
             _port = port;
@@ -125,6 +153,7 @@ namespace Apache.IoTDB
             _certificatePath = certificatePath;
             _sqlDialect = sqlDialect;
             _database = database;
+            _poolWaitTimeoutInMs = poolWaitTimeoutInMs;
         }
         /// <summary>
         ///  Initializes a new instance of the <see cref="SessionPool"/> class.
@@ -153,6 +182,10 @@ namespace Apache.IoTDB
 
         }
         protected internal SessionPool(List<string> nodeUrls, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout, bool useSsl, string certificatePath, string sqlDialect, string database)
+                        : this(nodeUrls, username, password, fetchSize, zoneId, poolSize, enableRpcCompression, timeout, useSsl, certificatePath, sqlDialect, database, DefaultPoolWaitTimeoutInMs)
+        {
+        }
+        protected internal SessionPool(List<string> nodeUrls, string username, string password, int fetchSize, string zoneId, int poolSize, bool enableRpcCompression, int timeout, bool useSsl, string certificatePath, string sqlDialect, string database, int poolWaitTimeoutInMs)
         {
             if (nodeUrls.Count == 0)
             {
@@ -172,10 +205,61 @@ namespace Apache.IoTDB
             _certificatePath = certificatePath;
             _sqlDialect = sqlDialect;
             _database = database;
+            _poolWaitTimeoutInMs = poolWaitTimeoutInMs;
         }
+        /// <summary>
+        /// Acquires a client from the pool. If the pool has no idle client but owns vacant slots left behind
+        /// by earlier failed reconnections, one of those slots is re-materialized on the spot instead of
+        /// blocking on a queue that nobody will ever feed. This is what lets the pool recover on its own
+        /// after the server has been unreachable for a while.
+        /// </summary>
+        private async Task<Client> AcquireClientAsync(CancellationToken cancellationToken = default)
+        {
+            if (_clients.ClientQueue.IsEmpty && TryReserveVacantSlot())
+            {
+                try
+                {
+                    return await Reconnect(cancellationToken: cancellationToken);
+                }
+                catch (ReconnectionFailedException reconnectEx)
+                {
+                    // Still unreachable - hand the slot back so a later call can retry.
+                    Interlocked.Increment(ref _vacantSlots);
+                    throw new SessionPoolDepletedException(DepletionReasonReconnectFailed, AvailableClients, TotalPoolSize, FailedReconnections, reconnectEx);
+                }
+                catch
+                {
+                    // Any other failure must not swallow the slot either.
+                    Interlocked.Increment(ref _vacantSlots);
+                    throw;
+                }
+            }
+
+            return _clients.Take();
+        }
+
+        /// <summary>
+        /// Atomically claims one vacant slot, returning false when none is left.
+        /// </summary>
+        private bool TryReserveVacantSlot()
+        {
+            while (true)
+            {
+                int current = Volatile.Read(ref _vacantSlots);
+                if (current <= 0)
+                {
+                    return false;
+                }
+                if (Interlocked.CompareExchange(ref _vacantSlots, current - 1, current) == current)
+                {
+                    return true;
+                }
+            }
+        }
+
         public async Task<TResult> ExecuteClientOperationAsync<TResult>(AsyncOperation<TResult> operation, string errMsg, bool retryOnFailure = true, bool putClientBack = true)
         {
-            Client client = _clients.Take();
+            Client client = await AcquireClientAsync();
             bool shouldReturnClient = true;
             bool operationSucceeded = false;
             try
@@ -196,8 +280,11 @@ namespace Apache.IoTDB
                     }
                     catch (ReconnectionFailedException reconnectEx)
                     {
-                        // Reconnection failed - original client was closed by Reconnect
+                        // Reconnection failed - original client was closed by Reconnect. Record the now-empty
+                        // slot so the pool keeps its configured capacity and can rebuild it later, instead of
+                        // shrinking by one on every failure until every caller blocks forever.
                         shouldReturnClient = false;
+                        Interlocked.Increment(ref _vacantSlots);
                         throw new SessionPoolDepletedException(DepletionReasonReconnectFailed, AvailableClients, TotalPoolSize, FailedReconnections, reconnectEx);
                     }
 
@@ -268,8 +355,9 @@ namespace Apache.IoTDB
         {
             _healthMetrics = new PoolHealthMetrics(_poolSize);
             _clients = new ConcurrentClientQueue();
-            _clients.Timeout = _timeout * 5;
+            _clients.TimeoutInMs = _poolWaitTimeoutInMs;
             _clients.DiagnosticReporter = this;
+            Volatile.Write(ref _vacantSlots, 0);
 
             if (_nodeUrls.Count == 0)
             {
@@ -344,7 +432,9 @@ namespace Apache.IoTDB
             }
             else
             {
-                int startIndex = _endPoints.FindIndex(x => x.Ip == originalClient.EndPoint.Ip && x.Port == originalClient.EndPoint.Port);
+                int startIndex = originalClient == null
+                    ? 0
+                    : _endPoints.FindIndex(x => x.Ip == originalClient.EndPoint.Ip && x.Port == originalClient.EndPoint.Port);
                 if (startIndex == -1)
                 {
                     throw new ArgumentException($"The original client is not in the list of endpoints. Original client: {originalClient.EndPoint.Ip}:{originalClient.EndPoint.Port}");
@@ -372,6 +462,16 @@ namespace Apache.IoTDB
             throw new ReconnectionFailedException("Error occurs when reconnecting session pool. Could not connect to any server");
         }
 
+        /// <summary>
+        /// Indicates whether this pool has been opened and not yet closed by the caller.
+        /// </summary>
+        /// <remarks>
+        /// This reflects the lifecycle of the pool object only - it is NOT a server-connectivity probe.
+        /// The client performs no heartbeat, so a server going down does not flip this back to false;
+        /// it stays true until <see cref="Close"/> is called. To reason about connectivity, use
+        /// <see cref="AvailableClients"/>, <see cref="VacantSlots"/> and <see cref="FailedReconnections"/>,
+        /// or simply let an operation throw <see cref="SessionPoolDepletedException"/>.
+        /// </remarks>
         public bool IsOpen() => !_isClose;
 
         public async Task Close()
@@ -430,7 +530,7 @@ namespace Apache.IoTDB
                 return _zoneId;
             }
 
-            var client = _clients.Take();
+            var client = await AcquireClientAsync();
 
             try
             {

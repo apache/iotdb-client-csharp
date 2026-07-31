@@ -34,9 +34,9 @@ using System;
 try
 {
     var sessionPool = new SessionPool.Builder()
-        .Host("127.0.0.1")
-        .Port(6667)
-        .PoolSize(4)
+        .SetHost("127.0.0.1")
+        .SetPort(6667)
+        .SetPoolSize(4)
         .Build();
 
     await sessionPool.Open();
@@ -54,6 +54,52 @@ catch (SessionPoolDepletedException ex)
 }
 ```
 
+## `IsOpen()` is a lifecycle flag, not a health check
+
+`SessionPool.IsOpen()` reports whether **you** have opened the pool and not yet closed it. It is not a
+connectivity probe:
+
+- It becomes `true` after a successful `Open()` and only returns to `false` when you call `Close()`.
+- The client runs no heartbeat, so a server that goes down does **not** flip it back to `false`.
+  Reconnection happens lazily, on the next operation.
+
+This means the following common guard never re-opens the pool, because the flag stays `true` forever:
+
+```csharp
+// Anti-pattern: this short-circuits even while every connection is dead
+if (_pool != null && _pool.IsOpen()) return;
+```
+
+To reason about actual availability, use the health metrics below, or simply let an operation throw
+`SessionPoolDepletedException` and handle it.
+
+## Pool Wait Timeout
+
+Two independent timeouts govern a pool operation:
+
+| Setting                                   | Unit | Default | Controls                                                                  |
+| ----------------------------------------- | ---- | ------- | ------------------------------------------------------------------------- |
+| `SetConnectionTimeoutInMs(int)`           | ms   | 500     | Socket-level send/receive timeout of an individual connection             |
+| `SetPoolWaitTimeoutInMs(int)`             | ms   | 10000   | How long an operation waits for a free client before the pool gives up    |
+
+```csharp
+var sessionPool = new SessionPool.Builder()
+    .SetHost("127.0.0.1")
+    .SetPort(6667)
+    .SetPoolSize(8)
+    .SetConnectionTimeoutInMs(500)   // socket timeout
+    .SetPoolWaitTimeoutInMs(10_000)  // give up after 10s of waiting for a free client
+    .Build();
+```
+
+When the wait budget is exhausted, the operation throws `SessionPoolDepletedException` with the reason
+`Connection pool is empty and wait time out(...ms)`. Raise `SetPoolWaitTimeoutInMs` if your workload
+legitimately queues behind long operations; lower it if you would rather fail fast and retry.
+
+> **Note:** before this setting existed, the wait budget was derived from the connection timeout and then
+> misinterpreted as seconds, which turned the 500 ms default into a ~41 minute block. If you are upgrading
+> from an older version and relied on that (unintended) long wait, set `SetPoolWaitTimeoutInMs` explicitly.
+
 ## Pool Health Metrics
 
 ### Monitoring Pool Status
@@ -62,9 +108,9 @@ The `SessionPool` class exposes real-time health metrics that can be used for mo
 
 ```csharp
 var sessionPool = new SessionPool.Builder()
-    .Host("127.0.0.1")
-    .Port(6667)
-    .PoolSize(8)
+    .SetHost("127.0.0.1")
+    .SetPort(6667)
+    .SetPoolSize(8)
     .Build();
 
 await sessionPool.Open();
@@ -72,6 +118,7 @@ await sessionPool.Open();
 // Check pool health
 Console.WriteLine($"Available Clients: {sessionPool.AvailableClients}");
 Console.WriteLine($"Total Pool Size: {sessionPool.TotalPoolSize}");
+Console.WriteLine($"Vacant Slots: {sessionPool.VacantSlots}");
 Console.WriteLine($"Failed Reconnections: {sessionPool.FailedReconnections}");
 ```
 
@@ -81,7 +128,20 @@ Console.WriteLine($"Failed Reconnections: {sessionPool.FailedReconnections}");
 | -------------------- | --------------------- | ------------------------------------------------ | --------------------------- |
 | Available Clients    | `AvailableClients`    | Number of idle clients ready for use             | Alert if < 25% of pool size |
 | Total Pool Size      | `TotalPoolSize`       | Configured maximum pool size                     | N/A (constant)              |
+| Vacant Slots         | `VacantSlots`         | Slots whose connection was dropped after a failed reconnection, pending rebuild | Alert if > 0 and not returning to 0 |
 | Failed Reconnections | `FailedReconnections` | Cumulative count of failed reconnection attempts | Alert if > 0 and increasing |
+
+### Self-healing behaviour
+
+When an operation fails and reconnection also fails, the dead connection is discarded but its **slot is
+retained**. `VacantSlots` counts those empty slots, and the next acquisition that finds the pool empty
+rebuilds one of them on the spot. Consequences:
+
+- The pool keeps its configured capacity instead of shrinking by one on every failure.
+- Once the server is reachable again, the pool repopulates itself on the next operation - no `Close()` +
+  `Open()` cycle is required.
+- A steady non-zero `VacantSlots` means the server is still unreachable; it should fall back to 0 on its
+  own after recovery.
 
 ## Failure Scenarios and Recovery Strategies
 
@@ -101,9 +161,9 @@ Console.WriteLine($"Failed Reconnections: {sessionPool.FailedReconnections}");
 
 ```csharp
 var sessionPool = new SessionPool.Builder()
-    .Host("127.0.0.1")
-    .Port(6667)
-    .PoolSize(16)  // Increased from 8
+    .SetHost("127.0.0.1")
+    .SetPort(6667)
+    .SetPoolSize(16)  // Increased from 8
     .Build();
 ```
 
@@ -137,12 +197,24 @@ for (int i = 0; i < maxRetries; i++)
 **Symptoms:**
 
 - `SessionPoolDepletedException` with reason "Reconnection failed"
-- `AvailableClients` decreases over time
+- `AvailableClients` drops toward 0 while `VacantSlots` rises
 - `FailedReconnections` > 0 and increasing
 
 **Root Cause:** IoTDB server unreachable or network issues
 
 **Recovery Strategies:**
+
+0. **Do nothing but retry.** The pool rebuilds its vacant slots on the next operation, so once the server
+   comes back a plain retry succeeds. Reinitialising is only needed if you want to change configuration or
+   drop accumulated state:
+
+```csharp
+catch (SessionPoolDepletedException ex)
+{
+    // Slots are retained and rebuilt lazily - just back off and try again
+    await Task.Delay(2000);
+}
+```
 
 1. **Reinitialize SessionPool:**
 
@@ -159,9 +231,9 @@ catch (SessionPoolDepletedException ex) when (ex.FailedReconnections > 5)
 
     // Create new pool
     sessionPool = new SessionPool.Builder()
-        .Host("127.0.0.1")
-        .Port(6667)
-        .PoolSize(8)
+        .SetHost("127.0.0.1")
+        .SetPort(6667)
+        .SetPoolSize(8)
         .Build();
 
     await sessionPool.Open();
@@ -245,9 +317,9 @@ public async Task RateLimitedInsert(string deviceId, RowRecord record)
 
 ```csharp
 var sessionPool = new SessionPool.Builder()
-    .Host("127.0.0.1")
-    .Port(6667)
-    .Timeout(120)  // Increased timeout for slow server
+    .SetHost("127.0.0.1")
+    .SetPort(6667)
+    .SetConnectionTimeoutInMs(5000)  // Increased socket timeout for a slow server
     .Build();
 ```
 
@@ -381,10 +453,10 @@ public class ProductionSessionPoolManager
     public async Task Initialize()
     {
         _pool = new SessionPool.Builder()
-            .Host("127.0.0.1")
-            .Port(6667)
-            .PoolSize(8)
-            .Timeout(60)
+            .SetHost("127.0.0.1")
+            .SetPort(6667)
+            .SetPoolSize(8)
+            .SetConnectionTimeoutInMs(5000)
             .Build();
 
         await _pool.Open();
@@ -481,7 +553,10 @@ public class ProductionSessionPoolManager
 The SessionPool exception handling and health monitoring features provide comprehensive tools for building robust IoTDB applications:
 
 - Use `SessionPoolDepletedException` to understand and react to pool issues
-- Monitor `AvailableClients`, `TotalPoolSize`, and `FailedReconnections` metrics
+- Treat `IsOpen()` as a lifecycle flag, never as a connectivity check
+- Tune `SetPoolWaitTimeoutInMs` separately from `SetConnectionTimeoutInMs`
+- Monitor `AvailableClients`, `TotalPoolSize`, `VacantSlots`, and `FailedReconnections` metrics
+- Rely on lazy slot rebuilding for recovery; reinitialise only when you need to change configuration
 - Implement appropriate recovery strategies based on failure scenarios
 - Set up proactive monitoring and alerting to prevent issues
 - Follow best practices for pool sizing and resource management
