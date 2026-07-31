@@ -83,7 +83,7 @@ namespace Apache.IoTDB
         /// stays above zero even after the server has fully recovered. It measures unrealized capacity,
         /// not server availability.
         /// </summary>
-        private int _vacantSlots;
+        private int _unrealizedCapacity;
 
         public delegate Task<TResult> AsyncOperation<TResult>(Client client);
 
@@ -108,7 +108,7 @@ namespace Apache.IoTDB
         /// load is normal and does NOT mean the server is unreachable. Use <see cref="FailedReconnections"/>
         /// to reason about server availability.
         /// </summary>
-        public int VacantSlots => Volatile.Read(ref _vacantSlots);
+        public int UnrealizedCapacity => Volatile.Read(ref _unrealizedCapacity);
 
 
         [Obsolete("This method is deprecated, please use new SessionPool.Builder().")]
@@ -218,7 +218,7 @@ namespace Apache.IoTDB
         /// </summary>
         private async Task<Client> AcquireClientAsync(CancellationToken cancellationToken = default)
         {
-            if (!_isClose && _clients.ClientQueue.IsEmpty && TryReserveVacantSlot())
+            if (!_isClose && _clients.ClientQueue.IsEmpty && TryReserveUnrealizedCapacity())
             {
                 try
                 {
@@ -227,13 +227,13 @@ namespace Apache.IoTDB
                 catch (ReconnectionFailedException reconnectEx)
                 {
                     // Still unreachable - hand the slot back so a later call can retry.
-                    Interlocked.Increment(ref _vacantSlots);
+                    Interlocked.Increment(ref _unrealizedCapacity);
                     throw new SessionPoolDepletedException(DepletionReasonReconnectFailed, AvailableClients, TotalPoolSize, FailedReconnections, reconnectEx);
                 }
                 catch
                 {
                     // Any other failure must not swallow the slot either.
-                    Interlocked.Increment(ref _vacantSlots);
+                    Interlocked.Increment(ref _unrealizedCapacity);
                     throw;
                 }
             }
@@ -242,18 +242,18 @@ namespace Apache.IoTDB
         }
 
         /// <summary>
-        /// Atomically claims one vacant slot, returning false when none is left.
+        /// Atomically claims one unit of unrealized capacity, returning false when none is left.
         /// </summary>
-        private bool TryReserveVacantSlot()
+        private bool TryReserveUnrealizedCapacity()
         {
             while (true)
             {
-                int current = Volatile.Read(ref _vacantSlots);
+                int current = Volatile.Read(ref _unrealizedCapacity);
                 if (current <= 0)
                 {
                     return false;
                 }
-                if (Interlocked.CompareExchange(ref _vacantSlots, current - 1, current) == current)
+                if (Interlocked.CompareExchange(ref _unrealizedCapacity, current - 1, current) == current)
                 {
                     return true;
                 }
@@ -287,7 +287,7 @@ namespace Apache.IoTDB
                         // slot so the pool keeps its configured capacity and can rebuild it later, instead of
                         // shrinking by one on every failure until every caller blocks forever.
                         shouldReturnClient = false;
-                        Interlocked.Increment(ref _vacantSlots);
+                        Interlocked.Increment(ref _unrealizedCapacity);
                         throw new SessionPoolDepletedException(DepletionReasonReconnectFailed, AvailableClients, TotalPoolSize, FailedReconnections, reconnectEx);
                     }
 
@@ -360,7 +360,7 @@ namespace Apache.IoTDB
             _clients = new ConcurrentClientQueue();
             _clients.TimeoutInMs = _poolWaitTimeoutInMs;
             _clients.DiagnosticReporter = this;
-            Volatile.Write(ref _vacantSlots, 0);
+            Volatile.Write(ref _unrealizedCapacity, 0);
 
             if (_nodeUrls.Count == 0)
             {
@@ -472,7 +472,7 @@ namespace Apache.IoTDB
         /// This reflects the lifecycle of the pool object only - it is NOT a server-connectivity probe.
         /// The client performs no heartbeat, so a server going down does not flip this back to false;
         /// it stays true until <see cref="Close"/> is called. To reason about connectivity, use
-        /// <see cref="AvailableClients"/>, <see cref="VacantSlots"/> and <see cref="FailedReconnections"/>,
+        /// <see cref="AvailableClients"/>, <see cref="UnrealizedCapacity"/> and <see cref="FailedReconnections"/>,
         /// or simply let an operation throw <see cref="SessionPoolDepletedException"/>.
         /// </remarks>
         public bool IsOpen() => !_isClose;
@@ -485,11 +485,11 @@ namespace Apache.IoTDB
             }
 
             // Flip the lifecycle state first. It must not depend on how many clients happen to be queued:
-            // once every connection has become a vacant slot the queue is empty, and assigning _isClose
-            // inside the loop below would leave IsOpen() true forever. Clearing the vacant slots also
+            // once every connection has been discarded the queue is empty, and assigning _isClose
+            // inside the loop below would leave IsOpen() true forever. Zeroing the unrealized capacity also
             // disables the rebuild path in AcquireClientAsync while we are tearing down.
             _isClose = true;
-            Volatile.Write(ref _vacantSlots, 0);
+            Volatile.Write(ref _unrealizedCapacity, 0);
 
             foreach (var client in _clients.ClientQueue.AsEnumerable())
             {

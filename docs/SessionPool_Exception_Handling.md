@@ -118,7 +118,7 @@ await sessionPool.Open();
 // Check pool health
 Console.WriteLine($"Available Clients: {sessionPool.AvailableClients}");
 Console.WriteLine($"Total Pool Size: {sessionPool.TotalPoolSize}");
-Console.WriteLine($"Vacant Slots: {sessionPool.VacantSlots}");
+Console.WriteLine($"Unrealized Capacity: {sessionPool.UnrealizedCapacity}");
 Console.WriteLine($"Failed Reconnections: {sessionPool.FailedReconnections}");
 ```
 
@@ -128,26 +128,26 @@ Console.WriteLine($"Failed Reconnections: {sessionPool.FailedReconnections}");
 | -------------------- | --------------------- | ------------------------------------------------ | --------------------------- |
 | Available Clients    | `AvailableClients`    | Number of idle clients ready for use             | Alert if < 25% of pool size |
 | Total Pool Size      | `TotalPoolSize`       | Configured maximum pool size                     | N/A (constant)              |
-| Vacant Slots         | `VacantSlots`         | Configured capacity currently holding no connection, refilled on demand | Not an alert signal on its own - see below |
+| Unrealized Capacity  | `UnrealizedCapacity`  | Configured capacity currently holding no connection, refilled on demand | Not an alert signal on its own - see below |
 | Failed Reconnections | `FailedReconnections` | Cumulative count of failed reconnection attempts | Alert if > 0 and increasing |
 
 ### Capacity is demand-driven
 
 When an operation fails and reconnection also fails, the dead connection is discarded but its **capacity is
-retained** rather than lost. `VacantSlots` counts that unrealized capacity, and an acquisition that finds no
-idle client materializes one slot before falling back to waiting. Consequences:
+retained** rather than lost. `UnrealizedCapacity` counts the capacity left without a connection, and an
+acquisition that finds no idle client materializes one connection before falling back to waiting.
+Consequences:
 
 - The pool no longer shrinks by one on every failure, so it cannot reach the state where every caller blocks
   on a queue nobody will feed.
 - Once the server is reachable again, the pool repopulates itself as load demands it - no `Close()` +
   `Open()` cycle is required.
-- **Capacity is refilled on demand, not eagerly.** A slot is only materialized when an acquisition finds the
+- **Capacity is refilled on demand, not eagerly.** A connection is only created when an acquisition finds the
   idle queue empty. Under sequential or light workloads one connection is enough to serve every request, so
-  `VacantSlots` legitimately stays above zero long after the server has fully recovered. It measures
-  unrealized capacity, not server availability.
-- Therefore **do not alert on `VacantSlots` alone.** Use `FailedReconnections` to reason about server
-  reachability: it only increases when a reconnection actually fails. `VacantSlots` is useful for
-  understanding how much of the configured pool is currently materialized.
+  `UnrealizedCapacity` legitimately stays above zero long after the server has fully recovered. It measures
+  how much of the configured pool has not been materialized, not server availability.
+- Therefore **do not alert on `UnrealizedCapacity` alone.** Use `FailedReconnections` to reason about server
+  reachability: it only increases when a reconnection actually fails.
 
 ## Failure Scenarios and Recovery Strategies
 
@@ -203,8 +203,8 @@ for (int i = 0; i < maxRetries; i++)
 **Symptoms:**
 
 - `SessionPoolDepletedException` with reason "Reconnection failed"
-- `AvailableClients` drops toward 0 while `VacantSlots` rises
-- `FailedReconnections` > 0 and increasing (this, not `VacantSlots`, is the outage signal)
+- `AvailableClients` drops toward 0 while `UnrealizedCapacity` rises
+- `FailedReconnections` > 0 and increasing (this, not `UnrealizedCapacity`, is the outage signal)
 
 **Root Cause:** IoTDB server unreachable or network issues
 
@@ -561,8 +561,8 @@ The SessionPool exception handling and health monitoring features provide compre
 - Use `SessionPoolDepletedException` to understand and react to pool issues
 - Treat `IsOpen()` as a lifecycle flag, never as a connectivity check
 - Tune `SetPoolWaitTimeoutInMs` separately from `SetConnectionTimeoutInMs`
-- Monitor `AvailableClients`, `TotalPoolSize`, and `FailedReconnections`; read `VacantSlots` as unrealized
-  capacity rather than as an outage signal
+- Monitor `AvailableClients`, `TotalPoolSize`, and `FailedReconnections`; read `UnrealizedCapacity` as
+  capacity not yet materialized rather than as an outage signal
 - Rely on demand-driven capacity refill for recovery; reinitialise only when you need to change configuration
 - Implement appropriate recovery strategies based on failure scenarios
 - Set up proactive monitoring and alerting to prevent issues

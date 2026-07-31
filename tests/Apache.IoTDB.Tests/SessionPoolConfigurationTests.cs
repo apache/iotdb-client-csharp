@@ -85,11 +85,11 @@ namespace Apache.IoTDB.Tests
         }
 
         [Test]
-        public void NewPool_StartsWithNoVacantSlotsAndIsNotOpen()
+        public void NewPool_StartsWithNoUnrealizedCapacityAndIsNotOpen()
         {
             var pool = new SessionPool.Builder().SetHost("127.0.0.1").SetPort(6667).Build();
 
-            Assert.That(pool.VacantSlots, Is.Zero);
+            Assert.That(pool.UnrealizedCapacity, Is.Zero);
             Assert.That(pool.IsOpen(), Is.False);
         }
 
@@ -104,19 +104,19 @@ namespace Apache.IoTDB.Tests
         public async Task Close_EmptyClientQueue_StillMarksThePoolClosed()
         {
             // Regression guard: _isClose used to be assigned only inside the foreach over queued clients.
-            // Once every connection had become a vacant slot the queue was empty, the loop ran zero times,
+            // Once every connection had been discarded the queue was empty, the loop ran zero times,
             // and Close() returned while IsOpen() stayed true - leaving the rebuild path armed.
             var pool = new SessionPool.Builder().SetHost("127.0.0.1").SetPort(6667).Build();
             SetPrivateField(pool, "_clients", new ConcurrentClientQueue());
             SetPrivateField(pool, "_isClose", false);
-            SetPrivateField(pool, "_vacantSlots", 8);
+            SetPrivateField(pool, "_unrealizedCapacity", 8);
 
             Assert.That(pool.IsOpen(), Is.True, "Precondition: the pool looks open with an empty queue.");
 
             await pool.Close();
 
             Assert.That(pool.IsOpen(), Is.False, "Close() must flip the lifecycle flag regardless of queue contents.");
-            Assert.That(pool.VacantSlots, Is.Zero, "Close() must disarm capacity refill.");
+            Assert.That(pool.UnrealizedCapacity, Is.Zero, "Close() must disarm capacity refill.");
         }
 
         [Test]
