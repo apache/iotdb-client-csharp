@@ -50,6 +50,7 @@ namespace Apache.IoTDB
                 "TEXT" => TSDataType.TEXT,
                 "STRING" => TSDataType.STRING,
                 "BLOB" => TSDataType.BLOB,
+                "OBJECT" => TSDataType.OBJECT,
                 "TIMESTAMP" => TSDataType.TIMESTAMP,
                 "DATE" => TSDataType.DATE,
                 _ => TSDataType.NONE

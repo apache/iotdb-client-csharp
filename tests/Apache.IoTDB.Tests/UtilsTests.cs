@@ -202,6 +202,49 @@ namespace Apache.IoTDB.Tests
         }
 
         [TestFixture]
+        public class ObjectBytesToStringTests : UtilsTests
+        {
+            private static byte[] ObjectValue(ulong size, byte[] suffix = null)
+            {
+                var bytes = new byte[8 + (suffix?.Length ?? 0)];
+                for (int i = 0; i < 8; i++)
+                {
+                    bytes[i] = (byte)(size >> (56 - 8 * i));
+                }
+                suffix?.CopyTo(bytes, 8);
+                return bytes;
+            }
+
+            [Test]
+            public void ObjectBytesToString_FormatsBytesKilobytesMegabytesAndGigabytes()
+            {
+                Assert.That(Utils.ObjectBytesToString(ObjectValue(1023)), Is.EqualTo("(Object) 1023 B"));
+                Assert.That(Utils.ObjectBytesToString(ObjectValue(1024)), Is.EqualTo("(Object) 1.00 KB"));
+                Assert.That(Utils.ObjectBytesToString(ObjectValue(1024 * 1024)), Is.EqualTo("(Object) 1.00 MB"));
+                Assert.That(Utils.ObjectBytesToString(ObjectValue(1024UL * 1024 * 1024)), Is.EqualTo("(Object) 1.00 GB"));
+            }
+
+            [Test]
+            public void ObjectBytesToString_IgnoresPathSuffix()
+            {
+                var value = ObjectValue(1024, System.Text.Encoding.UTF8.GetBytes("internal/path/1.bin"));
+                Assert.That(Utils.ObjectBytesToString(value), Is.EqualTo("(Object) 1.00 KB"));
+            }
+
+            [Test]
+            public void ObjectBytesToString_ShortValueThrows()
+            {
+                Assert.Throws<ArgumentException>(() => Utils.ObjectBytesToString(new byte[7]));
+            }
+
+            [Test]
+            public void ObjectBytesToString_NullThrows()
+            {
+                Assert.Throws<ArgumentNullException>(() => Utils.ObjectBytesToString(null));
+            }
+        }
+
+        [TestFixture]
         public class DateUtilsTests : UtilsTests
         {
             [Test]

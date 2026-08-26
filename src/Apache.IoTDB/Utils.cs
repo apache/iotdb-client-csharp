@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -120,6 +121,40 @@ namespace Apache.IoTDB
         public static string ByteArrayToHexString(byte[] bytes)
         {
             return "0x" + BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
+        }
+
+        /// <summary>
+        /// Formats the wire representation of a stored OBJECT value for display.
+        /// The server stores OBJECT cells as an 8-byte big-endian file size
+        /// followed by the internal object path; this renders the size in
+        /// human-readable units (mirrors the Go client's objectBytesToString).
+        /// </summary>
+        public static string ObjectBytesToString(byte[] input)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (input.Length < 8)
+                throw new ArgumentException(
+                    $"Invalid OBJECT value: expected at least 8 bytes, got {input.Length}.",
+                    nameof(input));
+
+            ulong size = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                size = (size << 8) | input[i];
+            }
+
+            const ulong kilobyte = 1024;
+            const ulong megabyte = kilobyte * 1024;
+            const ulong gigabyte = megabyte * 1024;
+
+            if (size < kilobyte)
+                return $"(Object) {size} B";
+            if (size < megabyte)
+                return string.Format(CultureInfo.InvariantCulture, "(Object) {0:F2} KB", (double)size / kilobyte);
+            if (size < gigabyte)
+                return string.Format(CultureInfo.InvariantCulture, "(Object) {0:F2} MB", (double)size / megabyte);
+            return string.Format(CultureInfo.InvariantCulture, "(Object) {0:F2} GB", (double)size / gigabyte);
         }
     }
 }

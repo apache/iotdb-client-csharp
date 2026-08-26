@@ -184,5 +184,101 @@ namespace Apache.IoTDB.Tests
             Assert.That(row0.DataTypes.Count, Is.EqualTo(row0.Values.Count),
                 "DataTypes count should match Values count.");
         }
+
+        private static byte[] BuildObjectTsBlockBytes()
+        {
+            var payload = new List<byte>();
+            payload.AddRange(new byte[] { 0, 0, 0, 0, 0, 0, 0x04, 0x00 }); // size 1024 BE
+            payload.AddRange(System.Text.Encoding.UTF8.GetBytes("internal/path/1.bin"));
+
+            var buf = new ByteBuffer(256);
+            buf.AddInt(1); // value column count
+            buf.AddByte((byte)TSDataType.OBJECT); // value column type
+            buf.AddInt(1); // position count
+            buf.AddByte((byte)ColumnEncoding.Int64Array); // time encoding
+            buf.AddByte((byte)ColumnEncoding.BinaryArray); // value encoding
+
+            buf.AddByte(0); // time mayHaveNull
+            buf.AddLong(1000L); // timestamp
+
+            buf.AddByte(0); // object mayHaveNull
+            buf.AddInt(payload.Count);
+            foreach (var b in payload)
+            {
+                buf.AddByte(b);
+            }
+
+            return buf.GetBuffer();
+        }
+
+        private RpcDataSet CreateObjectDataSet()
+        {
+            var columnNames = new List<string> { "file" };
+            var columnTypes = new List<string> { "OBJECT" };
+            var columnNameIndex = new Dictionary<string, int> { { "file", 0 } };
+            var columnIndex2TsBlockColumnIndexList = new List<int> { 0 };
+
+            return new RpcDataSet(
+                sql: "select file from object_table",
+                columnNameList: columnNames,
+                columnTypeList: columnTypes,
+                columnNameIndex: columnNameIndex,
+                ignoreTimestamp: false,
+                moreData: false,
+                queryId: 1,
+                statementId: 1,
+                client: null,
+                sessionId: 1,
+                queryResult: new List<byte[]> { BuildObjectTsBlockBytes() },
+                fetchSize: 1024,
+                timeout: 10000,
+                zoneId: "UTC",
+                columnIndex2TsBlockColumnIndexList: columnIndex2TsBlockColumnIndexList
+            );
+        }
+
+        [Test]
+        public void GetObject_ObjectColumn_ReturnsFormattedSizeString()
+        {
+            var dataSet = CreateObjectDataSet();
+            dataSet.Next();
+
+            Assert.That(dataSet.GetObject("file"), Is.EqualTo("(Object) 1.00 KB"));
+            // By-index APIs are 1-based with the implicit Time column at index 1,
+            // so the OBJECT column is index 2.
+            Assert.That(dataSet.GetObjectByIndex(2), Is.EqualTo("(Object) 1.00 KB"));
+        }
+
+        [Test]
+        public void GetString_ObjectColumn_ReturnsFormattedSizeString()
+        {
+            var dataSet = CreateObjectDataSet();
+            dataSet.Next();
+
+            Assert.That(dataSet.GetString("file"), Is.EqualTo("(Object) 1.00 KB"));
+            Assert.That(dataSet.GetStringByIndex(2), Is.EqualTo("(Object) 1.00 KB"));
+        }
+
+        [Test]
+        public void GetRow_ObjectColumn_KeepsObjectTypeAndValue()
+        {
+            var dataSet = CreateObjectDataSet();
+            dataSet.Next();
+            var row = dataSet.GetRow();
+
+            Assert.That(row.Measurements, Does.Contain("file"));
+            Assert.That(row.DataTypes, Does.Contain(TSDataType.OBJECT));
+            Assert.That(row.Values, Does.Contain("(Object) 1.00 KB"));
+        }
+
+        [Test]
+        public void GetBinary_ObjectColumn_Throws()
+        {
+            var dataSet = CreateObjectDataSet();
+            dataSet.Next();
+
+            Assert.Throws<InvalidOperationException>(() => dataSet.GetBinary("file"));
+            Assert.Throws<InvalidOperationException>(() => dataSet.GetBinaryByIndex(2));
+        }
     }
 }

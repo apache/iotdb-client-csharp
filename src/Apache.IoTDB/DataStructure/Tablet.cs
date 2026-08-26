@@ -297,6 +297,57 @@ namespace Apache.IoTDB.DataStructure
             return columnCategories;
         }
 
+        /// <summary>
+        /// Builds the wire representation of one OBJECT segment: a 1-byte isEOF
+        /// flag, an 8-byte big-endian offset, then the raw segment content.
+        /// This matches Java's
+        /// Tablet.addValue(rowIndex, columnIndex, isEOF, offset, content).
+        /// </summary>
+        public static byte[] BuildObjectValue(bool isEOF, long offset, byte[] content)
+        {
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException(nameof(offset), offset, "OBJECT segment offset must be non-negative.");
+
+            var value = new byte[9 + content.Length];
+            value[0] = isEOF ? (byte)1 : (byte)0;
+            value[1] = (byte)(offset >> 56);
+            value[2] = (byte)(offset >> 48);
+            value[3] = (byte)(offset >> 40);
+            value[4] = (byte)(offset >> 32);
+            value[5] = (byte)(offset >> 24);
+            value[6] = (byte)(offset >> 16);
+            value[7] = (byte)(offset >> 8);
+            value[8] = (byte)offset;
+            Array.Copy(content, 0, value, 9, content.Length);
+            return value;
+        }
+
+        /// <summary>
+        /// Writes one segment of an OBJECT column value at an existing row.
+        ///
+        /// An OBJECT value can be written in multiple segments so that a large
+        /// object does not need to be fully loaded into memory. Segments must be
+        /// written with ascending offsets and the last segment must set isEOF
+        /// to true.
+        /// </summary>
+        public void SetObjectValueAt(bool isEOF, long offset, byte[] content, int columnIndex, int rowIndex)
+        {
+            if (columnIndex < 0 || columnIndex >= ColNumber)
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), columnIndex, "Column index is out of range.");
+            if (rowIndex < 0 || rowIndex >= RowNumber)
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), rowIndex, "Row index is out of range.");
+            if (DataTypes[columnIndex] != TSDataType.OBJECT)
+                throw new ArgumentException($"Column {columnIndex} must be of type OBJECT.", nameof(columnIndex));
+
+            _values[rowIndex][columnIndex] = BuildObjectValue(isEOF, offset, content);
+            if (BitMaps != null && BitMaps[columnIndex] != null)
+            {
+                BitMaps[columnIndex].unmark(rowIndex);
+            }
+        }
+
         private int EstimateBufferSize()
         {
             var estimateSize = 0;
@@ -326,6 +377,7 @@ namespace Apache.IoTDB.DataStructure
                     case TSDataType.TEXT:
                     case TSDataType.BLOB:
                     case TSDataType.STRING:
+                    case TSDataType.OBJECT:
                         estimateSize += 8;
                         break;
                     default:
@@ -441,7 +493,9 @@ namespace Apache.IoTDB.DataStructure
                         break;
                     }
                     case TSDataType.BLOB:
+                    case TSDataType.OBJECT:
                     {
+                        // OBJECT uses the same length-prefixed binary encoding as BLOB.
                         for (int j = 0; j < RowNumber; j++)
                         {
                             var value = _values[j][i];

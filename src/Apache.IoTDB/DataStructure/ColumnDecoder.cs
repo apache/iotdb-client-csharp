@@ -188,7 +188,10 @@ namespace Apache.IoTDB.DataStructure
     {
         public Column ReadColumn(ByteBuffer reader, TSDataType dataType, int positionCount)
         {
-            if (dataType != TSDataType.TEXT)
+            if (dataType != TSDataType.TEXT
+                && dataType != TSDataType.STRING
+                && dataType != TSDataType.BLOB
+                && dataType != TSDataType.OBJECT)
                 throw new ArgumentException($"Invalid data type: {dataType}");
 
             bool[] nullIndicators = ColumnDeserializer.DeserializeNullIndicators(reader, positionCount);

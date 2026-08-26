@@ -495,6 +495,8 @@ namespace Apache.IoTDB.DataStructure
         private Binary GetBinaryByTsBlockColumnIndex(int tsBlockColumnIndex)
         {
             CheckRecord();
+            if (GetDataTypeByTsBlockColumnIndex(tsBlockColumnIndex) == TSDataType.OBJECT)
+                throw new InvalidOperationException("OBJECT type does not support GetBlob");
             if (!IsNull(tsBlockColumnIndex, _tsBlockIndex))
             {
                 _lastReadWasNull = false;
@@ -553,6 +555,10 @@ namespace Apache.IoTDB.DataStructure
 
                 case TSDataType.BLOB:
                     return _curTsBlock.GetColumn(tsBlockColumnIndex).GetBinary(_tsBlockIndex);
+
+                case TSDataType.OBJECT:
+                    Binary objectBytes = _curTsBlock.GetColumn(tsBlockColumnIndex).GetBinary(_tsBlockIndex);
+                    return Utils.ObjectBytesToString(objectBytes.Data);
 
                 case TSDataType.DATE:
                     int value = _curTsBlock.GetColumn(tsBlockColumnIndex).GetInt(_tsBlockIndex);
@@ -635,6 +641,10 @@ namespace Apache.IoTDB.DataStructure
                     Binary blobBytes = _curTsBlock.GetColumn(index).GetBinary(_tsBlockIndex);
                     return blobBytes.ToString().Replace("-", "");
 
+                case TSDataType.OBJECT:
+                    Binary objectBytes = _curTsBlock.GetColumn(index).GetBinary(_tsBlockIndex);
+                    return Utils.ObjectBytesToString(objectBytes.Data);
+
                 case TSDataType.DATE:
                     int dateValue = _curTsBlock.GetColumn(index).GetInt(_tsBlockIndex);
                     DateTime date = Int32ToDate(dateValue);
@@ -700,6 +710,9 @@ namespace Apache.IoTDB.DataStructure
                     case TSDataType.BLOB:
                         var binary = GetBinary(columnName);
                         localfield = binary?.Data;
+                        break;
+                    case TSDataType.OBJECT:
+                        localfield = GetString(columnName);
                         break;
                     case TSDataType.DATE:
                         localfield = GetDate(columnName);

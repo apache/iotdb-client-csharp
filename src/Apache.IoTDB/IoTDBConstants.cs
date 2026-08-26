@@ -33,6 +33,7 @@ namespace Apache.IoTDB
         DATE = 9,
         BLOB = 10,
         STRING = 11,
+        OBJECT = 12,
     }
 
     public enum TSEncoding
