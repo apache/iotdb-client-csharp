@@ -44,7 +44,8 @@ var tablet =
 | -------------- | ------------------------- | ------------------------ | ----------------------------- |
 | Open           | bool                      | open session             | session_pool.Open(false)      |
 | Close          | null                      | close session            | session_pool.Close()          |
-| IsOpen         | null                      | check if the pool was opened and not yet closed by the caller. It is a lifecycle flag, **not** a connectivity probe: it stays `true` after the server goes down, because the client keeps no heartbeat and reconnects on demand instead. | session_pool.IsOpen()         |
+| IsOpen         | null                      | check whether the pool was opened and not yet closed by the caller. It is a lifecycle flag, **not** a connectivity probe: it stays `true` after the server goes down, because the client keeps no heartbeat and reconnects on demand instead. For connectivity use `CheckHealthAsync` | session_pool.IsOpen()         |
+| CheckHealthAsync | CancellationToken=default | probe server connectivity on an idle pooled connection; returns a `SessionPoolHealth` snapshot | await session_pool.CheckHealthAsync() |
 | OpenDebugMode  | LoggingConfiguration=null | open debug mode          | session_pool.OpenDebugMode()  |
 | CloseDebugMode | null                      | close debug mode         | session_pool.CloseDebugMode() |
 | SetTimeZone    | string                    | set time zone            | session_pool.GetTimeZone()    |

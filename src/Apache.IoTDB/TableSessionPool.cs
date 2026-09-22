@@ -70,6 +70,15 @@ public partial class TableSessionPool
         sessionPool.OpenDebugMode(configure);
     }
 
+    /// <summary>
+    /// Probes server connectivity on an idle pooled connection. See
+    /// <see cref="SessionPool.CheckHealthAsync"/> for the semantics.
+    /// </summary>
+    public async Task<SessionPoolHealth> CheckHealthAsync(CancellationToken cancellationToken = default)
+    {
+        return await sessionPool.CheckHealthAsync(cancellationToken);
+    }
+
     public async Task Close()
     {
         await sessionPool.Close();

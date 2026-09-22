@@ -58,7 +58,6 @@ namespace Apache.IoTDB
         public void AddRef() => Interlocked.Increment(ref _ref);
         public int GetRef() => Volatile.Read(ref _ref);
         public void RemoveRef() => Interlocked.Decrement(ref _ref);
-
         /// <summary>
         /// The maximum time, in milliseconds, that <see cref="Take"/> waits for a client to be
         /// returned to the pool before throwing. Defaults to 10000 (10 seconds).
@@ -78,6 +77,12 @@ namespace Apache.IoTDB
             get => TimeoutInMs / 1000;
             set => TimeoutInMs = value * 1000;
         }
+
+        /// <summary>
+        /// Attempts to take a client without ever blocking. Returns false when no client is idle.
+        /// Use this for probes and diagnostics, which must not queue behind ordinary work.
+        /// </summary>
+        public bool TryTake(out Client client) => ClientQueue.TryDequeue(out client);
 
         public Client Take()
         {

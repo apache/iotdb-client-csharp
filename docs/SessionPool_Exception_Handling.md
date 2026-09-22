@@ -54,24 +54,62 @@ catch (SessionPoolDepletedException ex)
 }
 ```
 
-## `IsOpen()` is a lifecycle flag, not a health check
+## Checking connectivity: `CheckHealthAsync` vs `IsOpen`
 
-`SessionPool.IsOpen()` reports whether **you** have opened the pool and not yet closed it. It is not a
-connectivity probe:
+`SessionPool.IsOpen()` reports whether **you** have opened the pool and not yet closed it. It is a
+lifecycle flag, not a connectivity probe:
 
 - It becomes `true` after a successful `Open()` and only returns to `false` when you call `Close()`.
 - The client runs no heartbeat, so a server that goes down does **not** flip it back to `false`.
   Reconnection happens lazily, on the next operation.
 
-This means the following common guard never re-opens the pool, because the flag stays `true` forever:
+This makes the following common guard a trap - it short-circuits forever, so the pool is never rebuilt:
 
 ```csharp
-// Anti-pattern: this short-circuits even while every connection is dead
+// Anti-pattern: IsOpen() stays true even while every connection is dead
 if (_pool != null && _pool.IsOpen()) return;
 ```
 
-To reason about actual availability, use the health metrics below, or simply let an operation throw
-`SessionPoolDepletedException` and handle it.
+Use `CheckHealthAsync` when you need to know whether the server is actually reachable. It issues one
+lightweight request on an idle pooled connection and returns a `SessionPoolHealth` snapshot:
+
+```csharp
+var health = await sessionPool.CheckHealthAsync();
+
+if (!health.IsHealthy)
+{
+    Console.WriteLine(health);            // e.g. "Unhealthy: The server did not answer the probe: ..."
+    Console.WriteLine(health.Status);     // NotOpen | Healthy | Degraded | Unhealthy
+    Console.WriteLine(health.Error);      // the underlying exception, when Status is Unhealthy
+}
+```
+
+### Status values
+
+| Status      | Meaning                                                                                     |
+| ----------- | ------------------------------------------------------------------------------------------- |
+| `NotOpen`   | The pool has not been opened yet, or has already been closed. No network call is attempted.  |
+| `Healthy`   | The server answered the probe.                                                              |
+| `Degraded`  | The pool is open but no connection was idle to probe with. Says nothing about the server.    |
+| `Unhealthy` | A connection was available but the server did not answer. See `Error` for the cause.         |
+
+### Behaviour worth knowing
+
+- **The probe never blocks.** If every client is busy, it returns `Degraded` immediately instead of
+  queueing behind ordinary work, so a health endpoint cannot be starved by application load. It is also
+  unaffected by the pool wait timeout described below.
+- **The borrowed connection is always returned** to the pool, and a failed probe does not close it. The
+  regular reconnect-on-use path still applies to the next operation.
+- **`Degraded` is not a server verdict.** Under high concurrency it simply means the pool was saturated at
+  that instant. Treat a persistent `Degraded` as a sizing signal, not an outage.
+- **Bound the probe yourself if you need to.** Pass a cancellation token:
+
+```csharp
+using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+var health = await sessionPool.CheckHealthAsync(cts.Token);
+```
+
+`TableSessionPool` exposes the same `CheckHealthAsync` method with identical semantics.
 
 ## Pool Wait Timeout
 
@@ -94,7 +132,9 @@ var sessionPool = new SessionPool.Builder()
 
 When the wait budget is exhausted, the operation throws `SessionPoolDepletedException` with the reason
 `Connection pool is empty and wait time out(...ms)`. Raise `SetPoolWaitTimeoutInMs` if your workload
-legitimately queues behind long operations; lower it if you would rather fail fast and retry.
+legitimately queues behind long operations; lower it if you would rather fail fast and retry. The budget is
+a single deadline for the whole call: waiters woken by a returned connection that they lose the race for do
+not restart it.
 
 > **Note:** before this setting existed, the wait budget was derived from the connection timeout and then
 > misinterpreted as seconds, which turned the 500 ms default into a ~41 minute block. If you are upgrading
@@ -333,6 +373,8 @@ var sessionPool = new SessionPool.Builder()
 
 ### Health Check Implementation
 
+The simplest health check delegates to the built-in probe and only adds your own policy on top:
+
 ```csharp
 public class SessionPoolHealthCheck
 {
@@ -343,26 +385,27 @@ public class SessionPoolHealthCheck
         _pool = pool;
     }
 
-    public HealthStatus CheckHealth()
+    public async Task<HealthStatus> CheckHealthAsync()
     {
-        var availableRatio = (double)_pool.AvailableClients / _pool.TotalPoolSize;
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        var health = await _pool.CheckHealthAsync(cts.Token);
 
-        if (_pool.FailedReconnections > 10)
+        if (health.Status == SessionPoolHealthStatus.Unhealthy)
         {
             return new HealthStatus
             {
                 Status = "Critical",
-                Message = $"High reconnection failures: {_pool.FailedReconnections}",
+                Message = health.Message,
                 Recommendation = "Check IoTDB server availability"
             };
         }
 
-        if (availableRatio < 0.25)
+        if (health.Status == SessionPoolHealthStatus.Degraded)
         {
             return new HealthStatus
             {
                 Status = "Warning",
-                Message = $"Low available clients: {_pool.AvailableClients}/{_pool.TotalPoolSize}",
+                Message = $"No idle connection to probe ({health.AvailableClients}/{health.TotalPoolSize} available)",
                 Recommendation = "Consider increasing pool size"
             };
         }
@@ -370,7 +413,7 @@ public class SessionPoolHealthCheck
         return new HealthStatus
         {
             Status = "Healthy",
-            Message = $"Pool healthy: {_pool.AvailableClients}/{_pool.TotalPoolSize} available"
+            Message = health.Message
         };
     }
 }
@@ -382,6 +425,9 @@ public class HealthStatus
     public string Recommendation { get; set; }
 }
 ```
+
+If you would rather not issue a network call on every scrape, the metrics below can be sampled on their
+own - just remember they describe the pool, not the server.
 
 ### Metrics Collection for Monitoring Systems
 
@@ -559,7 +605,7 @@ public class ProductionSessionPoolManager
 The SessionPool exception handling and health monitoring features provide comprehensive tools for building robust IoTDB applications:
 
 - Use `SessionPoolDepletedException` to understand and react to pool issues
-- Treat `IsOpen()` as a lifecycle flag, never as a connectivity check
+- Use `CheckHealthAsync` for connectivity checks; `IsOpen()` is a lifecycle flag only
 - Tune `SetPoolWaitTimeoutInMs` separately from `SetConnectionTimeoutInMs`
 - Monitor `AvailableClients`, `TotalPoolSize`, and `FailedReconnections`; read `UnrealizedCapacity` as
   capacity not yet materialized rather than as an outage signal

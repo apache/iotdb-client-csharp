@@ -471,11 +471,61 @@ namespace Apache.IoTDB
         /// <remarks>
         /// This reflects the lifecycle of the pool object only - it is NOT a server-connectivity probe.
         /// The client performs no heartbeat, so a server going down does not flip this back to false;
-        /// it stays true until <see cref="Close"/> is called. To reason about connectivity, use
-        /// <see cref="AvailableClients"/>, <see cref="UnrealizedCapacity"/> and <see cref="FailedReconnections"/>,
-        /// or simply let an operation throw <see cref="SessionPoolDepletedException"/>.
+        /// it stays true until <see cref="Close"/> is called. Use <see cref="CheckHealthAsync"/> when you
+        /// need to know whether the server is actually reachable, or read <see cref="AvailableClients"/>,
+        /// <see cref="UnrealizedCapacity"/> and <see cref="FailedReconnections"/> for pool state.
         /// </remarks>
         public bool IsOpen() => !_isClose;
+
+        /// <summary>
+        /// Probes server connectivity by issuing one lightweight request on an idle pooled connection,
+        /// and returns a snapshot of the result. This is the connectivity check that <see cref="IsOpen"/>
+        /// is often mistaken for.
+        /// </summary>
+        /// <remarks>
+        /// The probe never blocks waiting for a connection: if every client is busy, the call returns
+        /// <see cref="SessionPoolHealthStatus.Degraded"/> immediately rather than queueing behind ordinary
+        /// work. The borrowed connection is always returned to the pool, and a failed probe does not close
+        /// it - the regular reconnect-on-use path still applies to the next operation.
+        /// Pass a cancellation token if you want to bound how long the probe may take.
+        /// </remarks>
+        public async Task<SessionPoolHealth> CheckHealthAsync(CancellationToken cancellationToken = default)
+        {
+            if (_isClose || _clients == null)
+            {
+                return new SessionPoolHealth(SessionPoolHealthStatus.NotOpen, 0, TotalPoolSize, FailedReconnections,
+                    "The pool has not been opened yet, or it has already been closed.");
+            }
+
+            if (!_clients.TryTake(out var client))
+            {
+                return new SessionPoolHealth(SessionPoolHealthStatus.Degraded, 0, TotalPoolSize, FailedReconnections,
+                    "No idle connection was available to probe. The pool is either saturated by concurrent work or has lost its connections.");
+            }
+
+            SessionPoolHealthStatus status;
+            string message;
+            Exception error = null;
+            try
+            {
+                await client.ServiceClient.getTimeZoneAsync(client.SessionId, cancellationToken);
+                status = SessionPoolHealthStatus.Healthy;
+                message = "The server answered the probe.";
+            }
+            catch (Exception e)
+            {
+                status = SessionPoolHealthStatus.Unhealthy;
+                message = $"The server did not answer the probe: {e.Message}";
+                error = e;
+                _logger?.LogWarning(e, "Health probe failed for session pool");
+            }
+            finally
+            {
+                _clients.Add(client);
+            }
+
+            return new SessionPoolHealth(status, AvailableClients, TotalPoolSize, FailedReconnections, message, error);
+        }
 
         public async Task Close()
         {
